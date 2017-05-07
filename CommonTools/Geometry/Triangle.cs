@@ -222,9 +222,10 @@ namespace CommonTools.Geometry
         }
 
         /// <summary>
-        /// Determines whether the triangle contains the specified p point. 
+        /// Determines whether the triangle contains the specified p point
+        /// using the Barycentric Technique.
         /// Points that fall on the edge are inside the triangle.
-        /// Source: http://www.gamedev.net/topic/295943-is-this-a-better-point-in-triangle-test-2d/
+        /// Source: http://www.blackpawn.com/texts/pointinpoly/default.html
         /// </summary>
         /// <param name="p">The point.</param>
         /// <returns>
@@ -232,25 +233,30 @@ namespace CommonTools.Geometry
         /// </returns>
         public bool ContainsPoint(Vector3 p)
         {
-            bool b1, b2, b3;
+            Vector3 a = this.V1;
+            Vector3 b = this.V2;
+            Vector3 c = this.V3;
 
-            b1 = Sign(p, v1, v2) < 0.0;
-            b2 = Sign(p, v2, v3) < 0.0;
-            b3 = Sign(p, v3, v1) < 0.0;
+            // Compute vectors
+            Vector3 v0 = c - a; // v0 = C - A
+            Vector3 v1 = b - a; // v1 = B - A
+            Vector3 v2 = p - a; // v2 = P - A
 
-            return ((b1 == b2) && (b2 == b3));
-        }
+            // Compute dot products
+            double dot00 = Vector3.DotProduct(v0, v0); // dot00 = dot(v0, v0)
+            double dot01 = Vector3.DotProduct(v0, v1); // dot01 = dot(v0, v1)
+            double dot02 = Vector3.DotProduct(v0, v2); // dot02 = dot(v0, v2)
+            double dot11 = Vector3.DotProduct(v1, v1); // dot11 = dot(v1, v1)
+            double dot12 = Vector3.DotProduct(v1, v2); // dot12 = dot(v1, v2)
 
-        /// <summary>
-        /// Gets the sign of three <see cref="Vector3"/>.
-        /// </summary>
-        /// <param name="p1">The p1 vector.</param>
-        /// <param name="p2">The p2 vector.</param>
-        /// <param name="p3">The p3 vector.</param>
-        /// <returns>The sign.</returns>
-        private double Sign(Vector3 p1, Vector3 p2, Vector3 p3)
-        {
-            return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
+            // Compute barycentric coordinates
+            double invDenom = 1 / (dot00 * dot11 - dot01 * dot01); // invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
+            double u = (dot11 * dot02 - dot01 * dot12) * invDenom; // u = (dot11 * dot02 - dot01 * dot12) * invDenom
+            double v = (dot00 * dot12 - dot01 * dot02) * invDenom; // v = (dot00 * dot12 - dot01 * dot02) * invDenom
+
+            // Check if point is in triangle
+            // Smaller modification - point can fall to the edge of the triangle
+            return (u >= 0) && (v >= 0) && (u + v <= 1); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
 
         /// <summary>
