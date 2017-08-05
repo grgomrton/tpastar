@@ -8,12 +8,12 @@ namespace PathFinder.TPAStar
 {
     public static class TPAStarAlgorithm
     {
-        public static Curve FindPath(Vector3 start, Triangle startTriangle, Vector3[] goals)
+        public static Curve FindPath(Vector3 startPoint, Triangle startTriangle, Vector3[] goals)
         {
             OpenSet openSet = new OpenSet();
             ExploredSet exploredSet = new ExploredSet();
 
-            TPAPath initialPath = new TPAPath(start, startTriangle);
+            TPAPath initialPath = new TPAPath(startPoint, startTriangle);
             openSet.Add(initialPath);
             TPAPath optimalPath = initialPath;
             bool done = false;

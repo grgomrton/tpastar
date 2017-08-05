@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathFinder", "TPAStar\PathF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStarGUI", "TPAStarGUI\TPAStarGUI.csproj", "{1785B63D-363C-45BB-8415-434FB560F85E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStar.Tests", "TPAStar.Tests\TPAStar.Tests.csproj", "{882C3111-AE96-4E55-8F69-134B1EC4570F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1785B63D-363C-45BB-8415-434FB560F85E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1785B63D-363C-45BB-8415-434FB560F85E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1785B63D-363C-45BB-8415-434FB560F85E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{882C3111-AE96-4E55-8F69-134B1EC4570F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{882C3111-AE96-4E55-8F69-134B1EC4570F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{882C3111-AE96-4E55-8F69-134B1EC4570F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{882C3111-AE96-4E55-8F69-134B1EC4570F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
