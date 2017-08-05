@@ -91,5 +91,10 @@ namespace PathFinder.TPAStar
                 }
             }
         }
+
+        public void Clear()
+        {
+            openSet.Clear();
+        }
     }
 }

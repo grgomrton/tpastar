@@ -61,6 +61,7 @@
     <Compile Include="TPAStarDemonstration.Designer.cs">
       <DependentUpon>TPAStarDemonstration.cs</DependentUpon>
     </Compile>
+    <Compile Include="TriangleIcon.cs" />
     <EmbeddedResource Include="FunnelDemonstration.resx">
       <DependentUpon>FunnelDemonstration.cs</DependentUpon>
     </EmbeddedResource>

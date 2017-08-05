@@ -48,7 +48,8 @@
     <Compile Include="TPAStar\OpenSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TPAStar\TPAPath.cs" />
-    <Compile Include="TPAStar\TPAStarAlgorithm.cs" />
+    <Compile Include="TPAStar\TPAStarSolver.cs" />
+    <Compile Include="TPAStar\TriangleEvaluationResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonTools\CommonTools.csproj">

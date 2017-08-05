@@ -19,14 +19,6 @@ namespace CommonTools.Geometry
         private Vector3 centroid;
         private Triangle[] neighbours;
 
-        // metadata
-        private long id;
-        private long expanded;
-        private double gMin;
-        private double gMax;
-        private double h;
-        private double fMin;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Triangle"/> class.
         /// </summary>
@@ -51,129 +43,46 @@ namespace CommonTools.Geometry
             this.v1 = v1;
             this.v2 = v2;
             this.v3 = v3;
-            this.centroid = (v1 + v2 + v3) / 3.0;
-            this.neighbours = new Triangle[0];
-
-            this.id = id;
-            this.expanded = 0;
-            this.gMin = 0;
-            this.gMax = 0;
-            this.fMin = 0;
-            this.h = 0;
+            centroid = (v1 + v2 + v3) / 3.0;
+            neighbours = new Triangle[0];
         }
 
         /// <summary>
         /// Gets the v1 corner point of the triangle.
         /// </summary>
-        public Vector3 V1
-        {
-            get { return v1; }
-        }
+        public Vector3 V1 => v1;
 
         /// <summary>
         /// Gets the v2 corner point of the triangle.
         /// </summary>
-        public Vector3 V2
-        {
-            get { return v2; }
-        }
+        public Vector3 V2 => v2;
 
         /// <summary>
         /// Gets the v3 corner point of the triangle.
         /// </summary>
-        public Vector3 V3
-        {
-            get { return v3; }
-        }
-
-
-        /// <summary>
-        /// Gets or sets the G min metadata.
-        /// </summary>
-        /// <value>
-        /// The G min.
-        /// </value>
-        public double GMin
-        {
-            get { return gMin; }
-            set { gMin = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the G max metadata.
-        /// </summary>
-        /// <value>
-        /// The G max.
-        /// </value>
-        public double GMax
-        {
-            get { return gMax; }
-            set { gMax = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the F min metadata.
-        /// </summary>
-        /// <value>
-        /// The F min.
-        /// </value>
-        public double FMin
-        {
-            get { return fMin; }
-            set { fMin = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the H metadata.
-        /// </summary>
-        /// <value>
-        /// The H.
-        /// </value>
-        public double H
-        {
-            get { return h; }
-            set { h = value; }
-        }
+        public Vector3 V3 => v3;
 
         /// <summary>
         /// Gets the centroid of the triangle.
         /// </summary>
-        public Vector3 Centroid
-        {
-            get { return centroid; }
-        }
+        public Vector3 Centroid => centroid;
 
         /// <summary>
         /// Gets the neighbours.
         /// </summary>
-        public Triangle[] Neighbours
-        {
-            get { return neighbours; }
-        }
+        public IEnumerable<Triangle> Neighbours => neighbours;
 
         /// <summary>
         /// Sets the neighbours.
         /// </summary>
         /// <param name="neighbours">The neighbours.</param>
-        public void SetNeighbours(Triangle[] neighbours)
+        public void SetNeighbours(params Triangle[] neighbours)
         {
+            if (neighbours.Length > 3)
+            {
+                throw new ArgumentOutOfRangeException("Parameter 'neighbours' exceeds the maximum allowed size of 3");
+            }
             this.neighbours = neighbours;
-        }
-
-        /// <summary>
-        /// Gets the id.
-        /// </summary>
-        public long Id
-        {
-            get { return id; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating how many times the current <see cref="Triangle"/> was expanded.
-        /// </summary>
-        public long Expanded
-        {
-            get { return expanded; }
         }
 
         /// <summary>
@@ -200,25 +109,6 @@ namespace CommonTools.Geometry
         public static bool operator !=(Triangle t1, Triangle t2)
         {
             return (((object)t1) != ((object)t2));
-        }
-
-        /// <summary>
-        /// Increases the traversion count.
-        /// </summary>
-        public void IncreaseTraversionCount()
-        {
-            expanded++;
-        }
-
-        /// <summary>
-        /// Resets the meta data.
-        /// </summary>
-        public void ResetMetaData()
-        {
-            expanded = 0;
-            gMin = 0;
-            h = 0;
-            fMin = 0;
         }
 
         /// <summary>
@@ -365,51 +255,6 @@ namespace CommonTools.Geometry
         public override int GetHashCode()
         {
             return V1.GetHashCode() ^ V2.GetHashCode() ^ V3.GetHashCode();
-        }
-
-        /// <summary>
-        /// Draws itself on the canvas.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: fill, edge; Optional: traversionShade</param>
-        /// <param name="widths">Required: edge</param>
-        public void Draw(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            Color baseFillColor = colors["fill"];
-            Color fillColor = baseFillColor;
-            if (colors.ContainsKey("traversionShade"))
-            {
-                Color shadeColor = colors["traversionShade"];
-                int r = Convert.ToInt32(Math.Max(baseFillColor.R - expanded * shadeColor.R, 0));
-                int g = Convert.ToInt32(Math.Max(baseFillColor.G - expanded * shadeColor.G, 0));
-                int b = Convert.ToInt32(Math.Max(baseFillColor.B - expanded * shadeColor.B, 0));
-                fillColor = Color.FromArgb(r, g, b);
-            }
-
-            Brush brush = new SolidBrush(fillColor);
-            Pen pen = new Pen(colors["edge"], widths["edge"]);
-
-            PointF[] points = new PointF[3];
-
-            points[0] = new PointF(V1.Xf, V1.Yf);
-            points[1] = new PointF(V2.Xf, V2.Yf);
-            points[2] = new PointF(V3.Xf, V3.Yf);
-
-            canvas.FillPolygon(brush, points);
-            canvas.DrawPolygon(pen, points);
-        }
-
-        /// <summary>
-        /// Draws metadata about this triangle.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: data</param>
-        /// <param name="widths">Required: fontSize</param>
-        public void DrawMeta(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            string formatString = "t{0} [{1}]\nmp: {2}";
-            String label = String.Format(formatString, Id.ToString(), Expanded, GMin.ToString("#.##"));
-            canvas.DrawString(label, new Font("Arial", widths["fontSize"]), new SolidBrush(colors["data"]), Centroid.ToPointF());
         }
 
     }

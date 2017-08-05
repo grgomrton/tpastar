@@ -160,7 +160,6 @@ namespace CommonTools.Geometry
         /// </returns>
         public bool Equals(Edge other)
         {
-            Double a = 1;
             return ((other.V1 == this.V1 && other.V2 == this.V2) || (other.V1 == this.V2 && other.V2 == this.V1));
         }
 

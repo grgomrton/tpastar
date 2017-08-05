@@ -16,7 +16,7 @@ namespace PathFinder.TPAStar
         private double dgMax;
         private double h; // heuristic value
         private bool isGoalReached;
-
+        
         public TPAPath(Vector3 startPoint, Triangle startTriangle) : base(startPoint)
         {
             this.currentTriangle = startTriangle;
@@ -37,7 +37,7 @@ namespace PathFinder.TPAStar
             isGoalReached = other.isGoalReached;
         }
 
-        public void StepTo(Triangle t, Vector3[] goalPoints)
+        internal TriangleEvaluationResult StepTo(Triangle t, Vector3[] goalPoints)
         {
             Edge currentEdge = currentTriangle.GetCommonEdge(t);
 
@@ -56,6 +56,8 @@ namespace PathFinder.TPAStar
             
             previousTriangle = currentTriangle;
             currentTriangle = t;
+            
+            return new TriangleEvaluationResult(h, FMin, GMin, GMax);
         }
 
         protected void UpdateMinPathToEdge(Edge edge)
@@ -183,7 +185,7 @@ namespace PathFinder.TPAStar
             }
         }
 
-        new public void FinalizePath(Vector3 goalPoint)
+        public new void FinalizePath(Vector3 goalPoint)
         {
             base.FinalizePath(goalPoint);
             dgMin = 0;
@@ -247,24 +249,12 @@ namespace PathFinder.TPAStar
                     ret = previousTriangle.GetCommonEdge(currentTriangle);
                 }
                 return ret;
-            
             }
         }
 
-        public LinkedList<Triangle> GetExplorableTriangles()
+        public IEnumerable<Triangle> GetExplorableTriangles()
         {
-            Triangle[] neighbours = currentTriangle.Neighbours;
-            LinkedList<Triangle> ret = new LinkedList<Triangle>();
-
-            for (int i = 0; i < neighbours.Length; i++)
-            {
-                if (neighbours[i] != previousTriangle)
-                {
-                    ret.AddLast(neighbours[i]);
-                }
-            }
-
-            return ret;
+            return currentTriangle.Neighbours.Where(triangle => triangle != previousTriangle);
         }
 
         public TPAPath Clone()
@@ -272,30 +262,9 @@ namespace PathFinder.TPAStar
             return new TPAPath(this);
         }
 
-        public void UpdateDisplayData()
+        public IEnumerable<Vector3> GetReachedGoalPoints(Vector3[] goalPoints)
         {
-            currentTriangle.IncreaseTraversionCount();
-            currentTriangle.H = h;
-            currentTriangle.GMin = GMin;
-            currentTriangle.GMax = GMax;
-            currentTriangle.FMin = FMin;
-        }
-
-        public LinkedList<Vector3> GetReachedGoalPoints(Vector3[] goalPoints)
-        {
-            LinkedList<Vector3> ret = new LinkedList<Vector3>();
-
-            for (int i = 0; i < goalPoints.Length; i++)
-            {
-                Vector3 goalPoint = goalPoints[i];
-
-                if (currentTriangle.ContainsPoint(goalPoint))
-                {
-                    ret.AddLast(goalPoint);
-                }
-            }
-
-            return ret;
+            return goalPoints.Where(point => currentTriangle.ContainsPoint(point));
         }
     }
 }

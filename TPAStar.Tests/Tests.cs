@@ -20,8 +20,9 @@ namespace TPAStar.Tests
             var t1 = new Triangle(a, b, c);
             var s = new Vector3(5.5, 7.5);
             var g = new Vector3(7.0, 7.5);
+            var solver = new TPAStarSolver();
             
-            var path = TPAStarAlgorithm.FindPath(s, t1, new [] { g });
+            var path = solver.FindPath(s, t1, new [] { g });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(1.5, Precision);
@@ -47,8 +48,9 @@ namespace TPAStar.Tests
             t2.SetNeighbours(new [] { t1 });
             var s = new Vector3(7.5, 7.5);
             var g = new Vector3(7.5, 10.0);
+            var solver = new TPAStarSolver();
             
-            var path = TPAStarAlgorithm.FindPath(s, t1, new [] { g });
+            var path = solver.FindPath(s, t1, new [] { g });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(2.5, Precision);
@@ -87,8 +89,9 @@ namespace TPAStar.Tests
             t5.SetNeighbours(new [] { t4 } );
             var s = new Vector3(9.0, 11.5);
             var g = new Vector3(12.0, 13.5);
-
-            var path = TPAStarAlgorithm.FindPath(s, t2, new [] { g });
+            var solver = new TPAStarSolver();
+            
+            var path = solver.FindPath(s, t2, new [] { g });
             
             path.Count.Should().Be(3);
             path.Length.Should().BeApproximately(sqrt2PlusSqrt5, Precision);
@@ -123,8 +126,9 @@ namespace TPAStar.Tests
             var s = new Vector3(9.0, 11.5);
             var g1 = new Vector3(12.0, 13.5);
             var g2 = new Vector3(9.0, 14.5);
-
-            var path = TPAStarAlgorithm.FindPath(s, t2, new [] { g1, g2 });
+            var solver = new TPAStarSolver();
+            
+            var path = solver.FindPath(s, t2, new [] { g1, g2 });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(3.0, Precision);

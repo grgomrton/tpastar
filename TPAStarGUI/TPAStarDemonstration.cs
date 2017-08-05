@@ -9,26 +9,49 @@ using System.Windows.Forms;
 using CommonTools.Geometry;
 using PathFinder.TPAStar;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 
 namespace TPAStarGUI
 {
     public partial class TPAStarDemonstration : Form
     {
-        Vector3 start;
-        Triangle[] triangles;
-        List<Vector3> goals;
-        Curve path;
-
-        int editingIndex = 0;
-        bool goalEditing = false, startEditing = false;
-        Triangle startTriangle;
-
-        Dictionary<string, Color> triangleColors;
-        Dictionary<string, float> triangleWidths;
-
+        private Vector3 start;
+        private Triangle[] triangles;
+        private List<Vector3> goals;
+        private Curve path;
+        
+        private TPAStarSolver solver;
+        private Dictionary<Triangle, TriangleIcon> trianglesToDraw;
+        
+        private int editingIndex = 0;
+        private bool goalEditing = false;
+        private bool startEditing = false;
+        private Triangle startTriangle;
+        
         public TPAStarDemonstration()
         {
             InitializeComponent();
+            
+            CreateTriangleMap();
+            AddDrawMethods();
+            solver = new TPAStarSolver();
+            solver.TriangleExplored += SolverOnTriangleExplored;
+
+            FindPathToGoal();
+        }
+
+        private void ResetDisplayMetaData()
+        {
+            foreach (var triangle in triangles)
+            {
+                trianglesToDraw[triangle].ResetMetaData();
+            }
+        }
+
+        private void SolverOnTriangleExplored(Triangle triangle, TriangleEvaluationResult result)
+        {
+            trianglesToDraw[triangle].IncreaseTraversionCount(result);
+            
         }
 
         private void DrawDots(Graphics canvas, Vector3[] vectors, Dictionary<string, Color> colors, Dictionary<string, float> widths)
@@ -102,21 +125,13 @@ namespace TPAStarGUI
 
         private void FindPathToGoal()
         {
-            for (int i = 0; i < triangles.Length; i++)
-            {
-                triangles[i].ResetMetaData();
-            }
-            path = TPAStarAlgorithm.FindPath(start, startTriangle, goals.ToArray());
+            ResetDisplayMetaData();
+            
+            path = solver.FindPath(start, startTriangle, goals.ToArray());
         }
 
         private void TPAStarDemonstration_Load(object sender, EventArgs e)
         {
-            InitTriangles();
-
-            FindPathToGoal();
-
-            AddDrawMethods();
-
             display.Invalidate();
         }
 
@@ -171,7 +186,9 @@ namespace TPAStarGUI
             display.Invalidate();
         }
 
-        private void InitTriangles() {
+        private void CreateTriangleMap() {
+            trianglesToDraw = new Dictionary<Triangle, TriangleIcon>();
+            
             Vector3 cr0 = new Vector3(2, 4, 0);
             Vector3 cr1 = new Vector3(2, 3, 0);
             Vector3 cr2 = new Vector3(3, 2, 0);
@@ -195,73 +212,69 @@ namespace TPAStarGUI
             goals.Add(new Vector3(5.1, 2.6, 0));
 
             Triangle t0 = new Triangle(cp0, cl0, cr0, 0);
+            CreateDrawableTriangle(t0, "t0");
             Triangle t1 = new Triangle(cl0, cr0, cl1, 1);
+            CreateDrawableTriangle(t1, "t1");
             Triangle t2 = new Triangle(cl1, cr0, cr1, 2);
+            CreateDrawableTriangle(t2, "t2");
             Triangle t3 = new Triangle(cl1, cr1, cl2, 3);
+            CreateDrawableTriangle(t3, "t3");
             Triangle t4 = new Triangle(cr1, cl2, cr2, 4);
+            CreateDrawableTriangle(t4, "t4");
             Triangle t5 = new Triangle(cr2, cl2, cr3, 5);
+            CreateDrawableTriangle(t5, "t5");
             Triangle t6 = new Triangle(cl3, cl2, cr3, 6);
+            CreateDrawableTriangle(t6, "t6");
             Triangle t7 = new Triangle(cl3, cl4, cr3, 7);
+            CreateDrawableTriangle(t7, "t7");
             Triangle t8 = new Triangle(cr4, cl4, cr3, 8);
+            CreateDrawableTriangle(t8, "t8");
             Triangle t9 = new Triangle(cr4, cl4, cp1, 9);
+            CreateDrawableTriangle(t9, "t9");
             Triangle t10 = new Triangle(cr0, cp0, cr3, 10);
+            CreateDrawableTriangle(t10, "t10");
             Triangle t11 = new Triangle(cr4, cp0, cr3, 11);
+            CreateDrawableTriangle(t11, "t11");
+            
+            t0.SetNeighbours(t1, t10);
+            t1.SetNeighbours(t2, t0);
+            t2.SetNeighbours(t3, t1);
+            t3.SetNeighbours(t4, t2);
+            t4.SetNeighbours(t5, t3);
+            t5.SetNeighbours( t6, t4);
+            t6.SetNeighbours(t7, t5);
+            t7.SetNeighbours(t8, t6);
+            t8.SetNeighbours(t9, t7, t11);
+            t9.SetNeighbours(t8);
+            t10.SetNeighbours(t0, t11);
+            t11.SetNeighbours(t8, t10);
 
-            Triangle[] n0 = { t1, t10 };
-            t0.SetNeighbours(n0);
-            Triangle[] n1 = { t2, t0 };
-            t1.SetNeighbours(n1);
-            Triangle[] n2 = { t3, t1 };
-            t2.SetNeighbours(n2);
-            Triangle[] n3 = { t4, t2 };
-            t3.SetNeighbours(n3);
-            Triangle[] n4 = { t5, t3 };
-            t4.SetNeighbours(n4);
-            Triangle[] n5 = { t6, t4 };
-            t5.SetNeighbours(n5);
-            Triangle[] n6 = { t7, t5 };
-            t6.SetNeighbours(n6);
-            Triangle[] n7 = { t8, t6 };
-            t7.SetNeighbours(n7);
-            Triangle[] n8 = { t9, t7, t11 };
-            t8.SetNeighbours(n8);
-            Triangle[] n9 = { t8 };
-            t9.SetNeighbours(n9);
-            Triangle[] n10 = { t0, t11 };
-            t10.SetNeighbours(n10);
-            Triangle[] n11 = { t8, t10 };
-            t11.SetNeighbours(n11);
+            triangles = new [] { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 };
 
-            triangles = new Triangle[] { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 };
-
+            foreach (var t in trianglesToDraw.Values)
+            {
+                display.AddDrawMethod(t.DrawMetaData, null, null);
+            }
+            
             startTriangle = t0;
         }
 
+        private void CreateDrawableTriangle(Triangle triangle, String displayName)
+        {
+            TriangleIcon triangleIcon = new TriangleIcon(triangle, displayName);
+            trianglesToDraw.Add(triangle, triangleIcon);
+            display.AddDrawMethod(triangleIcon.Draw, null, null);
+        }
+        
         private void AddDrawMethods()
         {
-            triangleColors = new Dictionary<string, Color>();
-            triangleColors.Add("fill", Color.White);
-            triangleColors.Add("traversionShade", Color.FromArgb(50, 50, 50));
-            triangleColors.Add("edge", Color.Gray);
-            triangleColors.Add("data", Color.Black);
-            triangleWidths = new Dictionary<string, float>();
-            triangleWidths.Add("edge", 0.01f);
-            triangleWidths.Add("fontSize", 0.12f);
-
-            foreach (Triangle t in triangles)
-            {
-                display.AddDrawMethod(t.Draw, triangleColors, triangleWidths);
-            }
-            foreach (Triangle t in triangles)
-            {
-                display.AddDrawMethod(t.DrawMeta, triangleColors, triangleWidths);
-            }
             Dictionary<string, Color> pathColors = new Dictionary<string, Color>();
             pathColors.Add("edge", Color.Green);
             pathColors.Add("data", Color.Black);
             Dictionary<string, float> pathWidths = new Dictionary<string, float>();
             pathWidths.Add("edge", 0.04f);
             pathWidths.Add("data", 0.12f);
+            pathWidths.Add("fontSize", 0.12f);
 
             display.AddDrawMethod(this.DrawPath, pathColors, pathWidths);
 
@@ -281,7 +294,7 @@ namespace TPAStarGUI
             if (path.Length > 0)
             {
                 path.Draw(canvas, colors, widths);
-                path.DrawMeta(canvas, triangleColors, triangleWidths);
+                path.DrawMeta(canvas, colors, widths);
             }
         }
 
