@@ -67,5 +67,10 @@ namespace PathFinder.TPAStar
             return exploredSet.ContainsKey(e);
         }
 
+        public void Clear()
+        {
+            exploredSet.Clear();
+        }
+
     }
 }
