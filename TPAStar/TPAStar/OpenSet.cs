@@ -33,12 +33,12 @@ namespace PathFinder.TPAStar
             return p;
         }
 
-        public bool IsExplorable(TPAPath p)
+        public bool PathMightBeShorterThanWhatWeScheduledForExploring(TPAPath p)
         {
             bool ret = true;
 
             double minOfGMaxToEdge = GetMinOfGMaxToEdge(p.CurrentEdge);
-            if ((minOfGMaxToEdge != 0) && (minOfGMaxToEdge < p.GMin))
+            if ((minOfGMaxToEdge != 0) && (minOfGMaxToEdge < p.ShortestPossiblePathLength))
             {
                 ret = false;
             }
@@ -52,17 +52,17 @@ namespace PathFinder.TPAStar
 
             for (int i = 0; i < openSet.Count; i++)
             {
-                if (openSet[i].CurrentEdge != null)
+                if (openSet[i].CurrentEdge != null) // TODO: if we wouldnt add the starttriangle to openset, we wouldnt need this check
                 {
                     if (openSet[i].CurrentEdge.Equals(e) && (openSet[i].GoalReached == false))
                     {
                         if (ret == 0)
                         {
-                            ret = openSet[i].GMax;
+                            ret = openSet[i].LongestPossiblePathLength;
                         }
                         else
                         {
-                            ret = Math.Min(ret, openSet[i].GMax);
+                            ret = Math.Min(ret, openSet[i].LongestPossiblePathLength);
                         }
                     }
                 }
@@ -81,7 +81,7 @@ namespace PathFinder.TPAStar
                 switched = false;
                 for (int i = 0; i < openSet.Count - 1; i++)
                 {
-                    if (openSet[i].FMin > openSet[i + 1].FMin)
+                    if (openSet[i].EstimatedMinimalOverallCost > openSet[i + 1].EstimatedMinimalOverallCost)
                     {
                         tmp = openSet[i];
                         openSet[i] = openSet[i + 1];

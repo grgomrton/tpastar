@@ -9,31 +9,31 @@ namespace PathFinder.TPAStar
     public class TPAStarSolver
     {
         private OpenSet openSet;
-        private ExploredSet exploredSet;
+        private Dictionary<Edge, double> higherBoundOfPathToEdges;
         
         public TPAStarSolver()
         {
             openSet = new OpenSet();
-            exploredSet = new ExploredSet();    
+            higherBoundOfPathToEdges = new Dictionary<Edge, double>();    
         }   
         
         public Curve FindPath(Vector3 startPoint, Triangle startTriangle, Vector3[] goals)
         {
             openSet.Clear();
-            exploredSet.Clear();
+            higherBoundOfPathToEdges.Clear();
             
             TPAPath initialPath = new TPAPath(startPoint, startTriangle);
             openSet.Add(initialPath);
             TriangleEvaluationResult startTriangleResult = new TriangleEvaluationResult(0.0, 0.0, 0.0, 0.0);
-            InvokeTriangleExploredIfAnySubscriberExists(startTriangle, startTriangleResult);
+            FireTriangleExploredEvent(startTriangle, startTriangleResult);
             
             TPAPath optimalPath = initialPath;
             bool done = false;
             while ((openSet.Count > 0) && (!done))
             {
                 TPAPath bestPath = openSet.PopFirst();
-                exploredSet.Add(bestPath);
-
+                UpdateHigherBoundsOfPathToEdges(bestPath);
+                
                 // two-level goaltest - second level
                 if (bestPath.GoalReached) // if the first path of the openset is a finalized path to one of the goalVectorts
                 {                          // then this is an optimal path, beacuse even the lower bound of every other path is bigger than the cost of this full path
@@ -50,30 +50,67 @@ namespace PathFinder.TPAStar
                         newPath.FinalizePath(goalPoint);
                         openSet.Add(newPath);
                     }
-
+                    
                     // adding new paths
                     IEnumerable<Triangle> neighbourTriangles = bestPath.GetExplorableTriangles();
                     foreach (Triangle t in neighbourTriangles)
                     {
                         TPAPath newPath = bestPath.Clone();
                         TriangleEvaluationResult result = newPath.StepTo(t, goals);
-
-                        if (exploredSet.IsExplorable(newPath))
+                        FireTriangleExploredEvent(t, result);
+                        
+                        if (PathMightBeShorterThanWhatWeAlreadyFound(newPath))
                         {
-                            if (openSet.IsExplorable(newPath))
+                            if (openSet.PathMightBeShorterThanWhatWeScheduledForExploring(newPath))
                             {
                                 openSet.Add(newPath);
                             }
                         }
-                        
-                        InvokeTriangleExploredIfAnySubscriberExists(t, result);
                     }
                 }
             }
             return optimalPath.GetBuiltPath();
         }
 
-        private void InvokeTriangleExploredIfAnySubscriberExists(Triangle triangle, TriangleEvaluationResult result)
+        /// <summary>
+        /// We exclude paths whose even the shortest possible path to the their edge is longer than
+        /// the one, we already found during exploration. We also prevent the algorithm to enter 
+        /// a loop around a hole in a polygon, but do not exclude possible shorter paths we found
+        /// only later during triangle traversion.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private bool PathMightBeShorterThanWhatWeAlreadyFound(TPAPath path)
+        {
+            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+            {
+                if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        private void UpdateHigherBoundsOfPathToEdges(TPAPath path)
+        {
+            if (path.CurrentEdge != null) // currentedge is null at the initial path with only the startpoint
+            {
+                if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+                {
+                    if (higherBoundOfPathToEdges[path.CurrentEdge] > path.LongestPossiblePathLength)
+                    {
+                        higherBoundOfPathToEdges[path.CurrentEdge] = path.LongestPossiblePathLength;
+                    }
+                }
+                else
+                {
+                    higherBoundOfPathToEdges.Add(path.CurrentEdge, path.LongestPossiblePathLength);
+                }
+            }
+        }
+        
+        private void FireTriangleExploredEvent(Triangle triangle, TriangleEvaluationResult result)
         {
             if (TriangleExplored != null)
             {

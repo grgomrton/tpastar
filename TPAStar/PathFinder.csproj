@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TPAStar\ExploredSet.cs" />
     <Compile Include="Funnel\FunnelAlgorithm.cs" />
     <Compile Include="Funnel\FunnelStructure.cs" />
     <Compile Include="TPAStar\OpenSet.cs" />

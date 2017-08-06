@@ -10,10 +10,10 @@ namespace CommonTools.Geometry
     /// <summary>
     /// Represents a curve by a list of <see cref="Vector3"/> objects.
     /// </summary>
-    public class Curve : IEnumerable
+    public class Curve : IEnumerable<Vector3>
     {
-        LinkedList<Vector3> points;
-        double length;
+        private LinkedList<Vector3> points;
+        private double length;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Curve"/> class that is empty.
@@ -63,14 +63,14 @@ namespace CommonTools.Geometry
         {
             get { return points.Count; }
         }
-
+        
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator GetEnumerator()
+        public IEnumerator<Vector3> GetEnumerator()
         {
             return points.GetEnumerator();
         }
@@ -125,7 +125,7 @@ namespace CommonTools.Geometry
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
-        override public String ToString()
+        public override String ToString()
         {
             StringBuilder sb = new StringBuilder();
             foreach (Vector3 v in points)
@@ -133,6 +133,11 @@ namespace CommonTools.Geometry
                 sb.AppendLine(String.Format("({0: 00.00;-00.00};{1: 00.00;-00.00})", v.X, v.Y));
             }
             return sb.ToString();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using CommonTools.Geometry;
@@ -11,13 +12,13 @@ namespace PathFinder.TPAStar
     public class TPAPath : FunnelStructure
     {
         private Triangle currentTriangle;
-        private Triangle previousTriangle;
+        private Triangle previousTriangle; // TODO: this might be removed by not adding backward steps in solver
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
         private double h; // heuristic value
         private bool isGoalReached;
         
-        public TPAPath(Vector3 startPoint, Triangle startTriangle) : base(startPoint)
+        internal TPAPath(Vector3 startPoint, Triangle startTriangle) : base(startPoint)
         {
             this.currentTriangle = startTriangle;
             this.previousTriangle = null;
@@ -27,7 +28,7 @@ namespace PathFinder.TPAStar
             isGoalReached = false;
         }
 
-        public TPAPath(TPAPath other) : base(other)
+        private TPAPath(TPAPath other) : base(other)
         {
             currentTriangle = other.currentTriangle;
             previousTriangle = other.previousTriangle;
@@ -50,17 +51,17 @@ namespace PathFinder.TPAStar
                 base.StepTo(currentEdge);
             }
 
-            UpdateMinPathToEdge(currentEdge);
-            UpdateMaxPathToEdge(currentEdge);
+            UpdateLowerBoundOfPathToEdge(currentEdge);
+            UpdateHigherBoundOfPathToEdge(currentEdge);
             UpdateHeuristicValue(currentEdge, goalPoints);
             
             previousTriangle = currentTriangle;
             currentTriangle = t;
             
-            return new TriangleEvaluationResult(h, FMin, GMin, GMax);
+            return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
         }
 
-        protected void UpdateMinPathToEdge(Edge edge)
+        internal void UpdateLowerBoundOfPathToEdge(Edge edge)
         {
             double minpathlength = 0;
 
@@ -141,7 +142,7 @@ namespace PathFinder.TPAStar
             dgMin = minpathlength;
         }
 
-        protected void UpdateMaxPathToEdge(Edge edge)
+        protected void UpdateHigherBoundOfPathToEdge(Edge edge)
         {
             LinkedListNode<Vector3> node = apex;
             double maxLeft = 0, maxRight = 0;
@@ -170,7 +171,7 @@ namespace PathFinder.TPAStar
             Vector3 toV2 = new Vector3(edge.V2 - startTriangle.Centroid);
 
             // Ha egy vonalban vannak? - elvileg nálunk most nem fordulhat elő...
-            // távolság alapján lehetne, a közelebbi vektor lenne, valszeg úgy értelmes..
+            // távolság alapján lehetne, a közelebbi vektor lenne, valszeg úgy értelmes.. // TODO: it would be nice to know what refers to the comment below
             if (OrientationUtil.ClockWise(toV1, toV2)) // V1 is on the left side of the funnel TODO: wtf?
             {
                 // funnel left-right = edge.v1, start, edge.v2
@@ -199,20 +200,14 @@ namespace PathFinder.TPAStar
             get { return isGoalReached; }
         }
 
-        protected void UpdateHeuristicValue(Edge edge, Vector3[] goalPoints)
+        private void UpdateHeuristicValue(Edge edge, Vector3[] goalPoints)
         {
-            double minH = 0;
+            h = FindDistanceFromClosestGoalPoint(edge, goalPoints);
+        }
 
-            for (int i = 0; i < goalPoints.Length; i++)
-            {
-                double distance = edge.DistanceFromPoint(goalPoints[i]);
-                if ((minH == 0) || (distance < minH))
-                {
-                    minH = distance;
-                }
-            }
-
-            h = minH;
+        private double FindDistanceFromClosestGoalPoint(Edge edge, IEnumerable<Vector3> goals)
+        {
+            return goals.Min(point => edge.DistanceFromPoint(point));
         }
 
         public Curve GetBuiltPath()
@@ -221,20 +216,21 @@ namespace PathFinder.TPAStar
         }
 
         /// <summary>
-        /// we are optimistic, we count with this value
+        /// The length of the possibly shortest path to the closest goal point along this path.
+        /// It is the sum of the length of the shortest possible path to the end edge of this path, 
+        /// and the shortest path between the edge and the closest goal point.
         /// </summary>
-        /// <returns></returns>
-        public double FMin
+        public double EstimatedMinimalOverallCost
         {
-            get { return GMin + h; }
+            get { return ShortestPossiblePathLength + h; }
         }
 
-        public double GMin
+        public double ShortestPossiblePathLength
         {
             get { return path.Length + dgMin; }
         }
 
-        public double GMax
+        public double LongestPossiblePathLength
         {
             get { return path.Length + dgMax; }
         }
@@ -252,7 +248,7 @@ namespace PathFinder.TPAStar
             }
         }
 
-        public IEnumerable<Triangle> GetExplorableTriangles()
+        internal IEnumerable<Triangle> GetExplorableTriangles()
         {
             return currentTriangle.Neighbours.Where(triangle => triangle != previousTriangle);
         }
