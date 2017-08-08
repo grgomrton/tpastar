@@ -22,17 +22,16 @@ namespace PathFinder.TPAStar
             openSet.Clear();
             higherBoundOfPathToEdges.Clear();
             
-            TPAPath initialPath = new TPAPath(startPoint, startTriangle);
-            openSet.Add(initialPath);
-            TriangleEvaluationResult startTriangleResult = new TriangleEvaluationResult(0.0, 0.0, 0.0, 0.0);
+            TPAPath initialPath = new TPAPath(startPoint);
+            TriangleEvaluationResult startTriangleResult = initialPath.StepTo(startTriangle, goals);
             FireTriangleExploredEvent(startTriangle, startTriangleResult);
+            openSet.Add(initialPath);
             
             TPAPath optimalPath = initialPath;
             bool done = false;
             while ((openSet.Count > 0) && (!done))
             {
                 TPAPath bestPath = openSet.PopFirst();
-                UpdateHigherBoundsOfPathToEdges(bestPath);
                 
                 // two-level goaltest - second level
                 if (bestPath.GoalReached) // if the first path of the openset is a finalized path to one of the goalVectorts
@@ -64,6 +63,7 @@ namespace PathFinder.TPAStar
                             if (openSet.PathMightBeShorterThanWhatWeScheduledForExploring(newPath))
                             {
                                 openSet.Add(newPath);
+                                UpdateHigherBoundsOfPathToEdges(newPath);
                             }
                         }
                     }
@@ -82,14 +82,11 @@ namespace PathFinder.TPAStar
         /// <returns></returns>
         private bool PathMightBeShorterThanWhatWeAlreadyFound(TPAPath path)
         {
-            if (path.CurrentEdge != null) 
+            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
             {
-                if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+                if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
                 {
-                    if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
             return true;
@@ -97,19 +94,16 @@ namespace PathFinder.TPAStar
         
         private void UpdateHigherBoundsOfPathToEdges(TPAPath path)
         {
-            if (path.CurrentEdge != null) // currentedge is null at the initial path with only the startpoint
+            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
             {
-                if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+                if (higherBoundOfPathToEdges[path.CurrentEdge] > path.LongestPossiblePathLength)
                 {
-                    if (higherBoundOfPathToEdges[path.CurrentEdge] > path.LongestPossiblePathLength)
-                    {
-                        higherBoundOfPathToEdges[path.CurrentEdge] = path.LongestPossiblePathLength;
-                    }
+                    higherBoundOfPathToEdges[path.CurrentEdge] = path.LongestPossiblePathLength;
                 }
-                else
-                {
-                    higherBoundOfPathToEdges.Add(path.CurrentEdge, path.LongestPossiblePathLength);
-                }
+            }
+            else
+            {
+                higherBoundOfPathToEdges.Add(path.CurrentEdge, path.LongestPossiblePathLength);
             }
         }
         

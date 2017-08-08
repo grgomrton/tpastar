@@ -12,17 +12,50 @@ namespace TPAStar.Tests
         [Test]
         public void afterSteppingIntoATriangleExplorableTrianglesShouldNotContainThePreviousOne()
         {
-            var t1 = new Triangle(new Vector3(), new Vector3(), new Vector3());
-            var t2 = new Triangle(new Vector3(), new Vector3(), new Vector3());
-            t1.SetNeighbours(t2);
-            t2.SetNeighbours(t1);
+            var t2a = new Vector3(10.0, 7.5);
+            var t2b = new Vector3(10.0, 12.5);
+            var t2c = new Vector3(5.0, 10.0);
+            var t2 = new Triangle(t2a, t2b, t2c);
+            var t3a = new Vector3(5.0, 10.0);
+            var t3b = new Vector3(10.0, 12.5);
+            var t3c = new Vector3(5.0, 15.0);
+            var t3 = new Triangle(t3a, t3b, t3c);
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2);
             var startPoint = new Vector3();
-            var path = new TPAPath(startPoint, t1);
+            var path = new TPAPath(startPoint);
+            
             path.StepTo(t2, new []{ new Vector3() });
-
+            path.StepTo(t3, new []{ new Vector3() });
             var explorableNeighbours = path.ExplorableTriangles;
 
-            explorableNeighbours.Contains(t1).Should().BeFalse();
+            explorableNeighbours.Contains(t2).Should().BeFalse();
+        }
+
+        [Test]
+        public void initialPathShouldContainEveryNeighbourOfStartTriangle()
+        {
+            var t2a = new Vector3(10.0, 7.5);
+            var t2b = new Vector3(10.0, 12.5);
+            var t2c = new Vector3(5.0, 10.0);
+            var t2 = new Triangle(t2a, t2b, t2c);
+            var t3a = new Vector3(5.0, 10.0);
+            var t3b = new Vector3(10.0, 12.5);
+            var t3c = new Vector3(5.0, 15.0);
+            var t3 = new Triangle(t3a, t3b, t3c);
+            var t4a = new Vector3(10.0, 12.5);
+            var t4b = new Vector3(12.5, 15.0);
+            var t4c = new Vector3(5.0, 15.0);
+            var t4 = new Triangle(t4a, t4b, t4c);
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2, t4);
+            var s = new Vector3(9.0, 11.5);
+            var path = new TPAPath(s);
+
+            path.StepTo(t3, new Vector3[] {});
+            
+            path.ExplorableTriangles.Contains(t2).Should().BeTrue();
+            path.ExplorableTriangles.Contains(t4).Should().BeTrue();
         }
         
         [Test]
@@ -49,9 +82,10 @@ namespace TPAStar.Tests
             t4.SetNeighbours(t3, t5);
             t5.SetNeighbours(t4);
             var s = new Vector3(9.0, 11.5);
-            var path = new TPAPath(s, t2);
+            var path = new TPAPath(s);
+            
+            path.StepTo(t2, new[] { new Vector3() });
             path.StepTo(t3, new []{ new Vector3() });
-
             var explorableNeighbours = path.ExplorableTriangles;
 
             explorableNeighbours.Contains(t4).Should().BeTrue();

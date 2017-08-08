@@ -18,11 +18,11 @@ namespace PathFinder.TPAStar
         private double h; // heuristic value
         private bool isGoalReached;
         
-        internal TPAPath(Vector3 startPoint, Triangle startTriangle) : base(startPoint)
+        internal TPAPath(Vector3 startPoint) : base(startPoint)
         {
-            this.currentTriangle = startTriangle;
+            this.currentTriangle = null;
             this.previousTriangle = null;
-            explorableTriangles = startTriangle.Neighbours;
+            explorableTriangles = null;
             dgMin = 0;
             dgMax = 0;
             h = 0;
@@ -42,7 +42,12 @@ namespace PathFinder.TPAStar
 
         internal TriangleEvaluationResult StepTo(Triangle t, Vector3[] goalPoints)
         {
-            if (previousTriangle != null) // funnel contains only the start point, we need to initialize the funnel first
+            if (currentTriangle == null)
+            {
+                currentTriangle = t;
+                explorableTriangles = t.Neighbours;
+            }
+            else
             {
                 Edge currentEdge = currentTriangle.GetCommonEdge(t);
                 
@@ -53,11 +58,10 @@ namespace PathFinder.TPAStar
                 UpdateHeuristicValue(currentEdge, goalPoints);
 
                 this.currentEdge = currentEdge;
+                explorableTriangles = t.Neighbours.Where(triangle => triangle != previousTriangle);
+                previousTriangle = currentTriangle;
+                currentTriangle = t;    
             }
-            
-            explorableTriangles = t.Neighbours.Where(triangle => triangle != previousTriangle);
-            previousTriangle = currentTriangle;
-            currentTriangle = t;
             
             return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
         }
