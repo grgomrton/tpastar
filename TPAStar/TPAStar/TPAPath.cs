@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using CommonTools.Geometry;
 using CommonTools.Miscellaneous;
 using PathFinder.Funnel;
@@ -12,16 +10,17 @@ namespace PathFinder.TPAStar
     public class TPAPath : FunnelStructure
     {
         private Triangle currentTriangle;
-        private Triangle previousTriangle; // TODO: this might be removed by not adding backward steps in solver
+        private IEnumerable<Triangle> explorableTriangles;
+        private Edge currentEdge;
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
         private double h; // heuristic value
         private bool isGoalReached;
         
-        internal TPAPath(Vector3 startPoint, Triangle startTriangle) : base(startPoint)
+        internal TPAPath(Vector3 startPoint) : base(startPoint)
         {
-            this.currentTriangle = startTriangle;
-            this.previousTriangle = null;
+            currentTriangle = null;
+            explorableTriangles = null;
             dgMin = 0;
             dgMax = 0;
             h = 0;
@@ -31,32 +30,39 @@ namespace PathFinder.TPAStar
         private TPAPath(TPAPath other) : base(other)
         {
             currentTriangle = other.currentTriangle;
-            previousTriangle = other.previousTriangle;
+            explorableTriangles = other.explorableTriangles;
             dgMin = other.dgMin;
             dgMax = other.dgMax;
             h = other.h;
             isGoalReached = other.isGoalReached;
         }
 
-        internal TriangleEvaluationResult StepTo(Triangle t, Vector3[] goalPoints)
+        internal TriangleEvaluationResult StepTo(Triangle targetTriangle, Vector3[] goalPoints)
         {
-            Edge currentEdge = currentTriangle.GetCommonEdge(t);
-
-            if (previousTriangle == null) // funnel contains only the start point, we need to initialize the funnel first
+            if (currentTriangle == null)
             {
-                InitFunnel(currentEdge, currentTriangle);
+                currentTriangle = targetTriangle;
+                explorableTriangles = targetTriangle.Neighbours;
             }
             else
             {
+                currentEdge = currentTriangle.GetCommonEdge(targetTriangle);
+                var explorableNeighbourList = new LinkedList<Triangle>();
+                foreach (var neighbour in targetTriangle.Neighbours)
+                {
+                    if (neighbour != currentTriangle)
+                    {
+                        explorableNeighbourList.AddLast(neighbour);
+                    }
+                }
+                explorableTriangles = explorableNeighbourList;
+                currentTriangle = targetTriangle;
+                
                 base.StepTo(currentEdge);
+                UpdateLowerBoundOfPathToEdge(currentEdge);
+                UpdateHigherBoundOfPathToEdge(currentEdge);
+                UpdateHeuristicValue(currentEdge, goalPoints);
             }
-
-            UpdateLowerBoundOfPathToEdge(currentEdge);
-            UpdateHigherBoundOfPathToEdge(currentEdge);
-            UpdateHeuristicValue(currentEdge, goalPoints);
-            
-            previousTriangle = currentTriangle;
-            currentTriangle = t;
             
             return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
         }
@@ -163,29 +169,6 @@ namespace PathFinder.TPAStar
             dgMax = Math.Max(maxLeft, maxRight);
         }
 
-        protected void InitFunnel(Edge edge, Triangle startTriangle)
-        {
-            // a funnel-t a háromszög kp-ja és a csúcspontok által definiált körbejárási irány alapján inicializáljuk,
-            // mivel csak a start és az él alapján nem lehet, amennyiben a start pont az élre esik
-            Vector3 toV1 = new Vector3(edge.V1 - startTriangle.Centroid);
-            Vector3 toV2 = new Vector3(edge.V2 - startTriangle.Centroid);
-
-            // Ha egy vonalban vannak? - elvileg nálunk most nem fordulhat elő...
-            // távolság alapján lehetne, a közelebbi vektor lenne, valszeg úgy értelmes.. // TODO: it would be nice to know what refers to the comment below
-            if (OrientationUtil.ClockWise(toV1, toV2)) // V1 is on the left side of the funnel TODO: wtf?
-            {
-                // funnel left-right = edge.v1, start, edge.v2
-                funnel.AddFirst(edge.V1);
-                funnel.AddLast(edge.V2);
-            }
-            else
-            {
-                // funnel left-right = edge.v2, start, edge.v1
-                funnel.AddFirst(edge.V2);
-                funnel.AddLast(edge.V1);
-            }
-        }
-
         public new void FinalizePath(Vector3 goalPoint)
         {
             base.FinalizePath(goalPoint);
@@ -237,21 +220,10 @@ namespace PathFinder.TPAStar
 
         public Edge CurrentEdge
         {
-            get 
-            {
-                Edge ret = null;
-                if (previousTriangle != null)
-                {
-                    ret = previousTriangle.GetCommonEdge(currentTriangle);
-                }
-                return ret;
-            }
+            get { return currentEdge; }
         }
 
-        internal IEnumerable<Triangle> GetExplorableTriangles()
-        {
-            return currentTriangle.Neighbours.Where(triangle => triangle != previousTriangle);
-        }
+        internal IEnumerable<Triangle> ExplorableTriangles => explorableTriangles;
 
         public TPAPath Clone()
         {
