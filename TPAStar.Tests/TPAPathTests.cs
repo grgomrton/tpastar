@@ -20,7 +20,7 @@ namespace TPAStar.Tests
             var path = new TPAPath(startPoint, t1);
             path.StepTo(t2, new []{ new Vector3() });
 
-            var explorableNeighbours = path.GetExplorableTriangles();
+            var explorableNeighbours = path.ExplorableTriangles;
 
             explorableNeighbours.Contains(t1).Should().BeFalse();
         }
@@ -52,7 +52,7 @@ namespace TPAStar.Tests
             var path = new TPAPath(s, t2);
             path.StepTo(t3, new []{ new Vector3() });
 
-            var explorableNeighbours = path.GetExplorableTriangles();
+            var explorableNeighbours = path.ExplorableTriangles;
 
             explorableNeighbours.Contains(t4).Should().BeTrue();
             explorableNeighbours.Contains(t2).Should().BeFalse();

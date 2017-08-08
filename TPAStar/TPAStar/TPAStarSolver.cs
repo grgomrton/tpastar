@@ -52,7 +52,7 @@ namespace PathFinder.TPAStar
                     }
                     
                     // adding new paths
-                    IEnumerable<Triangle> neighbourTriangles = bestPath.GetExplorableTriangles();
+                    var neighbourTriangles = bestPath.ExplorableTriangles;
                     foreach (Triangle t in neighbourTriangles)
                     {
                         TPAPath newPath = bestPath.Clone();
