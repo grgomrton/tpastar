@@ -37,18 +37,18 @@ namespace PathFinder.TPAStar
             isGoalReached = other.isGoalReached;
         }
 
-        internal TriangleEvaluationResult StepTo(Triangle t, Vector3[] goalPoints)
+        internal TriangleEvaluationResult StepTo(Triangle targetTriangle, Vector3[] goalPoints)
         {
             if (currentTriangle == null)
             {
-                currentTriangle = t;
-                explorableTriangles = t.Neighbours;
+                currentTriangle = targetTriangle;
+                explorableTriangles = targetTriangle.Neighbours;
             }
             else
             {
-                currentEdge = currentTriangle.GetCommonEdge(t);
+                currentEdge = currentTriangle.GetCommonEdge(targetTriangle);
                 var explorableNeighbourList = new LinkedList<Triangle>();
-                foreach (var neighbour in t.Neighbours)
+                foreach (var neighbour in targetTriangle.Neighbours)
                 {
                     if (neighbour != currentTriangle)
                     {
@@ -56,10 +56,9 @@ namespace PathFinder.TPAStar
                     }
                 }
                 explorableTriangles = explorableNeighbourList;
-                currentTriangle = t;
+                currentTriangle = targetTriangle;
                 
                 base.StepTo(currentEdge);
-                
                 UpdateLowerBoundOfPathToEdge(currentEdge);
                 UpdateHigherBoundOfPathToEdge(currentEdge);
                 UpdateHeuristicValue(currentEdge, goalPoints);
