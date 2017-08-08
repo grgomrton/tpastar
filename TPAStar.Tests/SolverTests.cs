@@ -7,7 +7,7 @@ using PathFinder.TPAStar;
 namespace TPAStar.Tests
 {
     [TestFixture]
-    public class Tests
+    public class SolverTests
     {
         private static double Precision = 0.00001;
         
@@ -44,8 +44,8 @@ namespace TPAStar.Tests
             var t2b = new Vector3(10.0, 12.5);
             var t2c = new Vector3(5.0, 10.0);
             var t2 = new Triangle(t2a, t2b, t2c);
-            t1.SetNeighbours(new [] { t2 });
-            t2.SetNeighbours(new [] { t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
             var s = new Vector3(7.5, 7.5);
             var g = new Vector3(7.5, 10.0);
             var solver = new TPAStarSolver();
@@ -83,10 +83,10 @@ namespace TPAStar.Tests
             var t5b = new Vector3(12.5, 15.0);
             var t5c = new Vector3(10.0, 12.5);
             var t5 = new Triangle(t5a, t5b, t5c);
-            t2.SetNeighbours(new [] { t3 });
-            t3.SetNeighbours(new [] { t2, t4 } );
-            t4.SetNeighbours(new [] { t3, t5 } );
-            t5.SetNeighbours(new [] { t4 } );
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4);
             var s = new Vector3(9.0, 11.5);
             var g = new Vector3(12.0, 13.5);
             var solver = new TPAStarSolver();
@@ -119,10 +119,10 @@ namespace TPAStar.Tests
             var t5b = new Vector3(12.5, 15.0);
             var t5c = new Vector3(10.0, 12.5);
             var t5 = new Triangle(t5a, t5b, t5c);
-            t2.SetNeighbours(new [] { t3 });
-            t3.SetNeighbours(new [] { t2, t4 } );
-            t4.SetNeighbours(new [] { t3, t5 } );
-            t5.SetNeighbours(new [] { t4 } );
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4);
             var s = new Vector3(9.0, 11.5);
             var g1 = new Vector3(12.0, 13.5);
             var g2 = new Vector3(9.0, 14.5);

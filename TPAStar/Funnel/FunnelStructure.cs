@@ -86,12 +86,13 @@ namespace PathFinder.Funnel
                 funnel.AddFirst(firstEdge.V1);
                 funnel.AddLast(firstEdge.V2);
             }
-            else
+            else if (OrientationUtil.CounterClockWise(toV1, toV2))
             {
                 // funnel left-right = edge.v2, start, edge.v1
                 funnel.AddFirst(firstEdge.V2);
                 funnel.AddLast(firstEdge.V1);
             }
+            // else { } we have nothing to do, we were standing on the edge, this edge is not needed
         }
 
 
