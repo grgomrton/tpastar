@@ -82,11 +82,14 @@ namespace PathFinder.TPAStar
         /// <returns></returns>
         private bool PathMightBeShorterThanWhatWeAlreadyFound(TPAPath path)
         {
-            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+            if (path.CurrentEdge != null) 
             {
-                if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
+                if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
                 {
-                    return false;
+                    if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

@@ -12,6 +12,7 @@ namespace PathFinder.TPAStar
         private Triangle currentTriangle;
         private Triangle previousTriangle; // TODO: this might be removed by not adding backward steps in solver
         private IEnumerable<Triangle> explorableTriangles;
+        private Edge currentEdge;
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
         private double h; // heuristic value
@@ -50,6 +51,8 @@ namespace PathFinder.TPAStar
                 UpdateLowerBoundOfPathToEdge(currentEdge);
                 UpdateHigherBoundOfPathToEdge(currentEdge);
                 UpdateHeuristicValue(currentEdge, goalPoints);
+
+                this.currentEdge = currentEdge;
             }
             
             explorableTriangles = t.Neighbours.Where(triangle => triangle != previousTriangle);
@@ -212,15 +215,7 @@ namespace PathFinder.TPAStar
 
         public Edge CurrentEdge
         {
-            get 
-            {
-                Edge ret = null;
-                if (previousTriangle != null)
-                {
-                    ret = previousTriangle.GetCommonEdge(currentTriangle);
-                }
-                return ret;
-            }
+            get { return currentEdge; }
         }
 
         internal IEnumerable<Triangle> ExplorableTriangles => explorableTriangles;
