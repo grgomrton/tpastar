@@ -10,7 +10,6 @@ namespace PathFinder.TPAStar
     public class TPAPath : FunnelStructure
     {
         private Triangle currentTriangle;
-        private Triangle previousTriangle; // TODO: this might be removed by not adding backward steps in solver
         private IEnumerable<Triangle> explorableTriangles;
         private Edge currentEdge;
         private double dgMin; // minimum length from apex to finaltriangle
@@ -20,8 +19,7 @@ namespace PathFinder.TPAStar
         
         internal TPAPath(Vector3 startPoint) : base(startPoint)
         {
-            this.currentTriangle = null;
-            this.previousTriangle = null;
+            currentTriangle = null;
             explorableTriangles = null;
             dgMin = 0;
             dgMax = 0;
@@ -32,7 +30,6 @@ namespace PathFinder.TPAStar
         private TPAPath(TPAPath other) : base(other)
         {
             currentTriangle = other.currentTriangle;
-            previousTriangle = other.previousTriangle;
             explorableTriangles = other.explorableTriangles;
             dgMin = other.dgMin;
             dgMax = other.dgMax;
@@ -49,18 +46,23 @@ namespace PathFinder.TPAStar
             }
             else
             {
-                Edge currentEdge = currentTriangle.GetCommonEdge(t);
+                currentEdge = currentTriangle.GetCommonEdge(t);
+                var explorableNeighbourList = new LinkedList<Triangle>();
+                foreach (var neighbour in t.Neighbours)
+                {
+                    if (neighbour != currentTriangle)
+                    {
+                        explorableNeighbourList.AddLast(neighbour);
+                    }
+                }
+                explorableTriangles = explorableNeighbourList;
+                currentTriangle = t;
                 
                 base.StepTo(currentEdge);
                 
                 UpdateLowerBoundOfPathToEdge(currentEdge);
                 UpdateHigherBoundOfPathToEdge(currentEdge);
                 UpdateHeuristicValue(currentEdge, goalPoints);
-
-                this.currentEdge = currentEdge;
-                explorableTriangles = t.Neighbours.Where(triangle => triangle != previousTriangle);
-                previousTriangle = currentTriangle;
-                currentTriangle = t;    
             }
             
             return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
