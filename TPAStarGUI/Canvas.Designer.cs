@@ -1,4 +1,4 @@
-﻿namespace CommonTools.GUI
+﻿namespace TPAStarGUI
 {
     partial class Canvas
     {

@@ -47,22 +47,9 @@
     <Compile Include="Geometry\Curve.cs" />
     <Compile Include="Geometry\Triangle.cs" />
     <Compile Include="Geometry\Vector3.cs" />
-    <Compile Include="GUI\Canvas.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Canvas.Designer.cs">
-      <DependentUpon>Canvas.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Drawable.cs" />
     <Compile Include="Miscellaneous\MathUtil.cs" />
     <Compile Include="Miscellaneous\OrientationUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="GUI\Canvas.resx">
-      <DependentUpon>Canvas.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

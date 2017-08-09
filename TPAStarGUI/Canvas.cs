@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using CommonTools.Geometry;
 
-namespace CommonTools.GUI
+namespace TPAStarGUI
 {
     /// <summary>
     /// A canvas user control that can be used for displaying multiple <see cref="DrawMethod"/>s.

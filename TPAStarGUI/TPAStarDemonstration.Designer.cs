@@ -32,7 +32,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.display = new CommonTools.GUI.Canvas();
+            this.display = new TPAStarGUI.Canvas();
             this.SuspendLayout();
             // 
             // textBox1
@@ -80,7 +80,7 @@
             // 
             // display
             // 
-            this.display.BackColor = System.Drawing.Color.White;
+//            this.display.BackColor = System.Drawing.Color.White;
             this.display.DisplayedObjectHeight = 8D;
             this.display.DisplayedObjectWidth = 8D;
             this.display.Location = new System.Drawing.Point(12, 12);
@@ -103,6 +103,7 @@
             this.Controls.Add(this.label1);
             this.Name = "TPAStarDemonstration";
             this.Text = "TPAStarDemonstration";
+//            this.BackColor = System.Drawing.Color.White;
             this.Load += new System.EventHandler(this.TPAStarDemonstration_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -115,6 +116,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private CommonTools.GUI.Canvas display;
+        private TPAStarGUI.Canvas display;
     }
 }

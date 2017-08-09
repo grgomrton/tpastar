@@ -1531,25 +1531,7 @@ namespace CommonTools.Geometry
             X = x;
             Y = y;
         }
-
-        /// <summary>
-        /// Draws itself on the canvas.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: fill.</param>
-        /// <param name="widths">Required: radius.</param>
-        public void Draw(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            Brush brush = new SolidBrush(colors["fill"]);
-            float radius = widths["radius"];
-
-            float x = Xf - radius;
-            float y = Yf - radius;
-            float diameter = 2 * radius;
-
-            canvas.FillEllipse(brush, x, y, diameter, diameter);
-        }
-
+        
         /// <summary>
         /// Gets the x coordinate converted to float. For drawing purposes only!
         /// </summary>

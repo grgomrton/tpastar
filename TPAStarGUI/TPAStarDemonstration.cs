@@ -54,14 +54,6 @@ namespace TPAStarGUI
             
         }
 
-        private void DrawDots(Graphics canvas, Vector3[] vectors, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            for (int i = 0; i < vectors.Length; i++)
-            {
-                vectors[i].Draw(canvas, colors, widths);
-            }
-        }
-
         private void SetSartTriangle()
         {
             startTriangle = null;
@@ -176,7 +168,7 @@ namespace TPAStarGUI
             {
                 for (int i = 0; i < goals.Count; i++)
                 {
-                    if (mouseOnPoint(goals[i], e))
+                    if (mouseOnPoint(goals[i], e) && goals.Count > 1)
                     {
                         goals.RemoveAt(i);
                     }
@@ -293,22 +285,40 @@ namespace TPAStarGUI
         {
             if (path.Length > 0)
             {
-                path.Draw(canvas, colors, widths);
-                path.DrawMeta(canvas, colors, widths);
+                List<PointF> nodes = new List<PointF>();
+                foreach (Vector3 v in path)
+                {
+                    nodes.Add(v.ToPointF());
+                }
+                canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
+                float fontSize = widths["fontSize"];
+                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), (path.Last() - new Vector3(2 * fontSize, 3 * fontSize, 0)).ToPointF());
             }
         }
 
         private void DrawStart(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
         {
-            start.Draw(canvas, colors, widths);
+            DrawPoint(start, canvas, colors, widths);
         }
 
         private void DrawGoals(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
         {
             foreach (Vector3 goal in goals)
             {
-                goal.Draw(canvas, colors, widths);
+                DrawPoint(goal, canvas, colors, widths);
             }
+        }
+
+        private void DrawPoint(Vector3 point, Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
+        {
+            Brush brush = new SolidBrush(colors["fill"]);
+            float radius = widths["radius"];
+
+            float x = point.Xf - radius;
+            float y = point.Yf - radius;
+            float diameter = 2 * radius;
+
+            canvas.FillEllipse(brush, x, y, diameter, diameter);
         }
 
     }

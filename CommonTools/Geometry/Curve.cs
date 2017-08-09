@@ -74,7 +74,12 @@ namespace CommonTools.Geometry
         {
             return points.GetEnumerator();
         }
-
+        
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        
         /// <summary>
         /// Converts the curve to a list of <see cref="Vector3"/>.
         /// </summary>
@@ -82,41 +87,6 @@ namespace CommonTools.Geometry
         public List<Vector3> ToList()
         {
             return new List<Vector3>(points);
-        }
-
-        /// <summary>
-        /// Draws a polyline representing this curve.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: edge</param>
-        /// <param name="widths">Required: edge</param>
-        public void Draw(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            if (points.Count >= 2)
-            {
-                List<PointF> nodes = new List<PointF>();
-                foreach (Vector3 v in points)
-                {
-                    nodes.Add(v.ToPointF());
-                }
-
-                canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
-            }
-        }
-
-        /// <summary>
-        /// Draws the length of the curve at the endpoint.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: data</param>
-        /// <param name="widths">Required: fontSize</param>
-        public void DrawMeta(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            if (points.Count > 0)
-            {
-                float fontSize = widths["fontSize"];
-                canvas.DrawString(length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), (points.Last.Value - new Vector3(2 * fontSize, 3 * fontSize, 0)).ToPointF());
-            }
         }
 
         /// <summary>
@@ -135,9 +105,5 @@ namespace CommonTools.Geometry
             return sb.ToString();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

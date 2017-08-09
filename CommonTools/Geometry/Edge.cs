@@ -174,21 +174,5 @@ namespace CommonTools.Geometry
             return V1.GetHashCode() ^ V2.GetHashCode();
         }
 
-        /// <summary>
-        /// Draws itself on the canvas.
-        /// </summary>
-        /// <param name="canvas"></param>
-        /// <param name="colors">Required: edge</param>
-        /// <param name="widths">Required: edge</param>
-        public void Draw(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
-        {
-            Pen pen = new Pen(colors["edge"], widths["edge"]);
-
-            PointF p1 = new PointF(V1.Xf, V1.Yf);
-            PointF p2 = new PointF(V2.Xf, V2.Yf);
-
-            canvas.DrawLine(pen, p1, p2);
-        }
-
     }
 }
