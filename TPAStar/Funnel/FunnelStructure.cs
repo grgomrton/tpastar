@@ -71,28 +71,20 @@ namespace PathFinder.Funnel
         {
             Vector3 startPoint = apex.Value;
 
-            // a funnel-t a háromszög kp-ja és a csúcspontok által definiált körbejárási irány alapján inicializáljuk,
-            // mivel csak a start és az él alapján nem lehet, amennyiben a start pont az élre esik
-            //Vector3 toV1 = new Vector3(firstEdge.V1 - startTriangle.Centroid);
-            //Vector3 toV2 = new Vector3(firstEdge.V2 - startTriangle.Centroid);
             Vector3 toV1 = firstEdge.V1 - startPoint;
             Vector3 toV2 = firstEdge.V2 - startPoint;
 
-            // Ha egy vonalban vannak? - elvileg nálunk most nem fordulhat elő...
-            // távolság alapján lehetne, a közelebbi vektor lenne, valszeg úgy értelmes..
-            if (OrientationUtil.ClockWise(toV1, toV2)) // V1 is on the left side of the funnel
+            if (OrientationUtil.ClockWise(toV1, toV2))
             {
-                // funnel left-right = edge.v1, start, edge.v2
                 funnel.AddFirst(firstEdge.V1);
                 funnel.AddLast(firstEdge.V2);
             }
             else if (OrientationUtil.CounterClockWise(toV1, toV2))
             {
-                // funnel left-right = edge.v2, start, edge.v1
                 funnel.AddFirst(firstEdge.V2);
                 funnel.AddLast(firstEdge.V1);
             }
-            // else { } we have nothing to do, we were standing on the edge, this edge is not needed
+            // else { } we have nothing to do, we were standing on the edge, this edge is not needed to be added
         }
 
 
@@ -219,5 +211,8 @@ namespace PathFinder.Funnel
         {
             get { return path; }
         }
+
+        // TODO: only for test now, but should be changed for use in algorithm
+        internal IEnumerable<Vector3> Funnel => funnel;
     }
 }

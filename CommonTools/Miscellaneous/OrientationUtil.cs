@@ -32,29 +32,29 @@ namespace CommonTools.Miscellaneous
         }
 
         /// <summary>
-        /// Returns whether <paramref name="b"/> is in clockwise direction from <paramref name="a"/>.
-        /// Paralel vectors are treated as clockwise.
+        /// Returns whether <paramref name="target"/> is in clockwise direction from <paramref name="source"/>.
+        /// Paralel vectors are treated as either clockwise neither counter-clockwise.
         /// </summary>
-        /// <param name="a">Vector a.</param>
-        /// <param name="b">Vector b.</param>
+        /// <param name="source">Vector a.</param>
+        /// <param name="target">Vector b.</param>
         /// <returns>Result of clockwise test.</returns>
-        public static bool ClockWise(Vector3 a, Vector3 b)
+        public static bool ClockWise(Vector3 source, Vector3 target)
         {
-            Vector3 cp = Vector3.CrossProduct(a, b);
-            return cp.Z >= 0;
+            Vector3 cp = Vector3.CrossProduct(source, target);
+            return cp.Z < 0;
         }
 
         /// <summary>
-        /// Returns whether <paramref name="b"/> is in counterclockwise direction from <paramref name="a"/>.
-        /// Paralel vectors are treated as clockwise, thus this function will return false for them.
+        /// Returns whether <paramref name="target"/> is in counterclockwise direction from <paramref name="source"/>.
+        /// Paralel vectors are treated as either clockwise neither counter-clockwise.
         /// </summary>
-        /// <param name="a">Vector a.</param>
-        /// <param name="b">Vector b.</param>
+        /// <param name="source">Vector a.</param>
+        /// <param name="target">Vector b.</param>
         /// <returns>Result of counter-clockwise test.</returns>
-        public static bool CounterClockWise(Vector3 a, Vector3 b)
+        public static bool CounterClockWise(Vector3 source, Vector3 target)
         {
-            Vector3 cp = Vector3.CrossProduct(a, b);
-            return cp.Z < 0;
+            Vector3 cp = Vector3.CrossProduct(source, target);
+            return cp.Z > 0;
         }
 
         /// <summary>
