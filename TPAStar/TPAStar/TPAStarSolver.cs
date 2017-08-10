@@ -8,12 +8,12 @@ namespace PathFinder.TPAStar
 {
     public class TPAStarSolver
     {
-        private OpenSet openSet;
+        private LinkedList<TPAPath> openSet;
         private Dictionary<Edge, double> higherBoundOfPathToEdges;
         
         public TPAStarSolver()
         {
-            openSet = new OpenSet();
+            openSet = new LinkedList<TPAPath>();
             higherBoundOfPathToEdges = new Dictionary<Edge, double>();    
         }   
         
@@ -25,13 +25,14 @@ namespace PathFinder.TPAStar
             TPAPath initialPath = new TPAPath(startPoint);
             TriangleEvaluationResult startTriangleResult = initialPath.StepTo(startTriangle, goals);
             FireTriangleExploredEvent(startTriangle, startTriangleResult);
-            openSet.Add(initialPath);
+            openSet.AddFirst(initialPath);
             
             TPAPath optimalPath = initialPath;
             bool done = false;
             while ((openSet.Count > 0) && (!done))
             {
-                TPAPath bestPath = openSet.PopFirst();
+                TPAPath bestPath = openSet.First.Value;
+                openSet.RemoveFirst();
                 
                 // two-level goaltest - second level
                 if (bestPath.GoalReached) // if the first path of the openset is a finalized path to one of the goalVectorts
@@ -47,7 +48,7 @@ namespace PathFinder.TPAStar
                     {
                         TPAPath newPath = bestPath.Clone();
                         newPath.FinalizePath(goalPoint);
-                        openSet.Add(newPath);
+                        AddToOpenSetOrderedByEstimatedOverallCost(newPath);
                     }
                     
                     // adding new paths
@@ -60,11 +61,8 @@ namespace PathFinder.TPAStar
                         
                         if (PathMightBeShorterThanWhatWeAlreadyFound(newPath))
                         {
-                            if (openSet.PathMightBeShorterThanWhatWeScheduledForExploring(newPath))
-                            {
-                                openSet.Add(newPath);
-                                UpdateHigherBoundsOfPathToEdges(newPath);
-                            }
+                            AddToOpenSetOrderedByEstimatedOverallCost(newPath);
+                            UpdateHigherBoundsOfPathToEdges(newPath);
                         }
                     }
                 }
@@ -106,7 +104,26 @@ namespace PathFinder.TPAStar
                 higherBoundOfPathToEdges.Add(path.CurrentEdge, path.LongestPossiblePathLength);
             }
         }
-        
+
+        private void AddToOpenSetOrderedByEstimatedOverallCost(TPAPath path)
+        {
+            if ((openSet.First == null) || 
+                (openSet.First.Value.EstimatedMinimalOverallCost > path.EstimatedMinimalOverallCost))
+            {
+                openSet.AddFirst(path);
+            }
+            else
+            {
+                var targetNode = openSet.First;
+                while ((targetNode.Next != null) && 
+                       (targetNode.Next.Value.EstimatedMinimalOverallCost < path.EstimatedMinimalOverallCost))
+                {
+                    targetNode = targetNode.Next;
+                }
+                openSet.AddAfter(targetNode, path);
+            }
+        }
+
         private void FireTriangleExploredEvent(Triangle triangle, TriangleEvaluationResult result)
         {
             if (TriangleExplored != null)

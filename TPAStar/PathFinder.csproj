@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="Funnel\FunnelAlgorithm.cs" />
     <Compile Include="Funnel\FunnelStructure.cs" />
-    <Compile Include="TPAStar\OpenSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TPAStar\TPAPath.cs" />
     <Compile Include="TPAStar\TPAStarSolver.cs" />
