@@ -9,8 +9,8 @@ namespace PathFinder.TPAStar
 {
     public class TPAPath : FunnelStructure
     {
-        private Triangle currentTriangle;
-        private IEnumerable<Triangle> explorableTriangles;
+        private ITriangle currentTriangle;
+        private IEnumerable<ITriangle> explorableTriangles;
         private Edge currentEdge;
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
@@ -37,7 +37,7 @@ namespace PathFinder.TPAStar
             isGoalReached = other.isGoalReached;
         }
 
-        internal TriangleEvaluationResult StepTo(Triangle targetTriangle, Vector3[] goalPoints)
+        internal TriangleEvaluationResult StepTo(ITriangle targetTriangle, Vector3[] goalPoints)
         {
             if (currentTriangle == null)
             {
@@ -47,10 +47,10 @@ namespace PathFinder.TPAStar
             else
             {
                 currentEdge = currentTriangle.GetCommonEdge(targetTriangle);
-                var explorableNeighbourList = new LinkedList<Triangle>();
+                var explorableNeighbourList = new LinkedList<ITriangle>();
                 foreach (var neighbour in targetTriangle.Neighbours)
                 {
-                    if (neighbour != currentTriangle)
+                    if (neighbour != currentTriangle) // TODO investigate this equality check warning
                     {
                         explorableNeighbourList.AddLast(neighbour);
                     }
@@ -223,7 +223,7 @@ namespace PathFinder.TPAStar
             get { return currentEdge; }
         }
 
-        internal IEnumerable<Triangle> ExplorableTriangles => explorableTriangles;
+        internal IEnumerable<ITriangle> ExplorableTriangles => explorableTriangles;
 
         public TPAPath Clone()
         {

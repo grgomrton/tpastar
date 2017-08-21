@@ -17,7 +17,7 @@ namespace PathFinder.TPAStar
             higherBoundOfPathToEdges = new Dictionary<Edge, double>();    
         }   
         
-        public Curve FindPath(Vector3 startPoint, Triangle startTriangle, Vector3[] goals)
+        public Curve FindPath(Vector3 startPoint, ITriangle startTriangle, Vector3[] goals)
         {
             openSet.Clear();
             higherBoundOfPathToEdges.Clear();
@@ -124,7 +124,7 @@ namespace PathFinder.TPAStar
             }
         }
 
-        private void FireTriangleExploredEvent(Triangle triangle, TriangleEvaluationResult result)
+        private void FireTriangleExploredEvent(ITriangle triangle, TriangleEvaluationResult result)
         {
             if (TriangleExplored != null)
             {
@@ -132,7 +132,7 @@ namespace PathFinder.TPAStar
             }
         }
         
-        public delegate void TriangleExploredEventHandler(Triangle t, TriangleEvaluationResult result);
+        public delegate void TriangleExploredEventHandler(ITriangle t, TriangleEvaluationResult result);
 
         public event TriangleExploredEventHandler TriangleExplored;
     }

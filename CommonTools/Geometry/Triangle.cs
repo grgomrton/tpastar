@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 #endregion
 
@@ -11,7 +12,7 @@ namespace CommonTools.Geometry
     /// <summary>
     /// Represents a triangle by three corner point.
     /// </summary>
-    public class Triangle
+    public class Triangle : ITriangle
     {
         private Vector3 v1;
         private Vector3 v2;
@@ -50,17 +51,17 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the v1 corner point of the triangle.
         /// </summary>
-        public Vector3 V1 => v1;
+        public Vector3 A => v1;
 
         /// <summary>
         /// Gets the v2 corner point of the triangle.
         /// </summary>
-        public Vector3 V2 => v2;
+        public Vector3 B => v2;
 
         /// <summary>
         /// Gets the v3 corner point of the triangle.
         /// </summary>
-        public Vector3 V3 => v3;
+        public Vector3 C => v3;
 
         /// <summary>
         /// Gets the centroid of the triangle.
@@ -70,7 +71,7 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the neighbours.
         /// </summary>
-        public IEnumerable<Triangle> Neighbours => neighbours;
+        public IEnumerable<ITriangle> Neighbours => neighbours;
 
         /// <summary>
         /// Sets the neighbours.
@@ -95,7 +96,7 @@ namespace CommonTools.Geometry
         /// </returns>
         public static bool operator ==(Triangle t1, Triangle t2)
         {
-            return (((object)t1) == ((object)t2));
+            return (((object) t1) == ((object) t2));
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace CommonTools.Geometry
         /// </returns>
         public static bool operator !=(Triangle t1, Triangle t2)
         {
-            return (((object)t1) != ((object)t2));
+            return (((object) t1) != ((object) t2));
         }
 
         /// <summary>
@@ -123,9 +124,9 @@ namespace CommonTools.Geometry
         /// </returns>
         public bool ContainsPoint(Vector3 p)
         {
-            Vector3 a = this.V1;
-            Vector3 b = this.V2;
-            Vector3 c = this.V3;
+            Vector3 a = this.A;
+            Vector3 b = this.B;
+            Vector3 c = this.C;
 
             // Compute vectors
             Vector3 v0 = c - a; // v0 = C - A
@@ -156,9 +157,9 @@ namespace CommonTools.Geometry
         /// <returns></returns>
         public double MinDistanceFromOuterPoint(Vector3 point)
         {
-            Edge e1 = new Edge(this.V1, this.V2);
-            Edge e2 = new Edge(this.V1, this.V3);
-            Edge e3 = new Edge(this.V2, this.V3);
+            Edge e1 = new Edge(this.A, this.B);
+            Edge e2 = new Edge(this.A, this.C);
+            Edge e3 = new Edge(this.B, this.C);
             double dist1 = e1.DistanceFromPoint(point);
             double dist2 = e2.DistanceFromPoint(point);
             double dist3 = e3.DistanceFromPoint(point);
@@ -168,38 +169,35 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the common edge of this triangle and another adjacent triangle.
         /// </summary>
-        /// <param name="t">The adjacent triangle.</param>
+        /// <param name="other">The adjacent triangle.</param>
         /// <returns>The common edge.</returns>
-        public Edge GetCommonEdge(Triangle t)
+        public Edge GetCommonEdge(ITriangle other)
         {
-            return GetCommonEdge(this, t);
-        }
+            var otherTriangleVertices = new Vector3[3];
+            otherTriangleVertices[0] = other.A;
+            otherTriangleVertices[1] = other.B;
+            otherTriangleVertices[2] = other.C;
 
-        /// <summary>
-        /// Gets the common edge of two adjacent triangles.
-        /// </summary>
-        /// <param name="t">The adjacent triangle.</param>
-        /// <returns>The common edge.</returns>
-        public static Edge GetCommonEdge(Triangle t1, Triangle t2)
-        {
-            Edge ret = null;
-            if ((t1.V1 == t2.V1) || (t1.V1 == t2.V2) || (t1.V1 == t2.V3))
+            bool aIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(A));
+            bool bIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(B));
+            bool cIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(C));
+
+            if (aIsEqual && bIsEqual)
             {
-                if ((t1.V2 == t2.V1) || (t1.V2 == t2.V2) || (t1.V2 == t2.V3))
-                {
-                    ret = new Edge(t1.V1, t1.V2);
-                }
-                else
-                {
-                    ret = new Edge(t1.V1, t1.V3);
-                }
+                return new Edge(A, B);
+            }
+            else if (aIsEqual && cIsEqual)
+            {
+                return new Edge(A, C);
+            }
+            else if (bIsEqual && cIsEqual)
+            {
+                return new Edge(B, C);
             }
             else
             {
-                ret = new Edge(t1.V2, t1.V3);
+                throw new ArgumentException("The specified triangle has no common edge with this one", "other");
             }
-
-            return ret;
         }
 
         /// <summary>
@@ -211,16 +209,15 @@ namespace CommonTools.Geometry
         /// </returns>
         public override bool Equals(object other)
         {
-            bool ret = false;
-            // Check object other is a Triangle object
-            if (other is Triangle)
+            ITriangle otherTriangle = other as ITriangle;
+            if (otherTriangle != null)
             {
-                Triangle t = (Triangle)other;
-
-                // Check for equality
-                ret = this.Equals(t);
+                return Equals(otherTriangle);
             }
-            return ret;
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -230,20 +227,15 @@ namespace CommonTools.Geometry
         /// <returns>
         ///   <c>true</c> if the specified <see cref="CommonTools.Geometry.Triangle"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(Triangle t)
+        public bool Equals(ITriangle other)
         {
-            bool ret = false;
-            if (
-                ((t.V1 == V1) || (t.V1 == V2) || (t.V1 == V3))
+            return (
+                ((other.A == A) || (other.A == B) || (other.A == C))
                 &&
-                ((t.V2 == V1) || (t.V2 == V2) || (t.V2 == V3))
+                ((other.B == A) || (other.B == B) || (other.B == C))
                 &&
-                ((t.V3 == V1) || (t.V3 == V2) || (t.V3 == V3))
-                )
-            {
-                ret = true;
-            }
-            return ret;
+                ((other.C == A) || (other.C == B) || (other.C == C))
+            );
         }
 
         /// <summary>
@@ -254,8 +246,7 @@ namespace CommonTools.Geometry
         /// </returns>
         public override int GetHashCode()
         {
-            return V1.GetHashCode() ^ V2.GetHashCode() ^ V3.GetHashCode();
+            return A.GetHashCode() ^ B.GetHashCode() ^ C.GetHashCode();
         }
-
     }
 }

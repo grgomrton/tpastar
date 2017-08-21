@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Geometry\Edge.cs" />
     <Compile Include="Geometry\Curve.cs" />
+    <Compile Include="Geometry\ITriangle.cs" />
     <Compile Include="Geometry\Triangle.cs" />
     <Compile Include="Geometry\Vector3.cs" />
     <Compile Include="Miscellaneous\MathUtil.cs" />

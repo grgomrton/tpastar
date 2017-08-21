@@ -21,7 +21,7 @@ namespace TPAStarGUI
         private Curve path;
         
         private TPAStarSolver solver;
-        private Dictionary<Triangle, TriangleIcon> trianglesToDraw;
+        private Dictionary<ITriangle, TriangleIcon> trianglesToDraw;
         
         private int editingIndex = 0;
         private bool goalEditing = false;
@@ -48,7 +48,7 @@ namespace TPAStarGUI
             }
         }
 
-        private void SolverOnTriangleExplored(Triangle triangle, TriangleEvaluationResult result)
+        private void SolverOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
         {
             trianglesToDraw[triangle].IncreaseTraversionCount(result);
             
@@ -179,7 +179,7 @@ namespace TPAStarGUI
         }
 
         private void CreateTriangleMap() {
-            trianglesToDraw = new Dictionary<Triangle, TriangleIcon>();
+            trianglesToDraw = new Dictionary<ITriangle, TriangleIcon>();
             
             Vector3 cr0 = new Vector3(2, 4, 0);
             Vector3 cr1 = new Vector3(2, 3, 0);

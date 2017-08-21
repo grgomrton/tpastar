@@ -35,9 +35,9 @@ namespace TPAStarGUI
         {
             this.id = id;
             points = new PointF[3];
-            points[0] = new PointF(triangle.V1.Xf, triangle.V1.Yf);
-            points[1] = new PointF(triangle.V2.Xf, triangle.V2.Yf);
-            points[2] = new PointF(triangle.V3.Xf, triangle.V3.Yf);
+            points[0] = new PointF(triangle.A.Xf, triangle.A.Yf);
+            points[1] = new PointF(triangle.B.Xf, triangle.B.Yf);
+            points[2] = new PointF(triangle.C.Xf, triangle.C.Yf);
 
             centroid = triangle.Centroid.ToPointF();
         }
