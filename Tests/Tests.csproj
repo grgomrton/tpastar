@@ -60,7 +60,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Math\CommonTools.csproj">
+    <ProjectReference Include="..\Math\Math.csproj">
       <Project>{2ebc57ef-8d80-4df2-9efe-fc4042ca9475}</Project>
       <Name>CommonTools</Name>
     </ProjectReference>
