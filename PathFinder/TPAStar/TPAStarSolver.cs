@@ -9,12 +9,12 @@ namespace PathFinder.TPAStar
     public class TPAStarSolver
     {
         private LinkedList<TPAPath> openSet;
-        private Dictionary<Edge, double> higherBoundOfPathToEdges;
+        private Dictionary<IEdge, double> higherBoundOfPathToEdges;
         
         public TPAStarSolver()
         {
             openSet = new LinkedList<TPAPath>();
-            higherBoundOfPathToEdges = new Dictionary<Edge, double>();    
+            higherBoundOfPathToEdges = new Dictionary<IEdge, double>();    
         }   
         
         public Curve FindPath(Vector3 startPoint, ITriangle startTriangle, Vector3[] goals)
@@ -53,7 +53,7 @@ namespace PathFinder.TPAStar
                     
                     // adding new paths
                     var neighbourTriangles = bestPath.ExplorableTriangles;
-                    foreach (Triangle t in neighbourTriangles)
+                    foreach (Triangle t in neighbourTriangles) // TODO why do we have here Triangle references?
                     {
                         TPAPath newPath = bestPath.Clone();
                         TriangleEvaluationResult result = newPath.StepTo(t, goals);

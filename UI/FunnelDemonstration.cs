@@ -56,12 +56,12 @@ namespace TPAStarGUI
         {
             for (int i = 0; i < edges.Length; i++)
             {
-                PointF a = (magnify * edges[i].V1).ToPointF();
-                PointF b = (magnify * edges[i].V2).ToPointF();
+                PointF a = (magnify * edges[i].A).ToPointF();
+                PointF b = (magnify * edges[i].B).ToPointF();
 
                 canvas.DrawLine(pen, a, b);
 
-                DrawDots(canvas, new Vector3[] { edges[i].V1, edges[i].V2 }, Brushes.Aqua, magnify);
+                DrawDots(canvas, new Vector3[] { edges[i].A, edges[i].B }, Brushes.Aqua, magnify);
             }
         }
 

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EdgeTests.cs" />
     <Compile Include="FunnelStructureTests.cs" />
     <Compile Include="GeometryUtilTests.cs" />
     <Compile Include="SolverTests.cs" />

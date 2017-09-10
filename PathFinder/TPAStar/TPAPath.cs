@@ -11,7 +11,7 @@ namespace PathFinder.TPAStar
     {
         private ITriangle currentTriangle;
         private IEnumerable<ITriangle> explorableTriangles;
-        private Edge currentEdge;
+        private IEdge currentEdge;
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
         private double h; // heuristic value
@@ -67,13 +67,13 @@ namespace PathFinder.TPAStar
             return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
         }
 
-        internal void UpdateLowerBoundOfPathToEdge(Edge edge)
+        internal void UpdateLowerBoundOfPathToEdge(IEdge edge)
         {
             double minpathlength = 0;
 
             if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
             {
-                Vector3 closestPoint = edge.ClosesPointFromPoint(apex.Value);
+                Vector3 closestPoint = edge.ClosestPointOnEdgeFrom(apex.Value);
                 Vector3 apexPoint = apex.Value;
                 Vector3 left_1 = apex.Previous.Value;
                 Vector3 right_1 = apex.Next.Value;
@@ -103,7 +103,7 @@ namespace PathFinder.TPAStar
                             node = node.Next;
                             //path.Add(node.Value); TODO: guinak
 
-                            closestPoint = edge.ClosesPointFromPoint(node.Value);
+                            closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                             apexPoint = node.Value;
                             left_1 = node.Previous.Value;
                             right_1 = node.Next.Value;
@@ -113,7 +113,7 @@ namespace PathFinder.TPAStar
                             vacp = closestPoint - apexPoint; // vector from apex to the closest point
                         }
 
-                        closestPoint = edge.ClosesPointFromPoint(node.Value);
+                        closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                         minpathlength += Vector3.Distance(node.Value, closestPoint);
                         //path.Add(closestPoint);
                     }
@@ -130,7 +130,7 @@ namespace PathFinder.TPAStar
                         node = node.Previous;
                         //path.Add(apex.Value);
 
-                        closestPoint = edge.ClosesPointFromPoint(node.Value);
+                        closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                         apexPoint = node.Value;
                         left_1 = node.Previous.Value;
                         right_1 = node.Next.Value;
@@ -140,7 +140,7 @@ namespace PathFinder.TPAStar
                         vacp = closestPoint - apexPoint; // vector from apex to the closest point
                     }
 
-                    closestPoint = edge.ClosesPointFromPoint(node.Value);
+                    closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                     minpathlength += Vector3.Distance(node.Value, closestPoint);
                     //path.Add(closestPoint);
                 }
@@ -148,7 +148,7 @@ namespace PathFinder.TPAStar
             dgMin = minpathlength;
         }
 
-        protected void UpdateHigherBoundOfPathToEdge(Edge edge)
+        protected void UpdateHigherBoundOfPathToEdge(IEdge edge)
         {
             LinkedListNode<Vector3> node = apex;
             double maxLeft = 0, maxRight = 0;
@@ -183,12 +183,12 @@ namespace PathFinder.TPAStar
             get { return isGoalReached; }
         }
 
-        private void UpdateHeuristicValue(Edge edge, Vector3[] goalPoints)
+        private void UpdateHeuristicValue(IEdge edge, Vector3[] goalPoints)
         {
             h = FindDistanceFromClosestGoalPoint(edge, goalPoints);
         }
 
-        private double FindDistanceFromClosestGoalPoint(Edge edge, IEnumerable<Vector3> goals)
+        private double FindDistanceFromClosestGoalPoint(IEdge edge, IEnumerable<Vector3> goals)
         {
             return goals.Min(point => edge.DistanceFromPoint(point));
         }
@@ -218,7 +218,7 @@ namespace PathFinder.TPAStar
             get { return path.Length + dgMax; }
         }
 
-        public Edge CurrentEdge
+        public IEdge CurrentEdge
         {
             get { return currentEdge; }
         }

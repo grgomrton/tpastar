@@ -171,7 +171,7 @@ namespace CommonTools.Geometry
         /// </summary>
         /// <param name="other">The adjacent triangle.</param>
         /// <returns>The common edge.</returns>
-        public Edge GetCommonEdge(ITriangle other)
+        public IEdge GetCommonEdge(ITriangle other)
         {
             var otherTriangleVertices = new Vector3[3];
             otherTriangleVertices[0] = other.A;
@@ -182,6 +182,7 @@ namespace CommonTools.Geometry
             bool bIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(B));
             bool cIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(C));
 
+            // TODO exception if every vertex is the same (same triangle)
             if (aIsEqual && bIsEqual)
             {
                 return new Edge(A, B);

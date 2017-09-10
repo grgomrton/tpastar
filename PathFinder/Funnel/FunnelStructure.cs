@@ -30,7 +30,7 @@ namespace PathFinder.Funnel
             path = new Curve(other.path);
         }
 
-        public void StepTo(Edge edge)
+        public void StepTo(IEdge edge)
         {
             Side modifiedSide = AddNewVertexToFunnel(edge);
 
@@ -67,22 +67,22 @@ namespace PathFinder.Funnel
             }
         }
 
-        protected void InitFunnel(Edge firstEdge)
+        protected void InitFunnel(IEdge firstEdge)
         {
             Vector3 startPoint = apex.Value;
 
-            Vector3 toV1 = firstEdge.V1 - startPoint;
-            Vector3 toV2 = firstEdge.V2 - startPoint;
+            Vector3 toV1 = firstEdge.A - startPoint;
+            Vector3 toV2 = firstEdge.B - startPoint;
 
             if (OrientationUtil.ClockWise(toV1, toV2))
             {
-                funnel.AddFirst(firstEdge.V1);
-                funnel.AddLast(firstEdge.V2);
+                funnel.AddFirst(firstEdge.A);
+                funnel.AddLast(firstEdge.B);
             }
             else if (OrientationUtil.CounterClockWise(toV1, toV2))
             {
-                funnel.AddFirst(firstEdge.V2);
-                funnel.AddLast(firstEdge.V1);
+                funnel.AddFirst(firstEdge.B);
+                funnel.AddLast(firstEdge.A);
             }
             // else { } we have nothing to do, we were standing on the edge, this edge is not needed to be added
         }
@@ -90,15 +90,15 @@ namespace PathFinder.Funnel
 
         // returns the modified side
         // todo: addedge
-        protected Side AddNewVertexToFunnel(Edge edge)
+        protected Side AddNewVertexToFunnel(IEdge edge)
         {
             Side ret = Side.None;
             Vector3 left = funnel.First.Value; // Left vertex in funnel
             Vector3 right = funnel.Last.Value; // Right vertex in funnel
 
             // a funnel mindkét vége azonos pont
-            if (((left == edge.V1) && (right == edge.V2))
-                || ((left == edge.V2) && (right == edge.V1))
+            if (((left == edge.A) && (right == edge.B))
+                || ((left == edge.B) && (right == edge.A))
                 )
             {
                 // kétszer léptünk ugyanarra az élre,
@@ -106,28 +106,28 @@ namespace PathFinder.Funnel
                 ret = Side.Both;
             }
             // a funnel balszélső vertexe közös az éllel
-            else if (left == edge.V1)
+            else if (left == edge.A)
             {
                 // jobb oldalra fűzünk
                 ret = Side.Right;
-                funnel.AddLast(edge.V2);
+                funnel.AddLast(edge.B);
             }
-            else if (left == edge.V2)
+            else if (left == edge.B)
             {
                 ret = Side.Right;
-                funnel.AddLast(edge.V1);
+                funnel.AddLast(edge.A);
             }
             // a funnel jobbszélső vertexe közös az éllel
-            else if (right == edge.V1)
+            else if (right == edge.A)
             {
                 // bal oldalra fűzünk
                 ret = Side.Left;
-                funnel.AddFirst(edge.V2);
+                funnel.AddFirst(edge.B);
             }
-            else if (right == edge.V2)
+            else if (right == edge.B)
             {
                 ret = Side.Left;
-                funnel.AddFirst(edge.V1);
+                funnel.AddFirst(edge.A);
             }
             else
             {
