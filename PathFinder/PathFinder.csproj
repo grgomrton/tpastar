@@ -50,7 +50,7 @@
     <Compile Include="TPAStar\TriangleEvaluationResult.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonTools\CommonTools.csproj">
+    <ProjectReference Include="..\Math\CommonTools.csproj">
       <Project>{2EBC57EF-8D80-4DF2-9EFE-FC4042CA9475}</Project>
       <Name>CommonTools</Name>
     </ProjectReference>

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTools", "CommonTools\CommonTools.csproj", "{2EBC57EF-8D80-4DF2-9EFE-FC4042CA9475}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonTools", "Math\CommonTools.csproj", "{2EBC57EF-8D80-4DF2-9EFE-FC4042CA9475}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathFinder", "TPAStar\PathFinder.csproj", "{9BBC78EC-4F3B-407B-A51D-91CA7DD69277}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PathFinder", "PathFinder\PathFinder.csproj", "{9BBC78EC-4F3B-407B-A51D-91CA7DD69277}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStarGUI", "TPAStarGUI\TPAStarGUI.csproj", "{1785B63D-363C-45BB-8415-434FB560F85E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStarGUI", "UI\TPAStarGUI.csproj", "{1785B63D-363C-45BB-8415-434FB560F85E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStar.Tests", "TPAStar.Tests\TPAStar.Tests.csproj", "{882C3111-AE96-4E55-8F69-134B1EC4570F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPAStar.Tests", "Tests\TPAStar.Tests.csproj", "{882C3111-AE96-4E55-8F69-134B1EC4570F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

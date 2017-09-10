@@ -98,11 +98,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonTools\CommonTools.csproj">
+    <ProjectReference Include="..\Math\CommonTools.csproj">
       <Project>{2ebc57ef-8d80-4df2-9efe-fc4042ca9475}</Project>
       <Name>CommonTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TPAStar\PathFinder.csproj">
+    <ProjectReference Include="..\PathFinder\PathFinder.csproj">
       <Project>{9bbc78ec-4f3b-407b-a51d-91ca7dd69277}</Project>
       <Name>PathFinder</Name>
     </ProjectReference>
