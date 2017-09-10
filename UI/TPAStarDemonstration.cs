@@ -292,7 +292,7 @@ namespace TPAStarGUI
                 }
                 canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
                 float fontSize = widths["fontSize"];
-                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), (path.Last() - new Vector3(2 * fontSize, 3 * fontSize, 0)).ToPointF());
+                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), (path.Last().Minus(new Vector3(2 * fontSize, 3 * fontSize, 0))).ToPointF());
             }
         }
 

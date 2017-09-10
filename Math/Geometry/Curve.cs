@@ -10,9 +10,9 @@ namespace CommonTools.Geometry
     /// <summary>
     /// Represents a curve by a list of <see cref="Vector3"/> objects.
     /// </summary>
-    public class Curve : IEnumerable<Vector3>
+    public class Curve : IEnumerable<IVector>
     {
-        private LinkedList<Vector3> points;
+        private LinkedList<IVector> points;
         private double length;
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace CommonTools.Geometry
         /// </summary>
         public Curve()
         {
-            points = new LinkedList<Vector3>();
+            points = new LinkedList<IVector>();
             length = 0;
         }
 
@@ -30,7 +30,7 @@ namespace CommonTools.Geometry
         /// <param name="p">The <see cref="Curve"/> whose elements are copied to the new <see cref="Curve"/>.</param>
         public Curve(Curve p)
         {
-            points = new LinkedList<Vector3>(p.points);
+            points = new LinkedList<IVector>(p.points);
             length = p.length;
         }
 
@@ -38,7 +38,7 @@ namespace CommonTools.Geometry
         /// Adds the specified point to the end of the <see cref="Curve"/>.
         /// </summary>
         /// <param name="point">The point to add at the end of the <see cref="Curve"/>.</param>
-        public void Add(Vector3 point)
+        public void Add(IVector point)
         {
             if (points.Count > 0)
             {
@@ -70,7 +70,7 @@ namespace CommonTools.Geometry
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<Vector3> GetEnumerator()
+        public IEnumerator<IVector> GetEnumerator()
         {
             return points.GetEnumerator();
         }
@@ -84,9 +84,9 @@ namespace CommonTools.Geometry
         /// Converts the curve to a list of <see cref="Vector3"/>.
         /// </summary>
         /// <returns>List of vectors.</returns>
-        public List<Vector3> ToList()
+        public List<IVector> ToList()
         {
-            return new List<Vector3>(points);
+            return new List<IVector>(points);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace CommonTools.Geometry
         public override String ToString()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Vector3 v in points)
+            foreach (IVector v in points)
             {
                 sb.AppendLine(String.Format("({0: 00.00;-00.00};{1: 00.00;-00.00})", v.X, v.Y));
             }

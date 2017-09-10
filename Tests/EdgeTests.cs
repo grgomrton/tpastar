@@ -133,5 +133,20 @@ namespace TPAStar.Tests
 
             equalityCheckResult.Should().BeTrue();
         }
+        
+        [Test]
+        public void EdgesShouldBeEqualIfTheyLieBetweenSameEndpointsEvenIfTheyAreBoxedIndependentlyFromEndpointOrder()
+        {
+            var leftEndpointOfFirstEdge = new Vector3(1.0, 3.0);
+            var leftEndpointOfSecondEdge = new Vector3(1.0, 3.0);
+            var rightEndpointOfFirstEdge = new Vector3(4.0, 3.0);
+            var rightEndpointOfSecondEdge = new Vector3(4.0, 3.0);
+            object firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
+            object secondEdge = new Edge(rightEndpointOfSecondEdge, leftEndpointOfSecondEdge);
+
+            var equalityCheckResult = firstEdge.Equals(secondEdge);
+
+            equalityCheckResult.Should().BeTrue();
+        }
     }
 }

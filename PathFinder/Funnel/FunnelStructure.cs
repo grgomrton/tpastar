@@ -11,13 +11,13 @@ namespace PathFinder.Funnel
 
     public class FunnelStructure
     {
-        protected LinkedList<Vector3> funnel; // from the apex view, the left side is the first element, the last one is on the right side
-        protected LinkedListNode<Vector3> apex;
+        protected LinkedList<IVector> funnel; // from the apex view, the left side is the first element, the last one is on the right side
+        protected LinkedListNode<IVector> apex;
         protected Curve path;
 
-        public FunnelStructure(Vector3 startPoint) 
+        public FunnelStructure(IVector startPoint) 
         {
-            funnel = new LinkedList<Vector3>();
+            funnel = new LinkedList<IVector>();
             apex = funnel.AddFirst(startPoint);
             path = new Curve();
             path.Add(startPoint);
@@ -25,7 +25,7 @@ namespace PathFinder.Funnel
 
         public FunnelStructure(FunnelStructure other)
         {
-            funnel = new LinkedList<Vector3>(other.funnel);
+            funnel = new LinkedList<IVector>(other.funnel);
             apex = funnel.Find(other.apex.Value);
             path = new Curve(other.path);
         }
@@ -55,12 +55,12 @@ namespace PathFinder.Funnel
             }
         }
 
-        public void FinalizePath(Vector3 goal)
+        public void FinalizePath(IVector goal)
         {
             funnel.AddLast(goal);
             RefreshFunnel(Side.Right);
-            LinkedListNode<Vector3> node = apex;
-            while (node.Value != goal)
+            LinkedListNode<IVector> node = apex;
+            while (!node.Value.Equals(goal))
             {
                 node = node.Next;
                 path.Add(node.Value);
@@ -69,10 +69,10 @@ namespace PathFinder.Funnel
 
         protected void InitFunnel(IEdge firstEdge)
         {
-            Vector3 startPoint = apex.Value;
+            IVector startPoint = apex.Value;
 
-            Vector3 toV1 = firstEdge.A - startPoint;
-            Vector3 toV2 = firstEdge.B - startPoint;
+            IVector toV1 = firstEdge.A.Minus(startPoint);
+            IVector toV2 = firstEdge.B.Minus(startPoint);
 
             if (OrientationUtil.ClockWise(toV1, toV2))
             {
@@ -93,12 +93,12 @@ namespace PathFinder.Funnel
         protected Side AddNewVertexToFunnel(IEdge edge)
         {
             Side ret = Side.None;
-            Vector3 left = funnel.First.Value; // Left vertex in funnel
-            Vector3 right = funnel.Last.Value; // Right vertex in funnel
+            IVector left = funnel.First.Value; // Left vertex in funnel
+            IVector right = funnel.Last.Value; // Right vertex in funnel
 
             // a funnel mindkét vége azonos pont
-            if (((left == edge.A) && (right == edge.B))
-                || ((left == edge.B) && (right == edge.A))
+            if (((left.Equals(edge.A)) && (right.Equals(edge.B)))
+                || ((left.Equals(edge.B)) && (right.Equals(edge.A)))
                 )
             {
                 // kétszer léptünk ugyanarra az élre,
@@ -106,25 +106,25 @@ namespace PathFinder.Funnel
                 ret = Side.Both;
             }
             // a funnel balszélső vertexe közös az éllel
-            else if (left == edge.A)
+            else if (left.Equals(edge.A))
             {
                 // jobb oldalra fűzünk
                 ret = Side.Right;
                 funnel.AddLast(edge.B);
             }
-            else if (left == edge.B)
+            else if (left.Equals(edge.B))
             {
                 ret = Side.Right;
                 funnel.AddLast(edge.A);
             }
             // a funnel jobbszélső vertexe közös az éllel
-            else if (right == edge.A)
+            else if (right.Equals(edge.A))
             {
                 // bal oldalra fűzünk
                 ret = Side.Left;
                 funnel.AddFirst(edge.B);
             }
-            else if (right == edge.B)
+            else if (right.Equals(edge.B))
             {
                 ret = Side.Left;
                 funnel.AddFirst(edge.A);
@@ -147,12 +147,12 @@ namespace PathFinder.Funnel
                 while (popped && (funnel.Count >= 3))
                 {
                     popped = false;
-                    LinkedListNode<Vector3> last = funnel.Last;
-                    Vector3 right = last.Value;
-                    Vector3 right_1 = last.Previous.Value;
-                    Vector3 right_2 = last.Previous.Previous.Value;
-                    Vector3 v1 = right_1 - right;
-                    Vector3 v2 = right_2 - right;
+                    LinkedListNode<IVector> last = funnel.Last;
+                    IVector right = last.Value;
+                    IVector right_1 = last.Previous.Value;
+                    IVector right_2 = last.Previous.Previous.Value;
+                    IVector v1 = right_1.Minus(right);
+                    IVector v2 = right_2.Minus(right);
                     if (apex != last.Previous)
                     {
                         if (OrientationUtil.ClockWise(v1, v2))
@@ -179,12 +179,12 @@ namespace PathFinder.Funnel
                 while (popped && (funnel.Count >= 3))
                 {
                     popped = false;
-                    LinkedListNode<Vector3> first = funnel.First;
-                    Vector3 left = first.Value;
-                    Vector3 left_1 = first.Next.Value;
-                    Vector3 left_2 = first.Next.Next.Value;
-                    Vector3 v1 = left_1 - left;
-                    Vector3 v2 = left_2 - left;
+                    LinkedListNode<IVector> first = funnel.First;
+                    IVector left = first.Value;
+                    IVector left_1 = first.Next.Value;
+                    IVector left_2 = first.Next.Next.Value;
+                    IVector v1 = left_1.Minus(left);
+                    IVector v2 = left_2.Minus(left);
                     if (apex != first.Next)
                     {
                         if (OrientationUtil.CounterClockWise(v1, v2))
@@ -213,6 +213,6 @@ namespace PathFinder.Funnel
         }
 
         // TODO: only for test now, but should be changed for use in algorithm
-        internal IEnumerable<Vector3> Funnel => funnel;
+        internal IEnumerable<IVector> Funnel => funnel;
     }
 }

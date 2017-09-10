@@ -138,5 +138,7 @@ namespace TPAStar.Tests
             pathNodes[1].X.Should().BeApproximately(9.0, Precision);
             pathNodes[1].Y.Should().BeApproximately(14.5, Precision);
         }
+        
+        // TODO add test for not entering the same triangle due to exceeding edge threshold
     }
 }

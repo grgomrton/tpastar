@@ -38,9 +38,9 @@ namespace CommonTools.Miscellaneous
         /// <param name="source">Vector a.</param>
         /// <param name="target">Vector b.</param>
         /// <returns>Result of clockwise test.</returns>
-        public static bool ClockWise(Vector3 source, Vector3 target)
+        public static bool ClockWise(IVector source, IVector target)
         {
-            Vector3 cp = Vector3.CrossProduct(source, target);
+            IVector cp = Vector3.CrossProduct(source, target);
             return cp.Z < 0;
         }
 
@@ -51,9 +51,9 @@ namespace CommonTools.Miscellaneous
         /// <param name="source">Vector a.</param>
         /// <param name="target">Vector b.</param>
         /// <returns>Result of counter-clockwise test.</returns>
-        public static bool CounterClockWise(Vector3 source, Vector3 target)
+        public static bool CounterClockWise(IVector source, IVector target)
         {
-            Vector3 cp = Vector3.CrossProduct(source, target);
+            IVector cp = Vector3.CrossProduct(source, target);
             return cp.Z > 0;
         }
 

@@ -14,8 +14,8 @@ namespace CommonTools.Geometry
     /// </summary>
     public class Edge : IEdge
     {
-        private Vector3 v1;
-        private Vector3 v2;
+        private IVector v1;
+        private IVector v2;
         private double length;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the first endpoint of the edge.
         /// </summary>
-        public Vector3 A
+        public IVector A
         {
             get { return v1; }
         }
@@ -52,7 +52,7 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the second endpoint of the edge.
         /// </summary>
-        public Vector3 B
+        public IVector B
         {
             get { return v2; }
         }
@@ -72,12 +72,12 @@ namespace CommonTools.Geometry
         /// </summary>
         /// <param name="p">The point.</param>
         /// <returns>The closest point of the <see cref="Edge"/>.</returns>
-        public Vector3 ClosestPointOnEdgeFrom(Vector3 p)      // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
+        public IVector ClosestPointOnEdgeFrom(IVector p)      // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
         {
-            Vector3 closestPoint = new Vector3();
+            IVector closestPoint = new Vector3();
                                                             // segmentClamp = true
-            Vector3 ap = p - A;                            // Vector AP = P - A:
-            Vector3 ab = B - A;                           // Vector AB = B - A;
+            IVector ap = p.Minus(A);                            // Vector AP = P - A:
+            IVector ab = B.Minus(A);                           // Vector AB = B - A;
             double ab2 = ab.X * ab.X + ab.Y * ab.Y;         // float ab2 = AB.x*AB.x + AB.y*AB.y;
             if (ab2 == 0)                                   // our segment is only one point - that must be the closest point
             {
@@ -91,7 +91,7 @@ namespace CommonTools.Geometry
                                                             //   if (t < 0.0f) t = 0.0f;
                                                             //   else if (t > 1.0f) t = 1.0f;    
                                                             // }
-                closestPoint = A + ab * t;                 // Vector Closest = A + AB * t;
+                closestPoint = A.Plus(ab.MultiplyByScalar(t));                 // Vector Closest = A + AB * t;
             }
             return closestPoint;                            // return Closest;
         }
@@ -102,12 +102,12 @@ namespace CommonTools.Geometry
         /// </summary>
         /// <param name="p">The point.</param>
         /// <returns>The distance.</returns>
-        public double DistanceFromPoint(Vector3 p)  // float dist_Point_to_Segment(Point P, Segment S) {
+        public double DistanceFromPoint(IVector p)  // float dist_Point_to_Segment(Point P, Segment S) {
         {
             double ret;
 
-            Vector3 v = this.B - this.A;          // Vector v =S.P1 - S.P0;
-            Vector3 w = p - this.A;                // Vector w = P - S.P0;
+            IVector v = this.B.Minus(this.A);          // Vector v =S.P1 - S.P0;
+            IVector w = p.Minus(this.A);                // Vector w = P - S.P0;
 
             double c1 = Vector3.DotProduct(w, v);   // double c1 = dot(w, v);
             double c2 = Vector3.DotProduct(v, v);   // double c2 = dot(v, v);
@@ -122,7 +122,7 @@ namespace CommonTools.Geometry
             else
             {
                 double b = c1 / c2;                 // double b = c1 / c2;
-                Vector3 pb = this.A + b * v;       // Point Pb = S.P0 + b * v;
+                IVector pb = this.A.Plus(v.MultiplyByScalar(b));       // Point Pb = S.P0 + b * v;
                 ret = Vector3.Distance(p, pb);      // return d(P, Pb);
             }
 
@@ -136,14 +136,14 @@ namespace CommonTools.Geometry
         /// <returns>
         /// <c>true</c> if other is an instance of <see cref="Edge"/> and equals the value of this instance; otherwise, <c>false</c>
         /// </returns>
-        public override bool Equals(object other) // TODO: check this implementation
+        public override bool Equals(object other)
         {
             // Check object other is an Edge object
             if (other is IEdge)
             {
-                Edge otherEdge = (Edge)other;
+                IEdge otherEdge = (IEdge)other;
                 // Check for equality
-                return ((otherEdge.A == this.A && otherEdge.B == this.B) || (otherEdge.A == this.B && otherEdge.B == this.A));
+                return Equals(otherEdge);
             }
             else
             {
@@ -160,7 +160,7 @@ namespace CommonTools.Geometry
         /// </returns>
         public bool Equals(IEdge other)
         {
-            return ((other.A == this.A && other.B == this.B) || (other.A == this.B && other.B == this.A));
+            return ((other.A.Equals(this.A) && other.B.Equals(this.B)) || (other.A.Equals(this.B) && other.B.Equals(this.A)));
         }
 
         /// <summary>

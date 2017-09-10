@@ -29,7 +29,7 @@ namespace CommonTools.Geometry
     /// </Changes>
     [Serializable]
     public struct Vector3
-        : IComparable, IComparable<Vector3>, IEquatable<Vector3>, IFormattable
+        : IComparable, IComparable<Vector3>, IEquatable<Vector3>, IFormattable, IVector
     {
 
         #region Class Variables
@@ -102,6 +102,11 @@ namespace CommonTools.Geometry
         #endregion
 
         #region Accessors & Mutators
+
+        public IVector MultiplyByScalar(double scalar)
+        {
+            return this * scalar;
+        }
 
         /// <summary>
         /// Property for the x component of the Vector3
@@ -427,7 +432,7 @@ namespace CommonTools.Geometry
         /// Cross products are non commutable
         /// </implementation>
         /// <Acknowledgement>This code is adapted from CSOpenGL - Lucas Viñas Livschitz </Acknowledgement>
-        public static Vector3 CrossProduct(Vector3 v1, Vector3 v2)
+        public static IVector CrossProduct(IVector v1, IVector v2) // TODO: do we need this?
         {
             return
             (
@@ -451,7 +456,7 @@ namespace CommonTools.Geometry
         /// Uses the CrossProduct function to avoid code duplication
         /// <see cref="CrossProduct(Vector3, Vector3)"/>
         /// </implementation>
-        public Vector3 CrossProduct(Vector3 other)
+        public IVector CrossProduct(IVector other)
         {
             return CrossProduct(this, other);
         }
@@ -465,7 +470,7 @@ namespace CommonTools.Geometry
         /// <implementation>
         /// </implementation>
         /// <Acknowledgement>This code is adapted from CSOpenGL - Lucas Viñas Livschitz </Acknowledgement>
-        public static double DotProduct(Vector3 v1, Vector3 v2)
+        public static double DotProduct(IVector v1, IVector v2)
         {
             return
             (
@@ -685,7 +690,7 @@ namespace CommonTools.Geometry
         /// <returns>The distance between two Vectors</returns>
         /// <implementation>
         /// </implementation>
-        public static double Distance(Vector3 v1, Vector3 v2)
+        public static double Distance(IVector v1, IVector v2) // TODO make these things private
         {
             return
             (
@@ -709,9 +714,33 @@ namespace CommonTools.Geometry
         /// Overload for Distance method, finds distance between this Vector3 and another
         /// Uses the Distance(Vector3,Vector3) method to avoid code duplication
         /// </implementation>
-        public double Distance(Vector3 other)
+        public double Distance(IVector other)
         {
             return Distance(this, other);
+        }
+
+        public IVector Plus(IVector other)
+        {
+            if (!(other is Vector3))
+            {
+                throw new NotSupportedException(
+                    "Mathematical operations between different implementations are not supported");                
+            }
+            Vector3 otherVector3 = (Vector3) other;
+            
+            return this + otherVector3;
+        }
+
+        public IVector Minus(IVector other)
+        {
+            if (!(other is Vector3))
+            {
+                throw new NotSupportedException(
+                    "Mathematical operations between different implementations are not supported");                
+            }
+            Vector3 otherVector3 = (Vector3) other;
+
+            return this - otherVector3;
         }
 
         /// <summary>
@@ -1190,6 +1219,23 @@ namespace CommonTools.Geometry
         /// Required in order to implement comparator operations (i.e. ==, !=)
         /// </implementation>
         public override bool Equals(object other)
+        {
+            // Check object other is a Vector3 object
+            if (other is Vector3)
+            {
+                // Convert object to Vector3
+                Vector3 otherVector = (Vector3)other;
+
+                // Check for equality
+                return otherVector == this;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool Equals(IVector other)
         {
             // Check object other is a Vector3 object
             if (other is Vector3)

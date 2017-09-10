@@ -50,7 +50,7 @@ namespace PathFinder.TPAStar
                 var explorableNeighbourList = new LinkedList<ITriangle>();
                 foreach (var neighbour in targetTriangle.Neighbours)
                 {
-                    if (neighbour != currentTriangle) // TODO investigate this equality check warning
+                    if (!neighbour.Equals(currentTriangle)) // TODO investigate this equality check warning
                     {
                         explorableNeighbourList.AddLast(neighbour);
                     }
@@ -73,14 +73,14 @@ namespace PathFinder.TPAStar
 
             if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
             {
-                Vector3 closestPoint = edge.ClosestPointOnEdgeFrom(apex.Value);
-                Vector3 apexPoint = apex.Value;
-                Vector3 left_1 = apex.Previous.Value;
-                Vector3 right_1 = apex.Next.Value;
+                IVector closestPoint = edge.ClosestPointOnEdgeFrom(apex.Value);
+                IVector apexPoint = apex.Value;
+                IVector left_1 = apex.Previous.Value;
+                IVector right_1 = apex.Next.Value;
 
-                Vector3 val = left_1 - apexPoint; // vector from apex to the left part of the funnel
-                Vector3 var = right_1 - apexPoint; // vector from apex to the right part of the funnel
-                Vector3 vacp = closestPoint - apexPoint; // vector from apex to the closest point
+                IVector val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
+                IVector var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
+                IVector vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
 
                 // 
                 if (OrientationUtil.ClockWise(val, vacp))
@@ -94,7 +94,7 @@ namespace PathFinder.TPAStar
                     else
                     {
                         // we have to march on the right side of the funnel, to see the edge
-                        LinkedListNode<Vector3> node = apex;
+                        LinkedListNode<IVector> node = apex;
 
                         while ((OrientationUtil.ClockWise(var, vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
                         {
@@ -108,9 +108,9 @@ namespace PathFinder.TPAStar
                             left_1 = node.Previous.Value;
                             right_1 = node.Next.Value;
 
-                            val = left_1 - apexPoint; // vector from apex to the left part of the funnel
-                            var = right_1 - apexPoint; // vector from apex to the right part of the funnel
-                            vacp = closestPoint - apexPoint; // vector from apex to the closest point
+                            val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
+                            var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
+                            vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
                         }
 
                         closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
@@ -121,7 +121,7 @@ namespace PathFinder.TPAStar
                 else
                 {
                     // we have to march on the left side of the funnel, to see the edge
-                    LinkedListNode<Vector3> node = apex;
+                    LinkedListNode<IVector> node = apex;
 
                     while ((OrientationUtil.CounterClockWise(val, vacp)) && (node.Previous.Previous != null))
                     {
@@ -135,9 +135,9 @@ namespace PathFinder.TPAStar
                         left_1 = node.Previous.Value;
                         right_1 = node.Next.Value;
 
-                        val = left_1 - apexPoint; // vector from apex to the left part of the funnel
-                        var = right_1 - apexPoint; // vector from apex to the right part of the funnel
-                        vacp = closestPoint - apexPoint; // vector from apex to the closest point
+                        val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
+                        var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
+                        vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
                     }
 
                     closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
@@ -150,7 +150,7 @@ namespace PathFinder.TPAStar
 
         protected void UpdateHigherBoundOfPathToEdge(IEdge edge)
         {
-            LinkedListNode<Vector3> node = apex;
+            LinkedListNode<IVector> node = apex;
             double maxLeft = 0, maxRight = 0;
 
             while (node.Previous != null)
@@ -169,7 +169,7 @@ namespace PathFinder.TPAStar
             dgMax = Math.Max(maxLeft, maxRight);
         }
 
-        public new void FinalizePath(Vector3 goalPoint)
+        public void FinalizePath(Vector3 goalPoint)
         {
             base.FinalizePath(goalPoint);
             dgMin = 0;

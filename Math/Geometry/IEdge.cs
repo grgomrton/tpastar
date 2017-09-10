@@ -7,26 +7,26 @@
         /// </summary>
         /// <param name="point">The point to measure the distance from.</param>
         /// <returns>The distance between the closest point of the edge and the specified point.</returns>
-        double DistanceFromPoint(Vector3 point);
+        double DistanceFromPoint(IVector point);
 
         /// <summary>
         /// Returns the closest point on this edge from the specified point.
         /// </summary>
         /// <param name="point">The point to measure the distance from.</param>
         /// <returns>The closest point to the point of the <see cref="Edge"/>.</returns>
-        Vector3 ClosestPointOnEdgeFrom(Vector3 point);
+        IVector ClosestPointOnEdgeFrom(IVector point);
         
         /// <summary>
         /// The first endpoint of the edge. 
         /// No specific geometrical property of the endpoints is expected.
         /// </summary>
-        Vector3 A { get; }
+        IVector A { get; }
 
         /// <summary>
         /// The second endpoint of the edge. 
         /// No specific geometrical property of the endpoints is expected.
         /// </summary>
-        Vector3 B { get; }
+        IVector B { get; }
         
         /// <summary>
         /// Determines whether the specified object represents the same edge 

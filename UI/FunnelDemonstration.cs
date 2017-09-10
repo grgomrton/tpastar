@@ -14,8 +14,8 @@ namespace TPAStarGUI
     public partial class FunnelDemonstration : Form
     {
         Edge[] internalEdges;
-        Vector3 start, goal;
-        List<Vector3> path;
+        IVector start, goal;
+        List<IVector> path;
         double magnify = 40;
 
         private void FunnelDemonstration_Load(object sender, EventArgs e)
@@ -56,12 +56,12 @@ namespace TPAStarGUI
         {
             for (int i = 0; i < edges.Length; i++)
             {
-                PointF a = (magnify * edges[i].A).ToPointF();
-                PointF b = (magnify * edges[i].B).ToPointF();
+                PointF a = (edges[i].A.MultiplyByScalar(magnify)).ToPointF();
+                PointF b = (edges[i].B.MultiplyByScalar(magnify)).ToPointF();
 
                 canvas.DrawLine(pen, a, b);
 
-                DrawDots(canvas, new Vector3[] { edges[i].A, edges[i].B }, Brushes.Aqua, magnify);
+                DrawDots(canvas, new IVector[] { edges[i].A, edges[i].B }, Brushes.Aqua, magnify);
             }
         }
 
@@ -94,13 +94,13 @@ namespace TPAStarGUI
 
         }
 
-        private void DrawDots(Graphics canvas, Vector3[] vectors, Brush brush, double magnify)
+        private void DrawDots(Graphics canvas, IVector[] vectors, Brush brush, double magnify)
         {
             for (int i = 0; i < vectors.Length; i++)
             {
                 double dotRadius = 0.075;
                 float dotDiameter = Convert.ToSingle(2 * dotRadius * magnify);
-                PointF p = ((vectors[i] - new Vector3(dotRadius, dotRadius, 0)) * magnify).ToPointF();
+                PointF p = ((vectors[i].Minus(new Vector3(dotRadius, dotRadius, 0))).MultiplyByScalar(magnify)).ToPointF(); // TODO: WOW :D refactor this.
                 SizeF rect = new SizeF(dotDiameter, dotDiameter);
 
                 canvas.FillEllipse(brush, new RectangleF(p, rect));
@@ -133,8 +133,8 @@ namespace TPAStarGUI
         {
             Graphics canvas = e.Graphics;
 
-            DrawDots(canvas, new Vector3[] { start }, Brushes.Blue, magnify);
-            DrawDots(canvas, new Vector3[] { goal }, Brushes.Green, magnify);
+            DrawDots(canvas, new IVector[] { start }, Brushes.Blue, magnify);
+            DrawDots(canvas, new IVector[] { goal }, Brushes.Green, magnify);
             DrawEdges(canvas, internalEdges, Pens.Blue, magnify);
 
             if (path.Count > 1)
