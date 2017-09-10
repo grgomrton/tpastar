@@ -1,8 +1,8 @@
 ﻿using System;
-using CommonTools.Geometry;
 using FluentAssertions;
 using NUnit.Framework;
 using PathFinder.TPAStar;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStar.Tests
 {
@@ -22,7 +22,7 @@ namespace TPAStar.Tests
             var g = new Vector3(7.0, 7.5);
             var solver = new TPAStarSolver();
             
-            var path = solver.FindPath(s, t1, new [] { g });
+            var path = solver.FindPath(s, t1, new IVector[] { g });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(1.5, Precision);
@@ -50,7 +50,7 @@ namespace TPAStar.Tests
             var g = new Vector3(7.5, 10.0);
             var solver = new TPAStarSolver();
             
-            var path = solver.FindPath(s, t1, new [] { g });
+            var path = solver.FindPath(s, t1, new IVector[] { g });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(2.5, Precision);
@@ -91,7 +91,7 @@ namespace TPAStar.Tests
             var g = new Vector3(12.0, 13.5);
             var solver = new TPAStarSolver();
             
-            var path = solver.FindPath(s, t2, new [] { g });
+            var path = solver.FindPath(s, t2, new IVector[] { g });
             
             path.Count.Should().Be(3);
             path.Length.Should().BeApproximately(sqrt2PlusSqrt5, Precision);
@@ -128,7 +128,7 @@ namespace TPAStar.Tests
             var g2 = new Vector3(9.0, 14.5);
             var solver = new TPAStarSolver();
             
-            var path = solver.FindPath(s, t2, new [] { g1, g2 });
+            var path = solver.FindPath(s, t2, new IVector[] { g1, g2 });
             
             path.Count.Should().Be(2);
             path.Length.Should().BeApproximately(3.0, Precision);

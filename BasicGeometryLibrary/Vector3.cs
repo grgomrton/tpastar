@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace CommonTools.Geometry
+namespace TriangulatedPolygonAStar.Geometry
 {
     /// <summary>
     /// Vector of doubles with three components (x,y,z). 
@@ -1250,6 +1250,16 @@ namespace CommonTools.Geometry
             {
                 return false;
             }
+        }
+
+        public bool ClockWise(IVector other)
+        {
+            return OrientationUtil.ClockWise(this, other);
+        }
+
+        public bool CounterClockWise(IVector other)
+        {
+            return OrientationUtil.CounterClockWise(this, other);
         }
 
         /// <summary>

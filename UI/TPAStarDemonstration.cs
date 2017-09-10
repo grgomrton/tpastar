@@ -6,10 +6,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CommonTools.Geometry;
 using PathFinder.TPAStar;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStarGUI
 {
@@ -118,8 +118,12 @@ namespace TPAStarGUI
         private void FindPathToGoal()
         {
             ResetDisplayMetaData();
-            
-            path = solver.FindPath(start, startTriangle, goals.ToArray());
+            IVector[] goalVector = new IVector[goals.Count];
+            for (int i = 0; i < goals.Count; i++)
+            {
+                goalVector[i] = goals[i];
+            }
+            path = solver.FindPath(start, startTriangle, goalVector);
         }
 
         private void TPAStarDemonstration_Load(object sender, EventArgs e)
@@ -292,7 +296,9 @@ namespace TPAStarGUI
                 }
                 canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
                 float fontSize = widths["fontSize"];
-                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), (path.Last().Minus(new Vector3(2 * fontSize, 3 * fontSize, 0))).ToPointF());
+                var position = path.Last().Minus(new Vector3(2 * fontSize, 3 * fontSize, 0));
+                var positionFloat = new PointF(Convert.ToSingle(position.X), Convert.ToSingle(position.Y));
+                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), positionFloat);
             }
         }
 

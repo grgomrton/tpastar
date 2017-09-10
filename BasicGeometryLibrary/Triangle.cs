@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TriangulatedPolygonAStar.Geometry;
 
 #endregion
 
-namespace CommonTools.Geometry
+namespace TriangulatedPolygonAStar.Geometry
 {
     /// <summary>
     /// Represents a triangle by three corner point.
@@ -51,17 +52,17 @@ namespace CommonTools.Geometry
         /// <summary>
         /// Gets the v1 corner point of the triangle.
         /// </summary>
-        public Vector3 A => v1;
+        public IVector A => v1;
 
         /// <summary>
         /// Gets the v2 corner point of the triangle.
         /// </summary>
-        public Vector3 B => v2;
+        public IVector B => v2;
 
         /// <summary>
         /// Gets the v3 corner point of the triangle.
         /// </summary>
-        public Vector3 C => v3;
+        public IVector C => v3;
 
         /// <summary>
         /// Gets the centroid of the triangle.
@@ -122,16 +123,16 @@ namespace CommonTools.Geometry
         /// <returns>
         ///   <c>true</c> if the triangle contains specified p point; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsPoint(Vector3 p)
+        public bool ContainsPoint(IVector p)
         {
-            Vector3 a = this.A;
-            Vector3 b = this.B;
-            Vector3 c = this.C;
+            IVector a = this.A;
+            IVector b = this.B;
+            IVector c = this.C;
 
             // Compute vectors
-            Vector3 v0 = c - a; // v0 = C - A
-            Vector3 v1 = b - a; // v1 = B - A
-            Vector3 v2 = p - a; // v2 = P - A
+            IVector v0 = c.Minus(a); // v0 = C - A
+            IVector v1 = b.Minus(a); // v1 = B - A
+            IVector v2 = p.Minus(a); // v2 = P - A
 
             // Compute dot products
             double dot00 = Vector3.DotProduct(v0, v0); // dot00 = dot(v0, v0)
@@ -173,7 +174,7 @@ namespace CommonTools.Geometry
         /// <returns>The common edge.</returns>
         public IEdge GetCommonEdge(ITriangle other)
         {
-            var otherTriangleVertices = new Vector3[3];
+            var otherTriangleVertices = new IVector[3];
             otherTriangleVertices[0] = other.A;
             otherTriangleVertices[1] = other.B;
             otherTriangleVertices[2] = other.C;
@@ -231,11 +232,11 @@ namespace CommonTools.Geometry
         public bool Equals(ITriangle other)
         {
             return (
-                ((other.A == A) || (other.A == B) || (other.A == C))
+                ((other.A.Equals(A)) || (other.A.Equals(B)) || (other.A.Equals(C)))
                 &&
-                ((other.B == A) || (other.B == B) || (other.B == C))
+                ((other.B.Equals(A)) || (other.B.Equals(B)) || (other.B.Equals(C)))
                 &&
-                ((other.C == A) || (other.C == B) || (other.C == C))
+                ((other.C.Equals(A)) || (other.C.Equals(B)) || (other.C.Equals(C)))
             );
         }
 

@@ -43,16 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry\Edge.cs" />
-    <Compile Include="Geometry\Curve.cs" />
-    <Compile Include="Geometry\IEdge.cs" />
-    <Compile Include="Geometry\ITriangle.cs" />
-    <Compile Include="Geometry\IVector.cs" />
-    <Compile Include="Geometry\Triangle.cs" />
-    <Compile Include="Geometry\Vector3.cs" />
-    <Compile Include="Miscellaneous\MathUtil.cs" />
-    <Compile Include="Miscellaneous\OrientationUtil.cs" />
+    <Compile Include="Edge.cs" />
+    <Compile Include="OrientationUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Triangle.cs" />
+    <Compile Include="Vector3.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PathFinder\PathFinder.csproj">
+      <Project>{9bbc78ec-4f3b-407b-a51d-91ca7dd69277}</Project>
+      <Name>PathFinder</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

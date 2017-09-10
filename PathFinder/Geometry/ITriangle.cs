@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CommonTools.Geometry
+namespace TriangulatedPolygonAStar.Geometry
 {
     public interface ITriangle
     {
@@ -12,7 +12,7 @@ namespace CommonTools.Geometry
         /// </summary>
         /// <param name="point">To point to check</param>
         /// <returns>true if the specified point falls inside the triangle; otherwise, false.</returns>
-        bool ContainsPoint(Vector3 point); 
+        bool ContainsPoint(IVector point); 
         
         /// <summary>
         /// List of neighbour triangles. 
@@ -54,16 +54,16 @@ namespace CommonTools.Geometry
         /// <summary>
         /// The first vertex of the triangle. No specific order of the vertices is expected.
         /// </summary>
-        Vector3 A { get; }
+        IVector A { get; }
         
         /// <summary>
         /// The second vertex of the triangle. No specific order of the vertices is expected.
         /// </summary>
-        Vector3 B { get; }
+        IVector B { get; }
 
         /// <summary>
         /// The third vertex of the triangle. No specific order of the vertices is expected.
         /// </summary>
-        Vector3 C { get; }
+        IVector C { get; }
     }
 }

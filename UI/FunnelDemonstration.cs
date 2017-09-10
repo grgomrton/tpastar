@@ -6,15 +6,16 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CommonTools.Geometry;
 using PathFinder.Funnel;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStarGUI
 {
     public partial class FunnelDemonstration : Form
     {
         Edge[] internalEdges;
-        IVector start, goal;
+        IVector start;
+        Vector3 goal;
         List<IVector> path;
         double magnify = 40;
 
@@ -56,8 +57,10 @@ namespace TPAStarGUI
         {
             for (int i = 0; i < edges.Length; i++)
             {
-                PointF a = (edges[i].A.MultiplyByScalar(magnify)).ToPointF();
-                PointF b = (edges[i].B.MultiplyByScalar(magnify)).ToPointF();
+                var firstEdgeEndpoint = edges[i].A.MultiplyByScalar(magnify);
+                var secondEdgeEndpoint = edges[i].B.MultiplyByScalar(magnify); 
+                PointF a = new PointF(Convert.ToSingle(firstEdgeEndpoint.X), Convert.ToSingle(firstEdgeEndpoint.Y));
+                PointF b = new PointF(Convert.ToSingle(secondEdgeEndpoint.X), Convert.ToSingle(secondEdgeEndpoint.Y));
 
                 canvas.DrawLine(pen, a, b);
 
@@ -100,7 +103,8 @@ namespace TPAStarGUI
             {
                 double dotRadius = 0.075;
                 float dotDiameter = Convert.ToSingle(2 * dotRadius * magnify);
-                PointF p = ((vectors[i].Minus(new Vector3(dotRadius, dotRadius, 0))).MultiplyByScalar(magnify)).ToPointF(); // TODO: WOW :D refactor this.
+                var pointToDraw = (vectors[i].Minus(new Vector3(dotRadius, dotRadius, 0))).MultiplyByScalar(magnify);
+                PointF p = VectorConverter.ToPointF(pointToDraw);
                 SizeF rect = new SizeF(dotDiameter, dotDiameter);
 
                 canvas.FillEllipse(brush, new RectangleF(p, rect));

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CommonTools.Geometry;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace PathFinder.TPAStar
 {
@@ -17,7 +17,7 @@ namespace PathFinder.TPAStar
             higherBoundOfPathToEdges = new Dictionary<IEdge, double>();    
         }   
         
-        public Curve FindPath(Vector3 startPoint, ITriangle startTriangle, Vector3[] goals)
+        public Curve FindPath(IVector startPoint, ITriangle startTriangle, IVector[] goals)
         {
             openSet.Clear();
             higherBoundOfPathToEdges.Clear();
@@ -43,8 +43,8 @@ namespace PathFinder.TPAStar
                 else
                 {
                     // first level goaltest - if in the triangle on the end of this path contains goalpoints, we add the finalized paths to the openset
-                    IEnumerable<Vector3> reachedGoalPoints = bestPath.GetReachedGoalPoints(goals);
-                    foreach (Vector3 goalPoint in reachedGoalPoints)
+                    IEnumerable<IVector> reachedGoalPoints = bestPath.GetReachedGoalPoints(goals);
+                    foreach (IVector goalPoint in reachedGoalPoints)
                     {
                         TPAPath newPath = bestPath.Clone();
                         newPath.FinalizePath(goalPoint);
@@ -53,7 +53,7 @@ namespace PathFinder.TPAStar
                     
                     // adding new paths
                     var neighbourTriangles = bestPath.ExplorableTriangles;
-                    foreach (Triangle t in neighbourTriangles) // TODO why do we have here Triangle references?
+                    foreach (ITriangle t in neighbourTriangles)
                     {
                         TPAPath newPath = bestPath.Clone();
                         TriangleEvaluationResult result = newPath.StepTo(t, goals);

@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 using System.Collections;
 
-namespace CommonTools.Geometry
+namespace TriangulatedPolygonAStar.Geometry
 {
     /// <summary>
     /// Represents a curve by a list of <see cref="Vector3"/> objects.
     /// </summary>
-    public class Curve : IEnumerable<IVector>
+    public class Curve : IEnumerable<IVector> // TODO this class is unnecessary, can be replaced with a linked list
     {
         private LinkedList<IVector> points;
         private double length;

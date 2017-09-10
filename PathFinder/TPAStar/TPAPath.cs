@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonTools.Geometry;
-using CommonTools.Miscellaneous;
 using PathFinder.Funnel;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace PathFinder.TPAStar
 {
@@ -17,7 +16,7 @@ namespace PathFinder.TPAStar
         private double h; // heuristic value
         private bool isGoalReached;
         
-        internal TPAPath(Vector3 startPoint) : base(startPoint)
+        internal TPAPath(IVector startPoint) : base(startPoint)
         {
             currentTriangle = null;
             explorableTriangles = null;
@@ -37,7 +36,7 @@ namespace PathFinder.TPAStar
             isGoalReached = other.isGoalReached;
         }
 
-        internal TriangleEvaluationResult StepTo(ITriangle targetTriangle, Vector3[] goalPoints)
+        internal TriangleEvaluationResult StepTo(ITriangle targetTriangle, IVector[] goalPoints)
         {
             if (currentTriangle == null)
             {
@@ -83,22 +82,22 @@ namespace PathFinder.TPAStar
                 IVector vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
 
                 // 
-                if (OrientationUtil.ClockWise(val, vacp))
+                if (val.ClockWise(vacp))
                 {
-                    if (OrientationUtil.CounterClockWise(var, vacp))
+                    if (var.CounterClockWise(vacp))
                     {
                         // easy way, closest point is visible from apex
                         //path.Add(closestPoint);
-                        minpathlength += Vector3.Distance(apexPoint, closestPoint);
+                        minpathlength += apexPoint.Distance(closestPoint);
                     }
                     else
                     {
                         // we have to march on the right side of the funnel, to see the edge
                         LinkedListNode<IVector> node = apex;
 
-                        while ((OrientationUtil.ClockWise(var, vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
+                        while ((var.ClockWise(vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
                         {
-                            minpathlength += Vector3.Distance(node.Value, node.Next.Value);
+                            minpathlength += node.Value.Distance(node.Next.Value);
 
                             node = node.Next;
                             //path.Add(node.Value); TODO: guinak
@@ -114,7 +113,7 @@ namespace PathFinder.TPAStar
                         }
 
                         closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
-                        minpathlength += Vector3.Distance(node.Value, closestPoint);
+                        minpathlength += node.Value.Distance(closestPoint);
                         //path.Add(closestPoint);
                     }
                 }
@@ -123,9 +122,9 @@ namespace PathFinder.TPAStar
                     // we have to march on the left side of the funnel, to see the edge
                     LinkedListNode<IVector> node = apex;
 
-                    while ((OrientationUtil.CounterClockWise(val, vacp)) && (node.Previous.Previous != null))
+                    while ((val.CounterClockWise(vacp)) && (node.Previous.Previous != null))
                     {
-                        minpathlength += Vector3.Distance(node.Value, node.Previous.Value);
+                        minpathlength += node.Value.Distance(node.Previous.Value);
 
                         node = node.Previous;
                         //path.Add(apex.Value);
@@ -141,7 +140,7 @@ namespace PathFinder.TPAStar
                     }
 
                     closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
-                    minpathlength += Vector3.Distance(node.Value, closestPoint);
+                    minpathlength += node.Value.Distance(closestPoint);
                     //path.Add(closestPoint);
                 }
             }
@@ -155,21 +154,21 @@ namespace PathFinder.TPAStar
 
             while (node.Previous != null)
             {
-                maxLeft += Vector3.Distance(node.Value, node.Previous.Value);
+                maxLeft += node.Value.Distance(node.Previous.Value);
                 node = node.Previous;
             }
 
             node = apex;
             while (node.Next != null)
             {
-                maxRight += Vector3.Distance(node.Value, node.Next.Value);
+                maxRight += node.Value.Distance(node.Next.Value);
                 node = node.Next;
             }
 
             dgMax = Math.Max(maxLeft, maxRight);
         }
 
-        public void FinalizePath(Vector3 goalPoint)
+        public void FinalizePath(IVector goalPoint)
         {
             base.FinalizePath(goalPoint);
             dgMin = 0;
@@ -183,12 +182,12 @@ namespace PathFinder.TPAStar
             get { return isGoalReached; }
         }
 
-        private void UpdateHeuristicValue(IEdge edge, Vector3[] goalPoints)
+        private void UpdateHeuristicValue(IEdge edge, IVector[] goalPoints)
         {
             h = FindDistanceFromClosestGoalPoint(edge, goalPoints);
         }
 
-        private double FindDistanceFromClosestGoalPoint(IEdge edge, IEnumerable<Vector3> goals)
+        private double FindDistanceFromClosestGoalPoint(IEdge edge, IEnumerable<IVector> goals)
         {
             return goals.Min(point => edge.DistanceFromPoint(point));
         }
@@ -230,7 +229,7 @@ namespace PathFinder.TPAStar
             return new TPAPath(this);
         }
 
-        public IEnumerable<Vector3> GetReachedGoalPoints(Vector3[] goalPoints)
+        public IEnumerable<IVector> GetReachedGoalPoints(IVector[] goalPoints)
         {
             return goalPoints.Where(point => currentTriangle.ContainsPoint(point));
         }

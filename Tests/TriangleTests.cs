@@ -1,7 +1,7 @@
 ﻿using System;
-using CommonTools.Geometry;
 using FluentAssertions;
 using NUnit.Framework;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStar.Tests
 {

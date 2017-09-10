@@ -3,10 +3,11 @@
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using TriangulatedPolygonAStar.Geometry;
 
 #endregion
 
-namespace CommonTools.Geometry
+namespace TriangulatedPolygonAStar.Geometry
 {
 
     /// <summary>
@@ -23,7 +24,7 @@ namespace CommonTools.Geometry
         /// </summary>
         /// <param name="v1">The v1 endpoint.</param>
         /// <param name="v2">The v2 endpoint.</param>
-        public Edge(Vector3 v1, Vector3 v2)
+        public Edge(IVector v1, IVector v2)
         {
             this.v1 = v1;
             this.v2 = v2;

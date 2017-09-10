@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
-using CommonTools.Geometry;
 using PathFinder.TPAStar;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStarGUI
 {
@@ -35,9 +35,9 @@ namespace TPAStarGUI
         {
             this.id = id;
             points = new PointF[3];
-            points[0] = new PointF(triangle.A.Xf, triangle.A.Yf);
-            points[1] = new PointF(triangle.B.Xf, triangle.B.Yf);
-            points[2] = new PointF(triangle.C.Xf, triangle.C.Yf);
+            points[0] = VectorConverter.ToPointF(triangle.A);
+            points[1] = VectorConverter.ToPointF(triangle.A);
+            points[2] = VectorConverter.ToPointF(triangle.A);
 
             centroid = triangle.Centroid.ToPointF();
         }

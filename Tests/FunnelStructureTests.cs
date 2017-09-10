@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using CommonTools.Geometry;
 using FluentAssertions;
 using NUnit.Framework;
 using PathFinder.Funnel;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStar.Tests
 {

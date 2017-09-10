@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using CommonTools.Geometry;
 using FluentAssertions;
 using NUnit.Framework;
 using PathFinder.TPAStar;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStar.Tests
 {
@@ -25,8 +25,8 @@ namespace TPAStar.Tests
             var startPoint = new Vector3();
             var path = new TPAPath(startPoint);
             
-            path.StepTo(t2, new []{ new Vector3() });
-            path.StepTo(t3, new []{ new Vector3() });
+            path.StepTo(t2, new IVector[]{ new Vector3() });
+            path.StepTo(t3, new IVector[]{ new Vector3() });
             var explorableNeighbours = path.ExplorableTriangles;
 
             explorableNeighbours.Contains(t2).Should().BeFalse();
@@ -52,7 +52,7 @@ namespace TPAStar.Tests
             var s = new Vector3(9.0, 11.5);
             var path = new TPAPath(s);
 
-            path.StepTo(t3, new Vector3[] {});
+            path.StepTo(t3, new IVector[] {});
             
             path.ExplorableTriangles.Contains(t2).Should().BeTrue();
             path.ExplorableTriangles.Contains(t4).Should().BeTrue();
@@ -84,8 +84,8 @@ namespace TPAStar.Tests
             var s = new Vector3(9.0, 11.5);
             var path = new TPAPath(s);
             
-            path.StepTo(t2, new[] { new Vector3() });
-            path.StepTo(t3, new []{ new Vector3() });
+            path.StepTo(t2, new IVector[] { new Vector3() });
+            path.StepTo(t3, new IVector[] { new Vector3() });
             var explorableNeighbours = path.ExplorableTriangles;
 
             explorableNeighbours.Contains(t4).Should().BeTrue();

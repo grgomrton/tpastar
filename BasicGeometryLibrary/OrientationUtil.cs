@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CommonTools.Geometry;
 
-namespace CommonTools.Miscellaneous
+namespace TriangulatedPolygonAStar.Geometry
 {
     /// <summary>
     /// Contains frequently used orientation relevant functions.

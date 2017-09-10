@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace CommonTools.Geometry
+﻿namespace TriangulatedPolygonAStar.Geometry
 {
     public interface IVector
     {
@@ -37,8 +35,6 @@ namespace CommonTools.Geometry
         double Y { get; }
         
         double Z { get; } // TODO: refactor clockwise test so third coordinate will not be needed on the interface - cw test can be done with the x and y coordinates
-
-        PointF ToPointF(); // TODO: move this to the UI
         
         /// <summary>
         /// Determines whether the specified object represents the same point 
@@ -55,5 +51,21 @@ namespace CommonTools.Geometry
         /// <param name="other">The other point to compare with</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         bool Equals(IVector other);
+
+        /// <summary>
+        /// Returns whether <paramref name="other"/> is in clockwise direction from the current vector.
+        /// Paralel vectors are treated as non-clockwise.
+        /// </summary>
+        /// <param name="other">The vector to determine the orientation to.</param>
+        /// <returns>Result of clockwise test.</returns>
+        bool ClockWise(IVector other);
+
+        /// <summary>
+        /// Returns whether <paramref name="other"/> is in counter-clockwise direction from the current vector.
+        /// Paralel vectors are treated as non-counter-clockwise.
+        /// </summary>
+        /// <param name="other">The vector to determine the orientation to.</param>
+        /// <returns>Result of counter-clockwise test.</returns>
+        bool CounterClockWise(IVector other);
     }
 }

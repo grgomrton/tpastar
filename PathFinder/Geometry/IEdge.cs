@@ -1,4 +1,4 @@
-﻿namespace CommonTools.Geometry
+﻿namespace TriangulatedPolygonAStar.Geometry
 {
     public interface IEdge
     {

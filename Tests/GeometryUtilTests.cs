@@ -1,7 +1,6 @@
-﻿using CommonTools.Geometry;
-using CommonTools.Miscellaneous;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using TriangulatedPolygonAStar.Geometry;
 
 namespace TPAStar.Tests
 {
