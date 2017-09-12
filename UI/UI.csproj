@@ -99,7 +99,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BasicGeometryLibrary\BasicGeometryLibrary.csproj">
+    <ProjectReference Include="..\Geometry\Geometry.csproj">
       <Project>{2ebc57ef-8d80-4df2-9efe-fc4042ca9475}</Project>
       <Name>CommonTools</Name>
     </ProjectReference>
