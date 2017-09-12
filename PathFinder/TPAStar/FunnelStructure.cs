@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TriangulatedPolygonAStar.Geometry;
 
-namespace PathFinder.Funnel
+namespace TriangulatedPolygonAStar
 {
     public enum Side { Left, Right, Both, None };
 
@@ -73,12 +70,12 @@ namespace PathFinder.Funnel
             IVector toV1 = firstEdge.A.Minus(startPoint);
             IVector toV2 = firstEdge.B.Minus(startPoint);
 
-            if (toV1.ClockWise(toV2))
+            if (toV1.IsInCounterClockWiseDirectionFrom(toV2))
             {
                 funnel.AddFirst(firstEdge.A);
                 funnel.AddLast(firstEdge.B);
             }
-            else if (toV1.CounterClockWise(toV2))
+            else if (toV1.IsInClockWiseDirectionFrom(toV2))
             {
                 funnel.AddFirst(firstEdge.B);
                 funnel.AddLast(firstEdge.A);
@@ -154,7 +151,7 @@ namespace PathFinder.Funnel
                     IVector v2 = right_2.Minus(right);
                     if (apex != last.Previous)
                     {
-                        if (v1.ClockWise(v2))
+                        if (v1.IsInCounterClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(last.Previous);
                             popped = true;
@@ -162,7 +159,7 @@ namespace PathFinder.Funnel
                     }
                     else
                     {
-                        if (v1.CounterClockWise(v2))
+                        if (v1.IsInClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(last.Previous);
                             path.Add(last.Previous.Value);
@@ -186,7 +183,7 @@ namespace PathFinder.Funnel
                     IVector v2 = left_2.Minus(left);
                     if (apex != first.Next)
                     {
-                        if (v1.CounterClockWise(v2))
+                        if (v1.IsInClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(first.Next);
                             popped = true;
@@ -194,7 +191,7 @@ namespace PathFinder.Funnel
                     }
                     else
                     {
-                        if (v1.ClockWise(v2))
+                        if (v1.IsInCounterClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(first.Next);
                             path.Add(first.Next.Value);

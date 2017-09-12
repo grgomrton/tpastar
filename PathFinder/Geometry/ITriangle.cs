@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TriangulatedPolygonAStar.Geometry
+namespace TriangulatedPolygonAStar
 {
     public interface ITriangle
     {
@@ -27,14 +27,6 @@ namespace TriangulatedPolygonAStar.Geometry
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         bool Equals(object other);
-
-        /// <summary>
-        /// Determines whether the specified triangle represents the same triangle 
-        /// as the current triangle.
-        /// </summary>
-        /// <param name="other">The other triangle to compare with</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        bool Equals(ITriangle other);
         
         /// <summary>
         /// Gets the common edge of this triangle and another adjacent triangle.

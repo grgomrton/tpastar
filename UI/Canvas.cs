@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
-using TriangulatedPolygonAStar.Geometry;
+using TriangulatedPolygonAStar;
+using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TPAStarGUI
 {
@@ -185,9 +186,9 @@ namespace TPAStarGUI
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <returns></returns>
-        public Vector3 GetAbsolutePosition(int x, int y)
+        public IVector GetAbsolutePosition(int x, int y)
         {
-            return new Vector3(x / this.magnify, y / this.magnify);
+            return new Vector(x / this.magnify, y / this.magnify);
         }
 
     }

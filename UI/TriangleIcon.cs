@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
-using PathFinder.TPAStar;
-using TriangulatedPolygonAStar.Geometry;
+using TriangulatedPolygonAStar;
+using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TPAStarGUI
 {
@@ -35,11 +35,11 @@ namespace TPAStarGUI
         {
             this.id = id;
             points = new PointF[3];
-            points[0] = VectorConverter.ToPointF(triangle.A);
-            points[1] = VectorConverter.ToPointF(triangle.A);
-            points[2] = VectorConverter.ToPointF(triangle.A);
+            points[0] = triangle.A.ToPointF();
+            points[1] = triangle.B.ToPointF();
+            points[2] = triangle.C.ToPointF();
 
-            centroid = triangle.Centroid.ToPointF();
+            centroid = triangle.CalculateCentroid().ToPointF();
         }
         
         internal void IncreaseTraversionCount()

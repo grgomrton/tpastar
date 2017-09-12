@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using TriangulatedPolygonAStar.Geometry;
+using TriangulatedPolygonAStar.BasicGeometry;
 
-namespace TPAStar.Tests
+namespace TriangulatedPolygonAStar.Tests
 {
     [TestFixture]
     public class EdgeTests
@@ -13,9 +13,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceFromPointShouldBeZeroIfPointFallsOnLeftEdgeEndpoint()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(2.0, 1.0);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(2.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
             var distance = edge.DistanceFromPoint(pointToCheck);
@@ -26,9 +26,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceFromPointShouldBeZeroIfPointFallsOnRightEdgeEndpoint()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(4.0, 1.0);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(4.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
             var distance = edge.DistanceFromPoint(pointToCheck);
@@ -39,9 +39,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceFromPointShouldBeZeroIfPointFallsOnEdge()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(3.0, 1.0);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(3.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
             var distance = edge.DistanceFromPoint(pointToCheck);
@@ -52,9 +52,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceOfPointFromHorizontalEdgeShouldBeDistanceOnYAxisIfPointFallsBetweenEndpointsOnXAxis()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(3.0, 2.5);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(3.0, 2.5);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
             var distance = edge.DistanceFromPoint(pointToCheck);
@@ -65,9 +65,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceOfPointFromHorizontalEdgeShouldBeDistanceFromLeftEndpointIfPointFallsLeftFromLeftEndpoint()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(1.0, 2.0);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(1.0, 2.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootTwo = 1.41421;
 
@@ -79,9 +79,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceOfPointFromHorizontalEdgeShouldBeDistanceFromRightEndpointIfPointFallsRightFromRightEndpoint()
         {
-            var leftEndpoint = new Vector3(2.0, 1.0);
-            var rightEndpoint = new Vector3(4.0, 1.0);
-            var pointToCheck = new Vector3(6.0, 2.0);
+            var leftEndpoint = new Vector(2.0, 1.0);
+            var rightEndpoint = new Vector(4.0, 1.0);
+            var pointToCheck = new Vector(6.0, 2.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootFive = 2.23607;
 
@@ -93,9 +93,9 @@ namespace TPAStar.Tests
         [Test]
         public void DistanceOfPointFromDiagonalEdgeShouldBeTheLenghtOfARightSegmentBetweenEdgeAndPoint()
         {
-            var leftEndpoint = new Vector3(1.0, 1.0);
-            var rightEndpoint = new Vector3(3.0, 3.0);
-            var pointToCheck = new Vector3(1.0, 3.0);
+            var leftEndpoint = new Vector(1.0, 1.0);
+            var rightEndpoint = new Vector(3.0, 3.0);
+            var pointToCheck = new Vector(1.0, 3.0);
             var squareRootTwo = 1.41421;
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
@@ -107,10 +107,10 @@ namespace TPAStar.Tests
         [Test]
         public void EdgesShouldBeEqualIfTheyLieBetweenSameEndpoints()
         {
-            var leftEndpointOfFirstEdge = new Vector3(1.0, 3.0);
-            var leftEndpointOfSecondEdge = new Vector3(1.0, 3.0);
-            var rightEndpointOfFirstEdge = new Vector3(4.0, 3.0);
-            var rightEndpointOfSecondEdge = new Vector3(4.0, 3.0);
+            var leftEndpointOfFirstEdge = new Vector(1.0, 3.0);
+            var leftEndpointOfSecondEdge = new Vector(1.0, 3.0);
+            var rightEndpointOfFirstEdge = new Vector(4.0, 3.0);
+            var rightEndpointOfSecondEdge = new Vector(4.0, 3.0);
             IEdge firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             IEdge secondEdge = new Edge(leftEndpointOfSecondEdge, rightEndpointOfSecondEdge);
 
@@ -122,10 +122,10 @@ namespace TPAStar.Tests
         [Test]
         public void EdgesShouldBeEqualIfTheyLieBetweenSameEndpointsIndependentlyFromEndpointOrder()
         {
-            var leftEndpointOfFirstEdge = new Vector3(1.0, 3.0);
-            var leftEndpointOfSecondEdge = new Vector3(1.0, 3.0);
-            var rightEndpointOfFirstEdge = new Vector3(4.0, 3.0);
-            var rightEndpointOfSecondEdge = new Vector3(4.0, 3.0);
+            var leftEndpointOfFirstEdge = new Vector(1.0, 3.0);
+            var leftEndpointOfSecondEdge = new Vector(1.0, 3.0);
+            var rightEndpointOfFirstEdge = new Vector(4.0, 3.0);
+            var rightEndpointOfSecondEdge = new Vector(4.0, 3.0);
             IEdge firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             IEdge secondEdge = new Edge(rightEndpointOfSecondEdge, leftEndpointOfSecondEdge);
 
@@ -137,10 +137,10 @@ namespace TPAStar.Tests
         [Test]
         public void EdgesShouldBeEqualIfTheyLieBetweenSameEndpointsEvenIfTheyAreBoxedIndependentlyFromEndpointOrder()
         {
-            var leftEndpointOfFirstEdge = new Vector3(1.0, 3.0);
-            var leftEndpointOfSecondEdge = new Vector3(1.0, 3.0);
-            var rightEndpointOfFirstEdge = new Vector3(4.0, 3.0);
-            var rightEndpointOfSecondEdge = new Vector3(4.0, 3.0);
+            var leftEndpointOfFirstEdge = new Vector(1.0, 3.0);
+            var leftEndpointOfSecondEdge = new Vector(1.0, 3.0);
+            var rightEndpointOfFirstEdge = new Vector(4.0, 3.0);
+            var rightEndpointOfSecondEdge = new Vector(4.0, 3.0);
             object firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             object secondEdge = new Edge(rightEndpointOfSecondEdge, leftEndpointOfSecondEdge);
 

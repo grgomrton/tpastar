@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TriangulatedPolygonAStar.Geometry;
 
-namespace PathFinder.TPAStar
+namespace TriangulatedPolygonAStar
 {
-    public class TPAStarSolver
+    public class TPAStarPathFinder
     {
         private LinkedList<TPAPath> openSet;
         private Dictionary<IEdge, double> higherBoundOfPathToEdges;
         
-        public TPAStarSolver()
+        public TPAStarPathFinder()
         {
             openSet = new LinkedList<TPAPath>();
             higherBoundOfPathToEdges = new Dictionary<IEdge, double>();    

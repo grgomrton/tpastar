@@ -1,4 +1,4 @@
-﻿namespace PathFinder.TPAStar
+﻿namespace TriangulatedPolygonAStar
 {
     public class TriangleEvaluationResult
     {

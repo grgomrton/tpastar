@@ -1,4 +1,4 @@
-﻿namespace TriangulatedPolygonAStar.Geometry
+﻿namespace TriangulatedPolygonAStar
 {
     public interface IVector
     {
@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="other">The point to measure the distance from</param>
         /// <returns>The cartesian distance between the two points.</returns>
-        double Distance(IVector other);
+        double DistanceFrom(IVector other);
 
         /// <summary>
         /// Returns the result of adding the specified vector to the current one. 
@@ -34,8 +34,6 @@
         
         double Y { get; }
         
-        double Z { get; } // TODO: refactor clockwise test so third coordinate will not be needed on the interface - cw test can be done with the x and y coordinates
-        
         /// <summary>
         /// Determines whether the specified object represents the same point 
         /// as the current point.
@@ -45,27 +43,19 @@
         bool Equals(object other);
 
         /// <summary>
-        /// Determines whether the specified point represents the same point 
-        /// as the current point.
-        /// </summary>
-        /// <param name="other">The other point to compare with</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        bool Equals(IVector other);
-
-        /// <summary>
-        /// Returns whether <paramref name="other"/> is in clockwise direction from the current vector.
-        /// Paralel vectors are treated as non-clockwise.
-        /// </summary>
-        /// <param name="other">The vector to determine the orientation to.</param>
-        /// <returns>Result of clockwise test.</returns>
-        bool ClockWise(IVector other);
-
-        /// <summary>
-        /// Returns whether <paramref name="other"/> is in counter-clockwise direction from the current vector.
+        /// Returns whether the current vector is in counter-clockwise direction from <paramref name="other"/>.
         /// Paralel vectors are treated as non-counter-clockwise.
         /// </summary>
         /// <param name="other">The vector to determine the orientation to.</param>
+        /// <returns>Result of clockwise test.</returns>
+        bool IsInCounterClockWiseDirectionFrom(IVector other);
+
+        /// <summary>
+        /// Returns whether the current vector is in clockwise direction from <paramref name="other"/>.
+        /// Paralel vectors are treated as non-clockwise.
+        /// </summary>
+        /// <param name="other">The vector to determine the orientation to.</param>
         /// <returns>Result of counter-clockwise test.</returns>
-        bool CounterClockWise(IVector other);
+        bool IsInClockWiseDirectionFrom(IVector other);
     }
 }

@@ -50,10 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Geometry\EdgeTests.cs" />
-    <Compile Include="Geometry\GeometryUtilTests.cs" />
     <Compile Include="Geometry\TriangleTests.cs" />
+    <Compile Include="Geometry\VectorTests.cs" />
     <Compile Include="Pathfinder\FunnelStructureTests.cs" />
-    <Compile Include="Pathfinder\SolverTests.cs" />
+    <Compile Include="Pathfinder\TPAStarTests.cs" />
     <Compile Include="Pathfinder\TPAPathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

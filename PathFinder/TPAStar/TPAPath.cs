@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PathFinder.Funnel;
-using TriangulatedPolygonAStar.Geometry;
 
-namespace PathFinder.TPAStar
+namespace TriangulatedPolygonAStar
 {
     public class TPAPath : FunnelStructure
     {
@@ -82,22 +80,22 @@ namespace PathFinder.TPAStar
                 IVector vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
 
                 // 
-                if (val.ClockWise(vacp))
+                if (val.IsInCounterClockWiseDirectionFrom(vacp))
                 {
-                    if (var.CounterClockWise(vacp))
+                    if (var.IsInClockWiseDirectionFrom(vacp))
                     {
                         // easy way, closest point is visible from apex
                         //path.Add(closestPoint);
-                        minpathlength += apexPoint.Distance(closestPoint);
+                        minpathlength += apexPoint.DistanceFrom(closestPoint);
                     }
                     else
                     {
                         // we have to march on the right side of the funnel, to see the edge
                         LinkedListNode<IVector> node = apex;
 
-                        while ((var.ClockWise(vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
+                        while ((var.IsInCounterClockWiseDirectionFrom(vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
                         {
-                            minpathlength += node.Value.Distance(node.Next.Value);
+                            minpathlength += node.Value.DistanceFrom(node.Next.Value);
 
                             node = node.Next;
                             //path.Add(node.Value); TODO: guinak
@@ -113,7 +111,7 @@ namespace PathFinder.TPAStar
                         }
 
                         closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
-                        minpathlength += node.Value.Distance(closestPoint);
+                        minpathlength += node.Value.DistanceFrom(closestPoint);
                         //path.Add(closestPoint);
                     }
                 }
@@ -122,9 +120,9 @@ namespace PathFinder.TPAStar
                     // we have to march on the left side of the funnel, to see the edge
                     LinkedListNode<IVector> node = apex;
 
-                    while ((val.CounterClockWise(vacp)) && (node.Previous.Previous != null))
+                    while ((val.IsInClockWiseDirectionFrom(vacp)) && (node.Previous.Previous != null))
                     {
-                        minpathlength += node.Value.Distance(node.Previous.Value);
+                        minpathlength += node.Value.DistanceFrom(node.Previous.Value);
 
                         node = node.Previous;
                         //path.Add(apex.Value);
@@ -140,7 +138,7 @@ namespace PathFinder.TPAStar
                     }
 
                     closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
-                    minpathlength += node.Value.Distance(closestPoint);
+                    minpathlength += node.Value.DistanceFrom(closestPoint);
                     //path.Add(closestPoint);
                 }
             }
@@ -154,14 +152,14 @@ namespace PathFinder.TPAStar
 
             while (node.Previous != null)
             {
-                maxLeft += node.Value.Distance(node.Previous.Value);
+                maxLeft += node.Value.DistanceFrom(node.Previous.Value);
                 node = node.Previous;
             }
 
             node = apex;
             while (node.Next != null)
             {
-                maxRight += node.Value.Distance(node.Next.Value);
+                maxRight += node.Value.DistanceFrom(node.Next.Value);
                 node = node.Next;
             }
 

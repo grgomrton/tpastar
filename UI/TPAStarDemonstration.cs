@@ -6,27 +6,27 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using PathFinder.TPAStar;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using TriangulatedPolygonAStar.Geometry;
+using TriangulatedPolygonAStar;
+using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TPAStarGUI
 {
     public partial class TPAStarDemonstration : Form
     {
-        private Vector3 start;
+        private IVector start;
         private Triangle[] triangles;
-        private List<Vector3> goals;
+        private List<IVector> goals;
         private Curve path;
         
-        private TPAStarSolver solver;
+        private TPAStarPathFinder solver;
         private Dictionary<ITriangle, TriangleIcon> trianglesToDraw;
         
         private int editingIndex = 0;
         private bool goalEditing = false;
         private bool startEditing = false;
-        private Triangle startTriangle;
+        private ITriangle startTriangle;
         
         public TPAStarDemonstration()
         {
@@ -34,7 +34,7 @@ namespace TPAStarGUI
             
             CreateTriangleMap();
             AddDrawMethods();
-            solver = new TPAStarSolver();
+            solver = new TPAStarPathFinder();
             solver.TriangleExplored += SolverOnTriangleExplored;
 
             FindPathToGoal();
@@ -70,7 +70,7 @@ namespace TPAStarGUI
                 double mindistance = 0;
                 for (int i = 0; i < triangles.Length; i++)
                 {
-                    double dist = triangles[i].MinDistanceFromOuterPoint(start);
+                    double dist = triangles[i].MinDistanceFromOuterPoint(start); // TODO is this information really useful on the ui?
                     if ((mindistance == 0) || (dist < mindistance))
                     {
                         startTriangle = triangles[i];
@@ -103,9 +103,9 @@ namespace TPAStarGUI
             return mouseOnPoint(start, e);
         }
 
-        private bool mouseOnPoint(Vector3 point, MouseEventArgs e) 
+        private bool mouseOnPoint(IVector point, MouseEventArgs e) 
         {
-            if (point.Distance(display.GetAbsolutePosition(e.X, e.Y)) < 0.15) // TODO: param
+            if (point.DistanceFrom(display.GetAbsolutePosition(e.X, e.Y)) < 0.15) // TODO: param
             {
                 return true;
             }
@@ -149,7 +149,7 @@ namespace TPAStarGUI
 
         private void display_MouseMove(object sender, MouseEventArgs e)
         {
-            Vector3 newVector = display.GetAbsolutePosition(e.X, e.Y);
+            var newVector = display.GetAbsolutePosition(e.X, e.Y);
 
             if (goalEditing)
             {
@@ -185,51 +185,51 @@ namespace TPAStarGUI
         private void CreateTriangleMap() {
             trianglesToDraw = new Dictionary<ITriangle, TriangleIcon>();
             
-            Vector3 cr0 = new Vector3(2, 4, 0);
-            Vector3 cr1 = new Vector3(2, 3, 0);
-            Vector3 cr2 = new Vector3(3, 2, 0);
-            Vector3 cr3 = new Vector3(5, 3, 0);
-            Vector3 cr4 = new Vector3(7, 2, 0);
-            Vector3 cl0 = new Vector3(0, 4, 0);
-            Vector3 cl1 = new Vector3(0, 3, 0);
-            Vector3 cl2 = new Vector3(3, 1, 0);
-            Vector3 cl3 = new Vector3(5, 2.5, 0);
-            Vector3 cl4 = new Vector3(6, 1, 0);
+            Vector cr0 = new Vector(2, 4);
+            Vector cr1 = new Vector(2, 3);
+            Vector cr2 = new Vector(3, 2);
+            Vector cr3 = new Vector(5, 3);
+            Vector cr4 = new Vector(7, 2);
+            Vector cl0 = new Vector(0, 4);
+            Vector cl1 = new Vector(0, 3);
+            Vector cl2 = new Vector(3, 1);
+            Vector cl3 = new Vector(5, 2.5);
+            Vector cl4 = new Vector(6, 1);
 
-            Vector3 cp0 = new Vector3(1, 7, 0);
-            Vector3 cp1 = new Vector3(6.5, 0, 0);
-            Vector3 cp2 = new Vector3(0, 9, 0);
-            Vector3 cp3 = new Vector3(1, 10, 0);
-            Vector3 cp4 = new Vector3(0, 11, 0);
+            Vector cp0 = new Vector(1, 7);
+            Vector cp1 = new Vector(6.5, 0);
+            Vector cp2 = new Vector(0, 9);
+            Vector cp3 = new Vector(1, 10);
+            Vector cp4 = new Vector(0, 11);
 
-            start = new Vector3(1, 5, 0);
+            start = new Vector(1, 5);
 
-            goals = new List<Vector3>();
-            goals.Add(new Vector3(5.1, 2.6, 0));
+            goals = new List<IVector>();
+            goals.Add(new Vector(5.1, 2.6));
 
-            Triangle t0 = new Triangle(cp0, cl0, cr0, 0);
+            Triangle t0 = new Triangle(cp0, cl0, cr0);
             CreateDrawableTriangle(t0, "t0");
-            Triangle t1 = new Triangle(cl0, cr0, cl1, 1);
+            Triangle t1 = new Triangle(cl0, cr0, cl1);
             CreateDrawableTriangle(t1, "t1");
-            Triangle t2 = new Triangle(cl1, cr0, cr1, 2);
+            Triangle t2 = new Triangle(cl1, cr0, cr1);
             CreateDrawableTriangle(t2, "t2");
-            Triangle t3 = new Triangle(cl1, cr1, cl2, 3);
+            Triangle t3 = new Triangle(cl1, cr1, cl2);
             CreateDrawableTriangle(t3, "t3");
-            Triangle t4 = new Triangle(cr1, cl2, cr2, 4);
+            Triangle t4 = new Triangle(cr1, cl2, cr2);
             CreateDrawableTriangle(t4, "t4");
-            Triangle t5 = new Triangle(cr2, cl2, cr3, 5);
+            Triangle t5 = new Triangle(cr2, cl2, cr3);
             CreateDrawableTriangle(t5, "t5");
-            Triangle t6 = new Triangle(cl3, cl2, cr3, 6);
+            Triangle t6 = new Triangle(cl3, cl2, cr3);
             CreateDrawableTriangle(t6, "t6");
-            Triangle t7 = new Triangle(cl3, cl4, cr3, 7);
+            Triangle t7 = new Triangle(cl3, cl4, cr3);
             CreateDrawableTriangle(t7, "t7");
-            Triangle t8 = new Triangle(cr4, cl4, cr3, 8);
+            Triangle t8 = new Triangle(cr4, cl4, cr3);
             CreateDrawableTriangle(t8, "t8");
-            Triangle t9 = new Triangle(cr4, cl4, cp1, 9);
+            Triangle t9 = new Triangle(cr4, cl4, cp1);
             CreateDrawableTriangle(t9, "t9");
-            Triangle t10 = new Triangle(cr0, cp0, cr3, 10);
+            Triangle t10 = new Triangle(cr0, cp0, cr3);
             CreateDrawableTriangle(t10, "t10");
-            Triangle t11 = new Triangle(cr4, cp0, cr3, 11);
+            Triangle t11 = new Triangle(cr4, cp0, cr3);
             CreateDrawableTriangle(t11, "t11");
             
             t0.SetNeighbours(t1, t10);
@@ -290,13 +290,13 @@ namespace TPAStarGUI
             if (path.Length > 0)
             {
                 List<PointF> nodes = new List<PointF>();
-                foreach (Vector3 v in path)
+                foreach (Vector v in path)
                 {
                     nodes.Add(v.ToPointF());
                 }
                 canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
                 float fontSize = widths["fontSize"];
-                var position = path.Last().Minus(new Vector3(2 * fontSize, 3 * fontSize, 0));
+                var position = path.Last().Minus(new Vector(2 * fontSize, 3 * fontSize));
                 var positionFloat = new PointF(Convert.ToSingle(position.X), Convert.ToSingle(position.Y));
                 canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), positionFloat);
             }
@@ -309,19 +309,19 @@ namespace TPAStarGUI
 
         private void DrawGoals(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
         {
-            foreach (Vector3 goal in goals)
+            foreach (Vector goal in goals)
             {
                 DrawPoint(goal, canvas, colors, widths);
             }
         }
 
-        private void DrawPoint(Vector3 point, Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
+        private void DrawPoint(IVector point, Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
         {
             Brush brush = new SolidBrush(colors["fill"]);
             float radius = widths["radius"];
 
-            float x = point.Xf - radius;
-            float y = point.Yf - radius;
+            float x = Convert.ToSingle(point.X) - radius;
+            float y = Convert.ToSingle(point.Y) - radius;
             float diameter = 2 * radius;
 
             canvas.FillEllipse(brush, x, y, diameter, diameter);

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace TriangulatedPolygonAStar.Geometry
+namespace TriangulatedPolygonAStar
 {
     /// <summary>
     /// Represents a curve by a list of <see cref="Vector3"/> objects.
@@ -41,7 +40,7 @@ namespace TriangulatedPolygonAStar.Geometry
         {
             if (points.Count > 0)
             {
-                length += point.Distance(points.Last.Value);
+                length += point.DistanceFrom(points.Last.Value);
             }
             points.AddLast(point);
         }

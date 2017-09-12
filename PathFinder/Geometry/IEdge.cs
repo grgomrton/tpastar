@@ -1,5 +1,8 @@
-﻿namespace TriangulatedPolygonAStar.Geometry
+﻿namespace TriangulatedPolygonAStar
 {
+    /// <summary>
+    /// Represents a line segment between two endpoints.
+    /// </summary>
     public interface IEdge
     {
         /// <summary>
@@ -35,14 +38,6 @@
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         bool Equals(object other);
-
-        /// <summary>
-        /// Determines whether the specified edge represents the same edge 
-        /// as the current edge.
-        /// </summary>
-        /// <param name="other">The other edge to compare with</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        bool Equals(IEdge other);
 
         /// <summary>
         /// Returns a hash code for this instance.

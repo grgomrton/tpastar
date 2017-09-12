@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using PathFinder.Funnel;
-using TriangulatedPolygonAStar.Geometry;
+using TriangulatedPolygonAStar.BasicGeometry;
 
-namespace TPAStar.Tests
+namespace TriangulatedPolygonAStar.Tests
 {
     [TestFixture]
     public class FunnelStructureTests
@@ -12,10 +11,10 @@ namespace TPAStar.Tests
         [Test]
         public void funnelShouldNotAddVertexIfFirstEdgeLiesOnApex()
         {
-            var v1 = new Vector3(1.0, 1.0);
-            var v2 = new Vector3(3.0, 1.0);
+            var v1 = new Vector(1.0, 1.0);
+            var v2 = new Vector(3.0, 1.0);
             var edge = new Edge(v1, v2);
-            var apex = new Vector3(2.0, 1.0);
+            var apex = new Vector(2.0, 1.0);
             var funnel = new FunnelStructure(apex);
             
             funnel.StepTo(edge);
@@ -27,10 +26,10 @@ namespace TPAStar.Tests
         [Test]
         public void funnelShouldBeATriangleAfterFirstEdgeIsSteppedOverUnlessApexIsOnEdge()
         {
-            var v1 = new Vector3(1.0, 1.0);
-            var v2 = new Vector3(3.0, 1.0);
+            var v1 = new Vector(1.0, 1.0);
+            var v2 = new Vector(3.0, 1.0);
             var edge = new Edge(v1, v2);
-            var apex = new Vector3(2.0, 0.0);
+            var apex = new Vector(2.0, 0.0);
             var funnel = new FunnelStructure(apex);
             
             funnel.StepTo(edge);
@@ -45,11 +44,11 @@ namespace TPAStar.Tests
         [Test]
         public void funnelShouldContainVerticesInCounterClockwiseOrderFromLeftToRight()
         {
-            var v1 = new Vector3(0.0, 1.5);
-            var v2 = new Vector3(1.0, 1.0);
-            var apex = new Vector3(2.0, 0.0);
-            var v3 = new Vector3(3.0, 1.0);
-            var v4 = new Vector3(5.0, 1.5);
+            var v1 = new Vector(0.0, 1.5);
+            var v2 = new Vector(1.0, 1.0);
+            var apex = new Vector(2.0, 0.0);
+            var v3 = new Vector(3.0, 1.0);
+            var v4 = new Vector(5.0, 1.5);
             var edge1 = new Edge(v2, v3);
             var edge2 = new Edge(v3, v1);
             var edge3 = new Edge(v1, v4);
