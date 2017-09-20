@@ -19,8 +19,9 @@ namespace TriangulatedPolygonAStar.Tests
             
             funnel.StepTo(edge);
 
-            funnel.Funnel.Count().Should().Be(1);
-            funnel.Funnel.First().ShouldBeEquivalentTo(apex);
+            var funnelPoints = funnel.Apex.List;
+            funnelPoints.Count.Should().Be(1);
+            funnelPoints.First().ShouldBeEquivalentTo(apex);
         }
 
         [Test]
@@ -34,8 +35,8 @@ namespace TriangulatedPolygonAStar.Tests
             
             funnel.StepTo(edge);
 
-            funnel.Funnel.Count().Should().Be(3);
-            var funnelVertices = funnel.Funnel.ToList();
+            var funnelVertices = funnel.Apex.List.ToList();
+            funnelVertices.Count.Should().Be(3);
             funnelVertices[0].ShouldBeEquivalentTo(v1);
             funnelVertices[1].ShouldBeEquivalentTo(apex);
             funnelVertices[2].ShouldBeEquivalentTo(v2);
@@ -58,8 +59,8 @@ namespace TriangulatedPolygonAStar.Tests
             funnel.StepTo(edge2);
             funnel.StepTo(edge3);
 
-            funnel.Funnel.Count().Should().Be(5);
-            var funnelVertices = funnel.Funnel.ToList();
+            var funnelVertices = funnel.Apex.List.ToList();
+            funnelVertices.Count.Should().Be(5);
             funnelVertices[0].ShouldBeEquivalentTo(v1);
             funnelVertices[1].ShouldBeEquivalentTo(v2);
             funnelVertices[2].ShouldBeEquivalentTo(apex);

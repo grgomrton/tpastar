@@ -18,7 +18,7 @@ namespace TPAStarGUI
         private IVector start;
         private Triangle[] triangles;
         private List<IVector> goals;
-        private Curve path;
+        private IEnumerable<IVector> path;
         
         private TPAStarPathFinder solver;
         private Dictionary<ITriangle, TriangleIcon> trianglesToDraw;
@@ -287,7 +287,7 @@ namespace TPAStarGUI
 
         private void DrawPath(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths)
         {
-            if (path.Length > 0)
+            if (path.Count() > 0)
             {
                 List<PointF> nodes = new List<PointF>();
                 foreach (Vector v in path)
@@ -298,7 +298,7 @@ namespace TPAStarGUI
                 float fontSize = widths["fontSize"];
                 var position = path.Last().Minus(new Vector(2 * fontSize, 3 * fontSize));
                 var positionFloat = new PointF(Convert.ToSingle(position.X), Convert.ToSingle(position.Y));
-                canvas.DrawString(path.Length.ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), positionFloat);
+                canvas.DrawString(path.Length().ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), positionFloat);
             }
         }
 

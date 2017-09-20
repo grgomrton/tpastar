@@ -14,7 +14,7 @@ namespace TriangulatedPolygonAStar
             higherBoundOfPathToEdges = new Dictionary<IEdge, double>();    
         }   
         
-        public Curve FindPath(IVector startPoint, ITriangle startTriangle, IVector[] goals)
+        public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
             openSet.Clear();
             higherBoundOfPathToEdges.Clear();

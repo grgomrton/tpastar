@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TriangulatedPolygonAStar.BasicGeometry;
@@ -24,7 +25,8 @@ namespace TriangulatedPolygonAStar.Tests
             var path = solver.FindPath(s, t1, new [] { g });
             
             path.Count.Should().Be(2);
-            path.Length.Should().BeApproximately(1.5, Precision);
+            var pathLength = path.Zip(path.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+            pathLength.Should().BeApproximately(1.5, Precision);
             var pathNodes = path.ToList();
             pathNodes[0].X.Should().BeApproximately(5.5, Precision);
             pathNodes[0].Y.Should().BeApproximately(7.5, Precision);
@@ -52,7 +54,8 @@ namespace TriangulatedPolygonAStar.Tests
             var path = solver.FindPath(s, t1, new IVector[] { g });
             
             path.Count.Should().Be(2);
-            path.Length.Should().BeApproximately(2.5, Precision);
+            var pathLength = path.Zip(path.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+            pathLength.Should().BeApproximately(2.5, Precision);
             var resultPath = path.ToList();
             resultPath[0].X.Should().BeApproximately(7.5, Precision);
             resultPath[0].Y.Should().BeApproximately(7.5, Precision);
@@ -93,7 +96,8 @@ namespace TriangulatedPolygonAStar.Tests
             var path = solver.FindPath(s, t2, new IVector[] { g });
             
             path.Count.Should().Be(3);
-            path.Length.Should().BeApproximately(sqrt2PlusSqrt5, Precision);
+            var pathLength = path.Zip(path.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+            pathLength.Should().BeApproximately(sqrt2PlusSqrt5, Precision);
             var pathNodes = path.ToList();
             pathNodes[1].X.Should().BeApproximately(10.0, Precision);
             pathNodes[1].Y.Should().BeApproximately(12.5, Precision);
@@ -130,7 +134,8 @@ namespace TriangulatedPolygonAStar.Tests
             var path = solver.FindPath(s, t2, new IVector[] { g1, g2 });
             
             path.Count.Should().Be(2);
-            path.Length.Should().BeApproximately(3.0, Precision);
+            var pathLength = path.Zip(path.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+            pathLength.Should().BeApproximately(3.0, Precision);
             var pathNodes = path.ToList();
             pathNodes[0].X.Should().BeApproximately(9.0, Precision);
             pathNodes[0].Y.Should().BeApproximately(11.5, Precision);

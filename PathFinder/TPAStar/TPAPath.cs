@@ -4,37 +4,44 @@ using System.Linq;
 
 namespace TriangulatedPolygonAStar
 {
-    public class TPAPath : FunnelStructure
+    public class TPAPath
     {
         private ITriangle currentTriangle;
         private IEnumerable<ITriangle> explorableTriangles;
         private IEdge currentEdge;
+        private FunnelStructure funnel;
+        
         private double dgMin; // minimum length from apex to finaltriangle
         private double dgMax;
         private double h; // heuristic value
+        private double gPart;
         private bool isGoalReached;
         
-        internal TPAPath(IVector startPoint) : base(startPoint)
+        internal TPAPath(IVector startPoint)
         {
+            funnel = new FunnelStructure(startPoint);
             currentTriangle = null;
             explorableTriangles = null;
+            gPart = 0;
             dgMin = 0;
             dgMax = 0;
             h = 0;
             isGoalReached = false;
         }
 
-        private TPAPath(TPAPath other) : base(other)
+        private TPAPath(TPAPath other)
         {
+            funnel = new FunnelStructure(other.funnel);
             currentTriangle = other.currentTriangle;
             explorableTriangles = other.explorableTriangles;
+            gPart = other.gPart;
             dgMin = other.dgMin;
             dgMax = other.dgMax;
             h = other.h;
             isGoalReached = other.isGoalReached;
         }
 
-        internal TriangleEvaluationResult StepTo(ITriangle targetTriangle, IVector[] goalPoints)
+        public TriangleEvaluationResult StepTo(ITriangle targetTriangle, IEnumerable<IVector> goalPoints)
         {
             if (currentTriangle == null)
             {
@@ -45,9 +52,9 @@ namespace TriangulatedPolygonAStar
             {
                 currentEdge = currentTriangle.GetCommonEdge(targetTriangle);
                 var explorableNeighbourList = new LinkedList<ITriangle>();
-                foreach (var neighbour in targetTriangle.Neighbours)
+                foreach (ITriangle neighbour in targetTriangle.Neighbours)
                 {
-                    if (!neighbour.Equals(currentTriangle)) // TODO investigate this equality check warning
+                    if (!neighbour.Equals(currentTriangle))
                     {
                         explorableNeighbourList.AddLast(neighbour);
                     }
@@ -55,7 +62,8 @@ namespace TriangulatedPolygonAStar
                 explorableTriangles = explorableNeighbourList;
                 currentTriangle = targetTriangle;
                 
-                base.StepTo(currentEdge);
+                funnel.StepTo(currentEdge);
+                UpdateLengthOfCurrentlyBuiltPath();
                 UpdateLowerBoundOfPathToEdge(currentEdge);
                 UpdateHigherBoundOfPathToEdge(currentEdge);
                 UpdateHeuristicValue(currentEdge, goalPoints);
@@ -64,16 +72,16 @@ namespace TriangulatedPolygonAStar
             return new TriangleEvaluationResult(h, EstimatedMinimalOverallCost, ShortestPossiblePathLength, LongestPossiblePathLength);
         }
 
-        internal void UpdateLowerBoundOfPathToEdge(IEdge edge)
+        private void UpdateLowerBoundOfPathToEdge(IEdge edge)
         {
             double minpathlength = 0;
 
-            if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
+            if ((funnel.Apex.Next != null) && (funnel.Apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
             {
-                IVector closestPoint = edge.ClosestPointOnEdgeFrom(apex.Value);
-                IVector apexPoint = apex.Value;
-                IVector left_1 = apex.Previous.Value;
-                IVector right_1 = apex.Next.Value;
+                IVector closestPoint = edge.ClosestPointOnEdgeFrom(funnel.Apex.Value);
+                IVector apexPoint = funnel.Apex.Value;
+                IVector left_1 = funnel.Apex.Previous.Value;
+                IVector right_1 = funnel.Apex.Next.Value;
 
                 IVector val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
                 IVector var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
@@ -85,20 +93,18 @@ namespace TriangulatedPolygonAStar
                     if (var.IsInClockWiseDirectionFrom(vacp))
                     {
                         // easy way, closest point is visible from apex
-                        //path.Add(closestPoint);
                         minpathlength += apexPoint.DistanceFrom(closestPoint);
                     }
                     else
                     {
                         // we have to march on the right side of the funnel, to see the edge
-                        LinkedListNode<IVector> node = apex;
+                        LinkedListNode<IVector> node = funnel.Apex;
 
                         while ((var.IsInCounterClockWiseDirectionFrom(vacp)) && (node.Next.Next != null)) // TODO: next.next béna..
                         {
                             minpathlength += node.Value.DistanceFrom(node.Next.Value);
 
                             node = node.Next;
-                            //path.Add(node.Value); TODO: guinak
 
                             closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                             apexPoint = node.Value;
@@ -112,20 +118,18 @@ namespace TriangulatedPolygonAStar
 
                         closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                         minpathlength += node.Value.DistanceFrom(closestPoint);
-                        //path.Add(closestPoint);
                     }
                 }
                 else
                 {
                     // we have to march on the left side of the funnel, to see the edge
-                    LinkedListNode<IVector> node = apex;
+                    LinkedListNode<IVector> node = funnel.Apex;
 
                     while ((val.IsInClockWiseDirectionFrom(vacp)) && (node.Previous.Previous != null))
                     {
                         minpathlength += node.Value.DistanceFrom(node.Previous.Value);
 
                         node = node.Previous;
-                        //path.Add(apex.Value);
 
                         closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                         apexPoint = node.Value;
@@ -139,15 +143,14 @@ namespace TriangulatedPolygonAStar
 
                     closestPoint = edge.ClosestPointOnEdgeFrom(node.Value);
                     minpathlength += node.Value.DistanceFrom(closestPoint);
-                    //path.Add(closestPoint);
                 }
             }
             dgMin = minpathlength;
         }
 
-        protected void UpdateHigherBoundOfPathToEdge(IEdge edge)
+        private void UpdateHigherBoundOfPathToEdge(IEdge edge)
         {
-            LinkedListNode<IVector> node = apex;
+            LinkedListNode<IVector> node = funnel.Apex;
             double maxLeft = 0, maxRight = 0;
 
             while (node.Previous != null)
@@ -156,7 +159,7 @@ namespace TriangulatedPolygonAStar
                 node = node.Previous;
             }
 
-            node = apex;
+            node = funnel.Apex;
             while (node.Next != null)
             {
                 maxRight += node.Value.DistanceFrom(node.Next.Value);
@@ -168,7 +171,8 @@ namespace TriangulatedPolygonAStar
 
         public void FinalizePath(IVector goalPoint)
         {
-            base.FinalizePath(goalPoint);
+            funnel.FinalizePath(goalPoint);
+            gPart = GetLengthOfBuiltPath();
             dgMin = 0;
             dgMax = 0;
             h = 0;
@@ -180,19 +184,36 @@ namespace TriangulatedPolygonAStar
             get { return isGoalReached; }
         }
 
-        private void UpdateHeuristicValue(IEdge edge, IVector[] goalPoints)
+        private void UpdateHeuristicValue(IEdge edge, IEnumerable<IVector> goalPoints)
         {
             h = FindDistanceFromClosestGoalPoint(edge, goalPoints);
         }
 
+        private void UpdateLengthOfCurrentlyBuiltPath()
+        {
+            gPart = GetLengthOfBuiltPath();
+        }
+        
+        private double GetLengthOfBuiltPath()
+        {
+            double length = 0;
+            LinkedListNode<IVector> currentNode = funnel.Path.First;
+            while (currentNode.Next != null)
+            {
+                length += currentNode.Value.DistanceFrom(currentNode.Next.Value);
+                currentNode = currentNode.Next;
+            }
+            return length;
+        }
+        
         private double FindDistanceFromClosestGoalPoint(IEdge edge, IEnumerable<IVector> goals)
         {
             return goals.Min(point => edge.DistanceFromPoint(point));
         }
 
-        public Curve GetBuiltPath()
+        public LinkedList<IVector> GetBuiltPath()
         {
-            return path;
+            return funnel.Path;
         }
 
         /// <summary>
@@ -207,12 +228,12 @@ namespace TriangulatedPolygonAStar
 
         public double ShortestPossiblePathLength
         {
-            get { return path.Length + dgMin; }
+            get { return gPart + dgMin; }
         }
 
         public double LongestPossiblePathLength
         {
-            get { return path.Length + dgMax; }
+            get { return gPart + dgMax; }
         }
 
         public IEdge CurrentEdge
@@ -220,14 +241,17 @@ namespace TriangulatedPolygonAStar
             get { return currentEdge; }
         }
 
-        internal IEnumerable<ITriangle> ExplorableTriangles => explorableTriangles;
+        public IEnumerable<ITriangle> ExplorableTriangles
+        {
+            get { return explorableTriangles; }
+        }
 
         public TPAPath Clone()
         {
             return new TPAPath(this);
         }
 
-        public IEnumerable<IVector> GetReachedGoalPoints(IVector[] goalPoints)
+        public IEnumerable<IVector> GetReachedGoalPoints(IEnumerable<IVector> goalPoints)
         {
             return goalPoints.Where(point => currentTriangle.ContainsPoint(point));
         }

@@ -54,6 +54,7 @@
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
     <Compile Include="GeometryExtensions.cs" />
+    <Compile Include="PathFinderExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TPAStarDemonstration.cs">

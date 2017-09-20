@@ -3,27 +3,27 @@ using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
-    public enum Side { Left, Right, Both, None };
 
     public class FunnelStructure
     {
-        protected LinkedList<IVector> funnel; // from the apex view, the left side is the first element, the last one is on the right side
-        protected LinkedListNode<IVector> apex;
-        protected Curve path;
-
+        private LinkedList<IVector> funnel; // from the apex view, the left side is the first element, the last one is on the right side
+        private LinkedListNode<IVector> apex;
+        private LinkedList<IVector> path;
+        private enum Side { Left, Right, Both, None };
+        
         public FunnelStructure(IVector startPoint) 
         {
             funnel = new LinkedList<IVector>();
             apex = funnel.AddFirst(startPoint);
-            path = new Curve();
-            path.Add(startPoint);
+            path = new LinkedList<IVector>();
+            path.AddFirst(startPoint);
         }
 
         public FunnelStructure(FunnelStructure other)
         {
             funnel = new LinkedList<IVector>(other.funnel);
             apex = funnel.Find(other.apex.Value);
-            path = new Curve(other.path);
+            path = new LinkedList<IVector>(other.path);
         }
 
         public void StepTo(IEdge edge)
@@ -59,11 +59,11 @@ namespace TriangulatedPolygonAStar
             while (!node.Value.Equals(goal))
             {
                 node = node.Next;
-                path.Add(node.Value);
+                path.AddLast(node.Value);
             }
         }
 
-        protected void InitFunnel(IEdge firstEdge)
+        private void InitFunnel(IEdge firstEdge)
         {
             IVector startPoint = apex.Value;
 
@@ -86,7 +86,7 @@ namespace TriangulatedPolygonAStar
 
         // returns the modified side
         // todo: addedge
-        protected Side AddNewVertexToFunnel(IEdge edge)
+        private Side AddNewVertexToFunnel(IEdge edge)
         {
             Side ret = Side.None;
             IVector left = funnel.First.Value; // Left vertex in funnel
@@ -133,7 +133,7 @@ namespace TriangulatedPolygonAStar
             return ret;
         }
 
-        protected void RefreshFunnel(Side modifiedSide)
+        private void RefreshFunnel(Side modifiedSide)
         {
             // ha jobbról indulunk - ez van papírra rajzolva
             if (modifiedSide == Side.Right)
@@ -162,7 +162,7 @@ namespace TriangulatedPolygonAStar
                         if (v1.IsInClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(last.Previous);
-                            path.Add(last.Previous.Value);
+                            path.AddLast(last.Previous.Value);
                             apex = last.Previous;
                             popped = true;
                         }
@@ -194,7 +194,7 @@ namespace TriangulatedPolygonAStar
                         if (v1.IsInCounterClockWiseDirectionFrom(v2))
                         {
                             funnel.Remove(first.Next);
-                            path.Add(first.Next.Value);
+                            path.AddLast(first.Next.Value);
                             apex = first.Next;
                             popped = true;
                         }
@@ -202,13 +202,16 @@ namespace TriangulatedPolygonAStar
                 }
             }
         }
-
-        public Curve Path
+        
+        public LinkedList<IVector> Path
         {
             get { return path; }
         }
 
-        // TODO: only for test now, but should be changed for use in algorithm
-        internal IEnumerable<IVector> Funnel => funnel;
+        public LinkedListNode<IVector> Apex
+        {
+            get { return apex; }
+        }
+        
     }
 }

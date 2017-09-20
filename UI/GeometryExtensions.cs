@@ -23,7 +23,7 @@ namespace TPAStarGUI
             return Math.Min(dist1, Math.Min(dist2, dist3));
         }
         
-        internal static PointF ToPointF(this IVector source)
+        public static PointF ToPointF(this IVector source)
         {
             float x = Convert.ToSingle(source.X);
             float y = Convert.ToSingle(source.Y);
@@ -34,6 +34,6 @@ namespace TPAStarGUI
         {
             var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);
             return new Vector(sum.X / 3.0, sum.Y / 3.0);
-        }
+        }    
     }
 }

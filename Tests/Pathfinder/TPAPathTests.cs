@@ -27,8 +27,8 @@ namespace TriangulatedPolygonAStar.Tests
             
             path.StepTo(t2, goalPoints);
             path.StepTo(t3, goalPoints);
+            
             var explorableNeighbours = path.ExplorableTriangles;
-
             explorableNeighbours.Contains(t2).Should().BeFalse();
         }
 
@@ -88,8 +88,8 @@ namespace TriangulatedPolygonAStar.Tests
             
             path.StepTo(t2, goalPoints);
             path.StepTo(t3, goalPoints);
+            
             var explorableNeighbours = path.ExplorableTriangles;
-
             explorableNeighbours.Contains(t4).Should().BeTrue();
             explorableNeighbours.Contains(t2).Should().BeFalse();
         }
