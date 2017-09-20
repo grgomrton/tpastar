@@ -84,17 +84,15 @@ namespace TriangulatedPolygonAStar
         // from the apex view, the left side is the first element, the last one is on the right side
         private void InitFunnel(IEdge firstEdge)
         {
-            IVector startPoint = apex.Value;
+            IVector apexToEdgeA = firstEdge.A.Minus(apex.Value);
+            IVector apexToEdgeB = firstEdge.B.Minus(apex.Value);
 
-            IVector toV1 = firstEdge.A.Minus(startPoint);
-            IVector toV2 = firstEdge.B.Minus(startPoint);
-
-            if (toV1.IsInCounterClockWiseDirectionFrom(toV2))
+            if (apexToEdgeA.IsInCounterClockWiseDirectionFrom(apexToEdgeB))
             {
                 funnel.AddFirst(firstEdge.A);
                 funnel.AddLast(firstEdge.B);
             }
-            else if (toV1.IsInClockWiseDirectionFrom(toV2))
+            else if (apexToEdgeA.IsInClockWiseDirectionFrom(apexToEdgeB))
             {
                 funnel.AddFirst(firstEdge.B);
                 funnel.AddLast(firstEdge.A);

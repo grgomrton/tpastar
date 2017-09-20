@@ -41,12 +41,12 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public bool IsInCounterClockWiseDirectionFrom(IVector other)
         {
-             return ZComponentOfCrossProductWith(other) < 0;
+             return ZComponentOfCrossProductWith(other) < -FloatingPointComparisonSettings.Tolerance;
         }
 
         public bool IsInClockWiseDirectionFrom(IVector other)
         {
-            return ZComponentOfCrossProductWith(other) > 0;
+            return ZComponentOfCrossProductWith(other) > FloatingPointComparisonSettings.Tolerance;
         }
 
         private double ZComponentOfCrossProductWith(IVector other)
@@ -59,7 +59,8 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             Vector other = obj as Vector;
             if (other != null)
             {
-                return X.Equals(other.X) && Y.Equals(other.Y); // TODO: add precision handling
+                return (Math.Abs(X - other.X) < FloatingPointComparisonSettings.Tolerance) &&
+                       (Math.Abs(Y - other.Y) < FloatingPointComparisonSettings.Tolerance);
             }
             else
             {
@@ -75,6 +76,15 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         public override string ToString()
         {
             return String.Format("({0:0.00}, {1:0.00})", X, Y);
+        }
+    }
+    
+    public static class VectorExtensions
+    {
+        public static double DotProduct(this IVector a, IVector b)
+        {
+            return a.X * b.X +
+                   a.Y * b.Y;
         }
     }
 }
