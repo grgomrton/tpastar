@@ -36,26 +36,5 @@ namespace TriangulatedPolygonAStar
         /// <exception cref="ArgumentException">In case the triangles have no common edge</exception>
         IEdge GetCommonEdge(ITriangle other);
         
-        
-        int GetHashCode(); // TODO do we really require the hashcode in pathfinder? or is it due to the equals method?
-                                   // note: if we only need the equality check, let's remove the hashcode from the interface
-                                   // in such case the hashcode is a requirement from the language and not the algorithm.
-                                   // we define here the requirements of the algorithm. Optionally we can mention the
-                                   // hashcode requirement in the equals method comment.
-
-        /// <summary>
-        /// The first vertex of the triangle. No specific order of the vertices is expected.
-        /// </summary>
-        IVector A { get; }
-        
-        /// <summary>
-        /// The second vertex of the triangle. No specific order of the vertices is expected.
-        /// </summary>
-        IVector B { get; }
-
-        /// <summary>
-        /// The third vertex of the triangle. No specific order of the vertices is expected.
-        /// </summary>
-        IVector C { get; }
     }
 }

@@ -9,47 +9,66 @@ namespace TriangulatedPolygonAStar.BasicGeometry
     /// </summary>
     public class Triangle : ITriangle
     {
-        private IVector v1;
-        private IVector v2;
-        private IVector v3;
-        private IEnumerable<Triangle> neighbours;
+        private Vector a;
+        private Vector b;
+        private Vector c;
+        private Dictionary<ITriangle, Edge> adjacentEdges;
 
         // TODO add comment
-        public Triangle(IVector v1, IVector v2, IVector v3)
+        public Triangle(Vector a, Vector b, Vector c)
         {
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-            this.neighbours = Enumerable.Empty<Triangle>();
+            this.a = a;
+            this.b = b;
+            this.c = c;
+            this.adjacentEdges = new Dictionary<ITriangle, Edge>();
         }
-        
-        public IVector A => v1; // TODO decide whether we use this syntactic sugar or not
 
-        public IVector B => v2;
+        public IVector A
+        {
+            get { return a; }
+        }
 
-        public IVector C => v3;
+        public IVector B
+        {
+            get { return b; }
+        }
 
-        public IEnumerable<ITriangle> Neighbours => neighbours;
+        public IVector C
+        {
+            get { return c; }
+        }
+
+        public IEnumerable<ITriangle> Neighbours
+        {
+            get { return adjacentEdges.Keys; }
+        }
 
         public void SetNeighbours(params Triangle[] neighbours)
         {
             if (neighbours.Length > 3)
             {
-                throw new ArgumentOutOfRangeException("Parameter 'neighbours' exceeds the maximum allowed size of 3");
+                throw new ArgumentOutOfRangeException("Maximum allowed amount of neighbour triangles is 3", nameof(neighbours));
             }
-            this.neighbours = neighbours;
+            if (!neighbours.All(HasCommonEdgeWithThisTriangle))
+            {
+                throw new ArgumentException(
+                    "One or more of the specified triangles has no common edge with this triangle", nameof(neighbours));
+            }
+            
+            adjacentEdges.Clear();
+            foreach (Triangle neighbour in neighbours)
+            {
+                Edge adjacentEdge = DetermineCommonEdgeWith(neighbour);
+                adjacentEdges.Add(neighbour, adjacentEdge);
+            }
         }
 
         // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
         public bool ContainsPoint(IVector p)
         {
-            IVector a = this.A;
-            IVector b = this.B;
-            IVector c = this.C;
-
             // Compute vectors
-            IVector v0 = c.Minus(a); // v0 = C - A
-            IVector v1 = b.Minus(a); // v1 = B - A
+            IVector v0 = C.Minus(A); // v0 = C - A
+            IVector v1 = B.Minus(A); // v1 = B - A
             IVector v2 = p.Minus(a); // v2 = P - A
 
             // Compute dot products
@@ -71,43 +90,19 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public IEdge GetCommonEdge(ITriangle other)
         {
-            var otherTriangleVertices = new [] { other.A, other.B, other.C };
-
-            bool aIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(this.A));
-            bool bIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(this.B));
-            bool cIsEqual = otherTriangleVertices.Any(vertex => vertex.Equals(this.C));
-
-            // TODO exception if every vertex is the same (same triangle) (under discussion)
-            if (aIsEqual && bIsEqual)
+            if (!adjacentEdges.ContainsKey(other))
             {
-                return new Edge(A, B);
+                throw new ArgumentException("The specified triangle cannot be found amoung the neighbours", nameof(other));
             }
-            else if (aIsEqual && cIsEqual)
-            {
-                return new Edge(A, C);
-            }
-            else if (bIsEqual && cIsEqual)
-            {
-                return new Edge(B, C);
-            }
-            else
-            {
-                throw new ArgumentException("The specified triangle has no common edge with this one", "other");
-            }
+            return adjacentEdges[other];
         }
 
         public override bool Equals(object other)
         {
-            ITriangle otherTriangle = other as ITriangle; // TODO should i require the same type, or should i only require the common interface?
+            Triangle otherTriangle = other as Triangle;
             if (otherTriangle != null)
             {
-                return (
-                    ((otherTriangle.A.Equals(A)) || (otherTriangle.A.Equals(B)) || (otherTriangle.A.Equals(C)))
-                    &&
-                    ((otherTriangle.B.Equals(A)) || (otherTriangle.B.Equals(B)) || (otherTriangle.B.Equals(C)))
-                    &&
-                    ((otherTriangle.C.Equals(A)) || (otherTriangle.C.Equals(B)) || (otherTriangle.C.Equals(C)))
-                );
+                return CommonVerticesWith(otherTriangle).Count() == 3;
             }
             else
             {
@@ -117,7 +112,25 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public override int GetHashCode()
         {
-            return A.GetHashCode() ^ B.GetHashCode() ^ C.GetHashCode();
+            return a.GetHashCode() ^ b.GetHashCode() ^ c.GetHashCode();
+        }
+        
+        private bool HasCommonEdgeWithThisTriangle(Triangle other)
+        {
+            return CommonVerticesWith(other).Count() == 2;
+        }
+
+        private IEnumerable<Vector> CommonVerticesWith(Triangle other)
+        {
+            var myTriangleVertices = new [] { a, b, c };
+            var otherTriangleVertices = new [] { other.a, other.b, other.c };
+            return myTriangleVertices.Intersect(otherTriangleVertices);
+        }
+        
+        private Edge DetermineCommonEdgeWith(Triangle other)
+        {
+            var commonVertices = CommonVerticesWith(other);
+            return new Edge(commonVertices.ElementAt(0), commonVertices.ElementAt(1));
         }
         
     }

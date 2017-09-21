@@ -12,11 +12,14 @@ namespace TPAStarGUI
         /// </summary>
         /// <param name="point">The point.</param>
         /// <returns></returns>
-        public static double MinDistanceFromOuterPoint(this ITriangle triangle, IVector point)
+        public static double MinDistanceFromOuterPoint(this Triangle triangle, IVector point)
         {
-            Edge e1 = new Edge(triangle.A, triangle.B);
-            Edge e2 = new Edge(triangle.A, triangle.C);
-            Edge e3 = new Edge(triangle.B, triangle.C);
+            Vector a = new Vector(triangle.A.X, triangle.A.Y);
+            Vector b = new Vector(triangle.B.X, triangle.B.Y);
+            Vector c = new Vector(triangle.C.X, triangle.C.Y);
+            Edge e1 = new Edge(a, b);
+            Edge e2 = new Edge(a, c);
+            Edge e3 = new Edge(b, c);
             double dist1 = e1.DistanceFromPoint(point);
             double dist2 = e2.DistanceFromPoint(point);
             double dist3 = e3.DistanceFromPoint(point);
@@ -30,7 +33,7 @@ namespace TPAStarGUI
             return new PointF(x, y);
         }
 
-        public static IVector CalculateCentroid(this ITriangle triangle)
+        public static Vector CalculateCentroid(this Triangle triangle)
         {
             var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);
             return new Vector(sum.X / 3.0, sum.Y / 3.0);

@@ -130,7 +130,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void GettingCommonEdgesShouldThrowExceptionIfTheTrianglesHaveNoCommonEdge()
+        public void SettingNeighboursShouldThrowExceptionIfTrianglesHaveNoCommonEdge()
         {
             var t1a = new Vector(3.0, 1.0);
             var t1b = new Vector(2.0, 2.0);
@@ -138,12 +138,31 @@ namespace TriangulatedPolygonAStar.Tests
             var t2a = new Vector(3.0, 1.1);
             var t2b = new Vector(2.0, 2.0);
             var t2c = new Vector(5.0, 5.0);
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2a, t2b, t2c);
+
+            Action settingNeighbours = () => t1.SetNeighbours(t2);
+
+            settingNeighbours.ShouldThrow<ArgumentException>()
+                .And.Message.Should().Contain("no common edge");
+        }
+
+        [Test]
+        public void GettingCommonEdgeShouldThrowExceptionIfOtherIsNotAmoungNeighbours()
+        {
+            var t1a = new Vector(3.0, 1.0);
+            var t1b = new Vector(2.0, 2.0);
+            var t1c = new Vector(1.0, 1.0);
+            var t2a = new Vector(3.0, 1.0);
+            var t2b = new Vector(2.0, 2.0);
+            var t2c = new Vector(5.0, 5.0);
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2a, t2b, t2c);
 
             Action gettingCommonEdge = () => t1.GetCommonEdge(t2);
 
-            gettingCommonEdge.ShouldThrow<ArgumentException>();
+            gettingCommonEdge.ShouldThrow<ArgumentException>()
+                .And.Message.Should().Contain("neighbour");
         }
         
         [Test]
@@ -156,9 +175,10 @@ namespace TriangulatedPolygonAStar.Tests
             var t2b = new Vector(2.0, 2.0);
             var t2c = new Vector(5.0, 5.0);
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
-
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2a, t2b, t2c);
+            t1.SetNeighbours(t2);
+            
             var commonEdge = t1.GetCommonEdge(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
@@ -174,98 +194,9 @@ namespace TriangulatedPolygonAStar.Tests
             var t2b = new Vector(2.0, 2.0);
             var t2c = new Vector(5.0, 5.0);
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2a, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfFirstTwoVerticesAreTheSameButShiftedTwice()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(5.0, 5.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2b, t2c, t2a);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfFirstTwoVerticesAreTheSameButArePresentInDifferentOrder()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(5.0, 5.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2b, t2a);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfFirstTwoVerticesAreTheSameButArePresentInDifferentOrderAndAreShiftedOnce()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(5.0, 5.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2c, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfFirstTwoVerticesAreTheSameButArePresentInDifferentOrderAndAreShiftedTwice()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(5.0, 5.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2b, t2a);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfSecondAndThirdVerticesAreTheSame()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(0.0, 2.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2c, t2a, t2b);
+            t1.SetNeighbours(t2);
 
             var commonEdge = t1.GetCommonEdge(t2);
 
@@ -282,170 +213,9 @@ namespace TriangulatedPolygonAStar.Tests
             var t2b = new Vector(2.0, 2.0);
             var t2c = new Vector(1.0, 1.0);
             var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2a, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfSecondAndThirdVerticesAreTheSameButShiftedTwice()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(0.0, 2.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfSecondAndThirdVerticesAreTheSameButTrianglesAreDefinedInDifferentOrder()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(0.0, 2.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2b, t2a);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfSecondAndThirdVerticesAreTheSameButTrianglesAreDefinedInDifferentOrderAndShiftedOnce()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(0.0, 2.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2c, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-                
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfSecondAndThirdVerticesAreTheSameButTrianglesAreDefinedInDifferentOrderAndShiftedTwice()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(0.0, 2.0);
-            var t2b = new Vector(2.0, 2.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2c, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfThirdAndFirstVerticesAreTheSame()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 0.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfThirdAndFirstVerticesAreTheSameButShiftedOnce()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 0.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2a, t2b);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfThirdAndFirstVerticesAreTheSameButShiftedTwice()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 0.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2b, t2c);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-        
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfThirdAndFirstVerticesAreTheSameButAreInDifferentOrder()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 0.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2b, t2a);
-
-            var commonEdge = t1.GetCommonEdge(t2);
-
-            commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
-        }
-                
-        [Test]
-        public void TriangleShouldReturnCommonEdgeIfThirdAndFirstVerticesAreTheSameButAreInDifferentOrderAndShiftedOnce()
-        {
-            var t1a = new Vector(3.0, 1.0);
-            var t1b = new Vector(2.0, 2.0);
-            var t1c = new Vector(1.0, 1.0);
-            var t2a = new Vector(3.0, 1.0);
-            var t2b = new Vector(2.0, 0.0);
-            var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2a, t2c, t2b);
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2c, t2a, t2b);
+            t1.SetNeighbours(t2);
 
             var commonEdge = t1.GetCommonEdge(t2);
 
@@ -462,9 +232,10 @@ namespace TriangulatedPolygonAStar.Tests
             var t2b = new Vector(2.0, 0.0);
             var t2c = new Vector(1.0, 1.0);
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            ITriangle t1 = new Triangle(t1a, t1b, t1c);
-            ITriangle t2 = new Triangle(t2c, t2b, t2a);
-
+            Triangle t1 = new Triangle(t1a, t1b, t1c);
+            Triangle t2 = new Triangle(t2c, t2b, t2a);
+            t1.SetNeighbours(t2);
+            
             var commonEdge = t1.GetCommonEdge(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);

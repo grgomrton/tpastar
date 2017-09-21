@@ -4,15 +4,15 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 {
     public class Edge : IEdge
     {
-        private IVector v1;
-        private IVector v2;
+        private Vector v1;
+        private Vector v2;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Edge"/> class.
         /// </summary>
         /// <param name="v1">The first endpoint.</param>
         /// <param name="v2">The second endpoint.</param>
-        public Edge(IVector v1, IVector v2)
+        public Edge(Vector v1, Vector v2)
         {
             this.v1 = v1;
             this.v2 = v2;
