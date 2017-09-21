@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Runtime.InteropServices.ComTypes;
 using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -16,31 +17,29 @@ namespace TPAStarGUI
     public partial class TPAStarDemonstration : Form
     {
         private IVector start;
-        private Triangle[] triangles;
         private List<IVector> goals;
+        private IEnumerable<Triangle> triangles;
+        
+        private TPAStarPathFinder pathFinder;
         private IEnumerable<IVector> path;
         
-        private TPAStarPathFinder solver;
         private Dictionary<ITriangle, TriangleIcon> trianglesToDraw;
-        
-        private int editingIndex = 0;
-        private bool goalEditing = false;
-        private bool startEditing = false;
-        private ITriangle startTriangle;
+        private int? currentlyEditedGoalPointIndex;
+        private bool startPointIsBeingModified;
         
         public TPAStarDemonstration()
         {
             InitializeComponent();
-            
+
+            currentlyEditedGoalPointIndex = null;
+            startPointIsBeingModified = false;
             CreateTriangleMap();
             AddDrawMethods();
-            solver = new TPAStarPathFinder();
-            solver.TriangleExplored += SolverOnTriangleExplored;
-
-            FindPathToGoal();
+            pathFinder = new TPAStarPathFinder();
+            pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
         }
 
-        private void ResetDisplayMetaData()
+        private void ClearMetaData()
         {
             foreach (var triangle in triangles)
             {
@@ -48,64 +47,19 @@ namespace TPAStarGUI
             }
         }
 
-        private void SolverOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
+        private void PathFinderOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
         {
             trianglesToDraw[triangle].IncreaseTraversionCount(result);
-            
         }
 
-        private void SetSartTriangle()
+        private bool IsStartPointUnderCursor(MouseEventArgs e)
         {
-            startTriangle = null;
-            
-            for (int i = 0; i < triangles.Length; i++)
-            {
-                if (triangles[i].ContainsPoint(start))
-                {
-                    startTriangle = triangles[i];
-                }
-            }
-            if (startTriangle == null)
-            {
-                double mindistance = 0;
-                for (int i = 0; i < triangles.Length; i++)
-                {
-                    double dist = triangles[i].MinDistanceFromOuterPoint(start); // TODO is this information really useful on the ui?
-                    if ((mindistance == 0) || (dist < mindistance))
-                    {
-                        startTriangle = triangles[i];
-                        mindistance = dist;
-                    }
-                }
-            }
+            return IsPointUnderCursor(start, e);
         }
 
-        private void SetEditingIndex(MouseEventArgs e)
+        private bool IsPointUnderCursor(IVector point, MouseEventArgs e) 
         {
-            bool found = false;
-            for (int i = 0; (i < goals.Count) && (!found); i++)
-            {
-                if (mouseOnPoint(goals[i], e))
-                {
-                    found = true;
-                    editingIndex = i;
-                }
-            }
-            if (!found) // new goalPoint have to be added
-            {
-                goals.Add(display.GetAbsolutePosition(e.X, e.Y));
-                editingIndex = goals.Count - 1;
-            }
-        }
-
-        private bool mouseOnStartPoint(MouseEventArgs e)
-        {
-            return mouseOnPoint(start, e);
-        }
-
-        private bool mouseOnPoint(IVector point, MouseEventArgs e) 
-        {
-            if (point.DistanceFrom(display.GetAbsolutePosition(e.X, e.Y)) < 0.15) // TODO: param
+            if (point.DistanceFrom(display.ConvertCanvasPositionToAbsolutePosition(e.X, e.Y)) < 0.15) // TODO: param
             {
                 return true;
             }
@@ -117,69 +71,96 @@ namespace TPAStarGUI
 
         private void FindPathToGoal()
         {
-            ResetDisplayMetaData();
-            IVector[] goalVector = new IVector[goals.Count];
-            for (int i = 0; i < goals.Count; i++)
+            ClearMetaData();
+            var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start));
+            if (startTriangle != null)
             {
-                goalVector[i] = goals[i];
+                path = pathFinder.FindPath(start, startTriangle, goals);
             }
-            path = solver.FindPath(start, startTriangle, goalVector);
+            else
+            {
+                path = Enumerable.Empty<IVector>();
+            }
+            display.Invalidate();
         }
 
         private void TPAStarDemonstration_Load(object sender, EventArgs e)
         {
-            display.Invalidate();
+            FindPathToGoal();
         }
 
-        private void display_MouseDown(object sender, MouseEventArgs e)
+        private void display_MouseDown(object sender, MouseEventArgs cursorState)
         {
-            if (e.Button == MouseButtons.Left)
+            if (cursorState.Button == MouseButtons.Left)
             {
-                if (mouseOnStartPoint(e))
+                if (IsStartPointUnderCursor(cursorState))
                 {
-                    startEditing = true;
+                    startPointIsBeingModified = true;
                 }
                 else
                 {
-                    SetEditingIndex(e);
-                    goalEditing = true;
-                }
-            }
-        }
-
-        private void display_MouseMove(object sender, MouseEventArgs e)
-        {
-            var newVector = display.GetAbsolutePosition(e.X, e.Y);
-
-            if (goalEditing)
-            {
-                goals[editingIndex] = newVector;
-            }
-            else if (startEditing)
-            {
-                start = newVector;
-                SetSartTriangle();
-            }
-            FindPathToGoal();
-            display.Invalidate();
-        }
-
-        private void display_MouseUp(object sender, MouseEventArgs e)
-        {
-            goalEditing = false;
-            startEditing = false;
-            if (e.Button == MouseButtons.Right)
-            {
-                for (int i = 0; i < goals.Count; i++)
-                {
-                    if (mouseOnPoint(goals[i], e) && goals.Count > 1)
+                    var goalToEdit = goals.FirstOrDefault(point => IsPointUnderCursor(point, cursorState));
+                    if (goalToEdit != null)
                     {
-                        goals.RemoveAt(i);
+                        currentlyEditedGoalPointIndex = goals.IndexOf(goalToEdit);
+                    }
+                    else
+                    {
+                        AddNewGoalPointAndSetToEdit(cursorState);
                     }
                 }
             }
+        }
+
+        private void AddNewGoalPointAndSetToEdit(MouseEventArgs cursorState)
+        {
+            var newGoalPoint = display.ConvertCanvasPositionToAbsolutePosition(cursorState.X, cursorState.Y); 
+            goals.Add(newGoalPoint);
+            currentlyEditedGoalPointIndex = goals.IndexOf(newGoalPoint);
             FindPathToGoal();
-            display.Invalidate();
+        }
+        
+        private void display_MouseMove(object sender, MouseEventArgs cursorState)
+        {
+            var configurationChanged = false;
+            
+            if (currentlyEditedGoalPointIndex.HasValue)
+            {
+                goals[currentlyEditedGoalPointIndex.Value] = display.ConvertCanvasPositionToAbsolutePosition(cursorState.X, cursorState.Y);
+                configurationChanged = true;
+            }
+            else if (startPointIsBeingModified)
+            {
+                start = display.ConvertCanvasPositionToAbsolutePosition(cursorState.X, cursorState.Y); // it works only because canvas starts at (0,0)
+                configurationChanged = true;
+            }
+            
+            if (configurationChanged)
+            {
+                FindPathToGoal();   
+            }
+        }
+
+        private void display_MouseUp(object sender, MouseEventArgs cursorState)
+        {
+            var configurationChanged = false;
+
+            currentlyEditedGoalPointIndex = null;
+            startPointIsBeingModified = false;
+            if (cursorState.Button == MouseButtons.Right)
+            {
+                var goalToDelete = goals.FirstOrDefault(point => IsPointUnderCursor(point, cursorState));
+                if (goalToDelete != null && goals.Count > 1)
+                {
+                    goals.Remove(goalToDelete);
+                    configurationChanged = true;
+                }
+            }
+            
+            if (configurationChanged)
+            {
+                FindPathToGoal();   
+            }
         }
 
         private void CreateTriangleMap() {
@@ -251,8 +232,6 @@ namespace TPAStarGUI
             {
                 display.AddDrawMethod(t.DrawMetaData, null, null);
             }
-            
-            startTriangle = t0;
         }
 
         private void CreateDrawableTriangle(Triangle triangle, String displayName)

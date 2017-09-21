@@ -186,7 +186,7 @@ namespace TPAStarGUI
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <returns></returns>
-        public IVector GetAbsolutePosition(int x, int y)
+        public IVector ConvertCanvasPositionToAbsolutePosition(int x, int y)
         {
             return new Vector(x / this.magnify, y / this.magnify);
         }
