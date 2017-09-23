@@ -57,6 +57,9 @@
     <Compile Include="PathFinderExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\TriangleMaps.cs" />
+    <Compile Include="Resources\TrianglesOfPolygonWithOneHole.cs" />
+    <Compile Include="Resources\TrianglesOfPolygonWithTwoHole.cs" />
     <Compile Include="TPAStarDemonstration.cs">
       <SubType>Form</SubType>
     </Compile>

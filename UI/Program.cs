@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     static class Program
     {
@@ -15,7 +15,6 @@ namespace TPAStarGUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new FunnelDemonstration());
             Application.Run(new TPAStarDemonstration());
         }
     }

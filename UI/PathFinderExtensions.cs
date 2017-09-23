@@ -2,7 +2,7 @@
 using System.Linq;
 using TriangulatedPolygonAStar;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     public static class PathFinderExtensions
     {

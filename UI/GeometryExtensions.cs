@@ -4,7 +4,7 @@ using System.Linq;
 using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     public static class GeometryExtensions
     {

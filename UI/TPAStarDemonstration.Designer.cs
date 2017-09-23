@@ -1,4 +1,4 @@
-﻿namespace TPAStarGUI
+﻿namespace TriangulatedPolygonAStar.UI
 {
     partial class TPAStarDemonstration
     {
@@ -32,7 +32,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.display = new TPAStarGUI.Canvas();
+            this.display = new TriangulatedPolygonAStar.UI.Canvas();
             this.SuspendLayout();
             // 
             // textBox1
@@ -116,6 +116,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private TPAStarGUI.Canvas display;
+        private TriangulatedPolygonAStar.UI.Canvas display;
     }
 }

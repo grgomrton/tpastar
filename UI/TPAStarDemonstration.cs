@@ -11,8 +11,9 @@ using System.Drawing.Text;
 using System.Runtime.InteropServices.ComTypes;
 using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
+using TriangulatedPolygonAStar.UI.Resources;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     public partial class TPAStarDemonstration : Form
     {
@@ -30,21 +31,18 @@ namespace TPAStarGUI
         public TPAStarDemonstration()
         {
             InitializeComponent();
-
-            currentlyEditedGoalPointIndex = null;
+            start = new Vector(1, 5);
             startPointIsBeingModified = false;
-            CreateTriangleMap();
-            AddDrawMethods();
+            var goal = new Vector(5.1, 2.6);
+            goals = new List<IVector> { goal };
+            currentlyEditedGoalPointIndex = null;
+            triangles = TriangleMaps.TrianglesOfPolygonWithOneHole;
+            trianglesToDraw = CreateTrianglesToDraw(triangles);
+            AddTriangleIconsToCanvas(trianglesToDraw.Values, display);
+            AddPointAndPathToCanvas();
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
-        }
-
-        private void ClearMetaData()
-        {
-            foreach (var triangle in triangles)
-            {
-                trianglesToDraw[triangle].ResetMetaData();
-            }
+            FindPathToGoal();
         }
 
         private void PathFinderOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
@@ -52,14 +50,14 @@ namespace TPAStarGUI
             trianglesToDraw[triangle].IncreaseTraversionCount(result);
         }
 
-        private bool IsStartPointUnderCursor(MouseEventArgs e)
+        private bool IsStartPointUnderCursor(MouseEventArgs cursorState)
         {
-            return IsPointUnderCursor(start, e);
+            return IsPointUnderCursor(start, cursorState);
         }
 
-        private bool IsPointUnderCursor(IVector point, MouseEventArgs e) 
+        private bool IsPointUnderCursor(IVector point, MouseEventArgs cursorState) 
         {
-            if (point.DistanceFrom(display.ConvertCanvasPositionToAbsolutePosition(e.X, e.Y)) < 0.15) // TODO: param
+            if (point.DistanceFrom(display.ConvertCanvasPositionToAbsolutePosition(cursorState.X, cursorState.Y)) < 0.15) // TODO: param
             {
                 return true;
             }
@@ -71,7 +69,10 @@ namespace TPAStarGUI
 
         private void FindPathToGoal()
         {
-            ClearMetaData();
+            foreach (var triangle in trianglesToDraw.Values)
+            {
+                triangle.ResetMetaData();
+            }
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start));
             if (startTriangle != null)
             {
@@ -86,7 +87,7 @@ namespace TPAStarGUI
 
         private void TPAStarDemonstration_Load(object sender, EventArgs e)
         {
-            FindPathToGoal();
+            display.Invalidate();
         }
 
         private void display_MouseDown(object sender, MouseEventArgs cursorState)
@@ -122,6 +123,8 @@ namespace TPAStarGUI
         
         private void display_MouseMove(object sender, MouseEventArgs cursorState)
         {
+            this.Text = display.ConvertCanvasPositionToAbsolutePosition(cursorState.X, cursorState.Y).ToString();
+            
             var configurationChanged = false;
             
             if (currentlyEditedGoalPointIndex.HasValue)
@@ -163,85 +166,30 @@ namespace TPAStarGUI
             }
         }
 
-        private void CreateTriangleMap() {
-            trianglesToDraw = new Dictionary<ITriangle, TriangleIcon>();
-            
-            Vector cr0 = new Vector(2, 4);
-            Vector cr1 = new Vector(2, 3);
-            Vector cr2 = new Vector(3, 2);
-            Vector cr3 = new Vector(5, 3);
-            Vector cr4 = new Vector(7, 2);
-            Vector cl0 = new Vector(0, 4);
-            Vector cl1 = new Vector(0, 3);
-            Vector cl2 = new Vector(3, 1);
-            Vector cl3 = new Vector(5, 2.5);
-            Vector cl4 = new Vector(6, 1);
 
-            Vector cp0 = new Vector(1, 7);
-            Vector cp1 = new Vector(6.5, 0);
-            Vector cp2 = new Vector(0, 9);
-            Vector cp3 = new Vector(1, 10);
-            Vector cp4 = new Vector(0, 11);
-
-            start = new Vector(1, 5);
-
-            goals = new List<IVector>();
-            goals.Add(new Vector(5.1, 2.6));
-
-            Triangle t0 = new Triangle(cp0, cl0, cr0);
-            CreateDrawableTriangle(t0, "t0");
-            Triangle t1 = new Triangle(cl0, cr0, cl1);
-            CreateDrawableTriangle(t1, "t1");
-            Triangle t2 = new Triangle(cl1, cr0, cr1);
-            CreateDrawableTriangle(t2, "t2");
-            Triangle t3 = new Triangle(cl1, cr1, cl2);
-            CreateDrawableTriangle(t3, "t3");
-            Triangle t4 = new Triangle(cr1, cl2, cr2);
-            CreateDrawableTriangle(t4, "t4");
-            Triangle t5 = new Triangle(cr2, cl2, cr3);
-            CreateDrawableTriangle(t5, "t5");
-            Triangle t6 = new Triangle(cl3, cl2, cr3);
-            CreateDrawableTriangle(t6, "t6");
-            Triangle t7 = new Triangle(cl3, cl4, cr3);
-            CreateDrawableTriangle(t7, "t7");
-            Triangle t8 = new Triangle(cr4, cl4, cr3);
-            CreateDrawableTriangle(t8, "t8");
-            Triangle t9 = new Triangle(cr4, cl4, cp1);
-            CreateDrawableTriangle(t9, "t9");
-            Triangle t10 = new Triangle(cr0, cp0, cr3);
-            CreateDrawableTriangle(t10, "t10");
-            Triangle t11 = new Triangle(cr4, cp0, cr3);
-            CreateDrawableTriangle(t11, "t11");
-            
-            t0.SetNeighbours(t1, t10);
-            t1.SetNeighbours(t2, t0);
-            t2.SetNeighbours(t3, t1);
-            t3.SetNeighbours(t4, t2);
-            t4.SetNeighbours(t5, t3);
-            t5.SetNeighbours( t6, t4);
-            t6.SetNeighbours(t7, t5);
-            t7.SetNeighbours(t8, t6);
-            t8.SetNeighbours(t9, t7, t11);
-            t9.SetNeighbours(t8);
-            t10.SetNeighbours(t0, t11);
-            t11.SetNeighbours(t8, t10);
-
-            triangles = new [] { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 };
-
-            foreach (var t in trianglesToDraw.Values)
+        private static Dictionary<ITriangle, TriangleIcon> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)
+        {
+            var trianglesToDraw = new Dictionary<ITriangle, TriangleIcon>();
+            var id = 0;
+            foreach (var triangle in triangles)
             {
-                display.AddDrawMethod(t.DrawMetaData, null, null);
+                var triangleIcon = new TriangleIcon(triangle, "t" + id);
+                trianglesToDraw.Add(triangle, triangleIcon);
+                id++;
+            }
+            return trianglesToDraw;
+        }
+
+        private static void AddTriangleIconsToCanvas(IEnumerable<TriangleIcon> triangles, Canvas canvas)
+        {
+            foreach (var triangle in triangles)
+            {
+                canvas.AddDrawMethod(triangle.Draw, null, null);
+                canvas.AddDrawMethod(triangle.DrawMetaData, null, null);
             }
         }
-
-        private void CreateDrawableTriangle(Triangle triangle, String displayName)
-        {
-            TriangleIcon triangleIcon = new TriangleIcon(triangle, displayName);
-            trianglesToDraw.Add(triangle, triangleIcon);
-            display.AddDrawMethod(triangleIcon.Draw, null, null);
-        }
         
-        private void AddDrawMethods()
+        private void AddPointAndPathToCanvas()
         {
             Dictionary<string, Color> pathColors = new Dictionary<string, Color>();
             pathColors.Add("edge", Color.Green);

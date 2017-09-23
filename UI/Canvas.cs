@@ -10,7 +10,7 @@ using System.Drawing.Drawing2D;
 using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
     /// A canvas user control that can be used for displaying multiple <see cref="DrawMethod"/>s.

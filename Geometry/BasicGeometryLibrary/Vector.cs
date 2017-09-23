@@ -71,6 +71,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             return (int) ((X + Y) % Int32.MaxValue);
         }
-        
+
+        public override string ToString()
+        {
+            return String.Format("({0:0.00}, {1:0.00})", X, Y);
+        }
     }
 }

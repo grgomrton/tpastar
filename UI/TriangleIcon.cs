@@ -5,14 +5,14 @@ using System.Drawing.Text;
 using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
-namespace TPAStarGUI
+namespace TriangulatedPolygonAStar.UI
 {
     public class TriangleIcon
     {
         private static Dictionary<string, Color> colors = new Dictionary<string, Color>
         {
             {"fill", Color.White},
-            {"traversionShade", Color.FromArgb(50, 50, 50)},
+            {"traversionShade", Color.FromArgb(30, 30, 30)},
             {"edge", Color.Gray},
             {"data", Color.Black}
         };

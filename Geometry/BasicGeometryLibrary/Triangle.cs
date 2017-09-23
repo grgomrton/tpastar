@@ -43,24 +43,26 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             get { return adjacentEdges.Keys; }
         }
 
-        public void SetNeighbours(params Triangle[] neighbours)
+        public void SetNeighbours(IEnumerable<Triangle> neighbours)
         {
-            if (neighbours.Length > 3)
+            if (neighbours.Count() > 3)
             {
                 throw new ArgumentOutOfRangeException("Maximum allowed amount of neighbour triangles is 3", nameof(neighbours));
             }
-            if (!neighbours.All(HasCommonEdgeWithThisTriangle))
+            if (neighbours.Any(triangle => triangle.GetCommonVerticesWith(this).Count() != 2))
             {
                 throw new ArgumentException(
-                    "One or more of the specified triangles has no common edge with this triangle", nameof(neighbours));
+                    "One or more of the specified triangles are not adjacent with this triangle", nameof(neighbours));
             }
             
-            adjacentEdges.Clear();
+            var edgeSet = new Dictionary<ITriangle, Edge>();
             foreach (Triangle neighbour in neighbours)
             {
-                Edge adjacentEdge = DetermineCommonEdgeWith(neighbour);
-                adjacentEdges.Add(neighbour, adjacentEdge);
+                var commonVertices = GetCommonVerticesWith(neighbour);
+                var adjacentEdge = new Edge(commonVertices.ElementAt(0), commonVertices.ElementAt(1));
+                edgeSet.Add(neighbour, adjacentEdge);
             }
+            adjacentEdges = edgeSet;
         }
 
         // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
@@ -92,7 +94,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             if (!adjacentEdges.ContainsKey(other))
             {
-                throw new ArgumentException("The specified triangle cannot be found amoung the neighbours", nameof(other));
+                throw new ArgumentException("The specified triangle cannot be found among the neighbours", nameof(other));
             }
             return adjacentEdges[other];
         }
@@ -102,7 +104,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             Triangle otherTriangle = other as Triangle;
             if (otherTriangle != null)
             {
-                return CommonVerticesWith(otherTriangle).Count() == 3;
+                return GetCommonVerticesWith(otherTriangle).Count() == 3;
             }
             else
             {
@@ -114,24 +116,18 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             return a.GetHashCode() ^ b.GetHashCode() ^ c.GetHashCode();
         }
-        
-        private bool HasCommonEdgeWithThisTriangle(Triangle other)
-        {
-            return CommonVerticesWith(other).Count() == 2;
-        }
 
-        private IEnumerable<Vector> CommonVerticesWith(Triangle other)
+        /// <summary>
+        /// Determines the set of vertices shared by this triangle and the specified one.
+        /// </summary>
+        /// <param name="other">The other triangle to compare this triangle with</param>
+        /// <returns></returns>
+        public IEnumerable<Vector> GetCommonVerticesWith(Triangle other)
         {
             var myTriangleVertices = new [] { a, b, c };
             var otherTriangleVertices = new [] { other.a, other.b, other.c };
             return myTriangleVertices.Intersect(otherTriangleVertices);
         }
-        
-        private Edge DetermineCommonEdgeWith(Triangle other)
-        {
-            var commonVertices = CommonVerticesWith(other);
-            return new Edge(commonVertices.ElementAt(0), commonVertices.ElementAt(1));
-        }
-        
+               
     }
 }

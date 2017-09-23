@@ -1,4 +1,4 @@
-﻿namespace TPAStarGUI
+﻿namespace TriangulatedPolygonAStar.UI
 {
     partial class Canvas
     {
