@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace TriangulatedPolygonAStar.UI
@@ -15,7 +13,7 @@ namespace TriangulatedPolygonAStar.UI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TPAStarDemonstration());
+            Application.Run(new Demo());
         }
     }
 }

@@ -2,47 +2,42 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.UI
 {
     public class PolyLine : IDrawable
     {
+        private static Color LineColor = Color.Green;
+        private static Color TextColor = Color.Black;
+        private static float LineWidth = 0.04f;
+        private static float FontSize = 0.12f;
+        private static string CaptionFormat = "{0:0.00}";
+        private static PointF CaptionTranslation = new PointF(-2 * FontSize, -3 * FontSize);
+
         private IEnumerable<IVector> points;
+        private Pen linePen;
+        private Brush captionBrush;
+        private Font captionFont;
 
-        private static Dictionary<string, Color> colors = new Dictionary<string, Color>()
-        {
-            {"edge", Color.Green},
-            {"data", Color.Black}
-        };
-
-        private static Dictionary<string, float> widths = new Dictionary<string, float>()
-        {
-            {"edge", 0.04f},
-            {"data", 0.12f},
-            {"fontSize", 0.12f}
-        };
-        
         public PolyLine(IEnumerable<IVector> points)
         {
             this.points = points;
+            linePen = new Pen(LineColor, LineWidth);
+            captionBrush = new SolidBrush(TextColor);
+            captionFont = new Font("Arial", FontSize, FontStyle.Bold); // TODO some os independent font?
         }
         
         public void Draw(Graphics canvas)
         {
-            if (points.Any())
-            {
-                List<PointF> nodes = new List<PointF>();
-                foreach (Vector v in points)
-                {
-                    nodes.Add(v.ToPointF());
-                }
-                canvas.DrawLines(new Pen(colors["edge"], widths["edge"]), nodes.ToArray());
-                float fontSize = widths["fontSize"];
-                var position = points.Last().Minus(new Vector(2 * fontSize, 3 * fontSize));
-                var positionFloat = new PointF(Convert.ToSingle(position.X), Convert.ToSingle(position.Y));
-                canvas.DrawString(points.Length().ToString("#.##"), new Font("Arial", fontSize, FontStyle.Bold), new SolidBrush(colors["data"]), positionFloat);
-            }
+            var vertices = points.Select(point => point.ToPointF()).ToArray();
+            canvas.DrawLines(linePen, vertices);
+              
+            var lastPoint = vertices.Last(); 
+            var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
+            
+            var lineLength = points.Zip(points.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+            
+            canvas.DrawString(String.Format(CaptionFormat, lineLength), captionFont, captionBrush, captionPosition);
         }
 
         public void SetPoints(IEnumerable<IVector> points)

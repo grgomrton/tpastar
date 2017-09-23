@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
-using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.UI
 {
     public static class GeometryExtensions
     {
-       
         public static PointF ToPointF(this IVector source)
         {
             float x = Convert.ToSingle(source.X);
             float y = Convert.ToSingle(source.Y);
             return new PointF(x, y);
         }
-
+        
         public static Vector CalculateCentroid(this Triangle triangle)
         {
             var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);

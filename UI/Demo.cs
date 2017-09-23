@@ -1,33 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.Runtime.InteropServices.ComTypes;
-using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 using TriangulatedPolygonAStar.UI.Resources;
 
 namespace TriangulatedPolygonAStar.UI
 {
-    public partial class TPAStarDemonstration : Form
+    public partial class Demo : Form
     {
         private IPoint start;
         private List<IPoint> goals;
+        private IPoint currentlyEditedPoint;
+        
         private IEnumerable<Triangle> triangles;
+        private Dictionary<ITriangle, DrawableTriangle> trianglesToDraw;
         
         private TPAStarPathFinder pathFinder;
         private PolyLine path;
         
-        private Dictionary<ITriangle, DrawableTriangle> trianglesToDraw;
-        private IPoint currentlyEditedPoint;
-        
-        public TPAStarDemonstration()
+        public Demo()
         {
             InitializeComponent();
             
@@ -74,6 +66,7 @@ namespace TriangulatedPolygonAStar.UI
             {
                 triangle.ResetMetaData();
             }
+            
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start.Position));
             if (startTriangle != null)
             {
@@ -84,15 +77,16 @@ namespace TriangulatedPolygonAStar.UI
             {
                 path.SetPoints(Enumerable.Empty<IVector>());
             }
+            
             display.Invalidate();
         }
 
-        private void TPAStarDemonstration_Load(object sender, EventArgs e)
+        private void DemoOnLoad(object sender, EventArgs e)
         {
             display.Invalidate();
         }
 
-        private void display_MouseDown(object sender, MouseEventArgs cursorState)
+        private void DisplayOnMouseDown(object sender, MouseEventArgs cursorState)
         {
             if (cursorState.Button == MouseButtons.Left)
             {
@@ -115,29 +109,20 @@ namespace TriangulatedPolygonAStar.UI
             FindPathToGoal();
         }
         
-        private void display_MouseMove(object sender, MouseEventArgs cursorState)
+        private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
         {
             var absolutePosition = GetAbsoluteCoordinateSystemFromMouseState(cursorState);
             Text = absolutePosition.ToString();
             
-            var configurationChanged = false;
             if (currentlyEditedPoint != null)
             {
                 currentlyEditedPoint.SetPosition(absolutePosition);
-                configurationChanged = true;
-            }
-            
-            if (configurationChanged)
-            {
-                FindPathToGoal();   
+                FindPathToGoal();
             }
         }
 
-        private void display_MouseUp(object sender, MouseEventArgs cursorState)
+        private void DisplayOnMouseUp(object sender, MouseEventArgs cursorState)
         {
-            var configurationChanged = false;
-            currentlyEditedPoint = null;
-            
             if (cursorState.Button == MouseButtons.Right)
             {
                 var goalToDelete = goals.FirstOrDefault(goal => IsPointUnderCursor(goal, cursorState));
@@ -145,19 +130,15 @@ namespace TriangulatedPolygonAStar.UI
                 {
                     goals.Remove(goalToDelete);
                     display.RemoveDrawable(goalToDelete);
-                    configurationChanged = true;
+                    FindPathToGoal();
                 }
             }
-            
-            if (configurationChanged)
-            {
-                FindPathToGoal();   
-            }
+            currentlyEditedPoint = null;
         }
 
-        private IVector GetAbsoluteCoordinateSystemFromMouseState(MouseEventArgs mouseState)
+        private IVector GetAbsoluteCoordinateSystemFromMouseState(MouseEventArgs cursorState)
         {
-            return display.GetAbsolutePosition(mouseState.X, mouseState.Y); // it works only because canvas starts at (0,0)
+            return display.GetAbsolutePosition(cursorState.X, cursorState.Y); // it works only because canvas starts at (0,0)
         }
 
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)

@@ -11,18 +11,15 @@ namespace TriangulatedPolygonAStar.UI
         protected Point(float radius, Color color, IVector position)
         {
             this.radius = radius;
-            brush = new SolidBrush(color);
             this.position = position;
+            brush = new SolidBrush(color);
         }
         
         public void Draw(Graphics canvas)
         {
-            PointF positionFloat = position.ToPointF();
-            float x = positionFloat.X - radius;
-            float y = positionFloat.Y - radius;
-            float diameter = 2 * radius;
-
-            canvas.FillEllipse(brush, x, y, diameter, diameter);
+            var positionF = position.ToPointF();
+            var diameter = 2 * radius;
+            canvas.FillEllipse(brush, positionF.X - radius, positionF.Y - radius, diameter, diameter);
         }
 
         public IVector Position
@@ -40,9 +37,5 @@ namespace TriangulatedPolygonAStar.UI
             position = positionInAbsoluteCoordinateSystem;
         }
 
-        public bool ContainsPoint(IVector pointInAbsoluteCoordinateSystem)
-        {
-            return pointInAbsoluteCoordinateSystem.DistanceFrom(position) < 2 * radius; // TODO why 2 times?
-        }
     }
 }

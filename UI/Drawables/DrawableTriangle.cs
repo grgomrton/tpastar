@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -7,28 +6,23 @@ namespace TriangulatedPolygonAStar.UI
 {
     public class DrawableTriangle : IDrawable
     {
-        private static Dictionary<string, Color> colors = new Dictionary<string, Color>
-        {
-            {"fill", Color.White},
-            {"traversionShade", Color.FromArgb(30, 30, 30)},
-            {"edge", Color.Gray},
-            {"data", Color.Black}
-        };
-
-        private static Dictionary<string, float> widths = new Dictionary<string, float>
-        {
-            {"edge", 0.01f},
-            {"fontSize", 0.12f}
-        };
-
-        private string id;
+        private static Color FillColor = Color.White;
+        private static Color TraversionShade = Color.FromArgb(30, 30, 30);
+        private static Color EdgeColor = Color.Gray;
+        private static float EdgeWidth = 0.01f;
+        private static Color TextColor = Color.Black;
+        private static float FontSize = 0.12f;
+        private static string MetaDataFormat = "{0} ({1}) {2:0.00}";
         
+        private string id;
         private int traversionCount;
         private TriangleEvaluationResult lastEvaluationResult;
-
         private PointF[] points;
         private PointF centroid;
-
+        private Pen edgePen;
+        private Brush captionBrush;
+        private Font captionFont;
+        
         public DrawableTriangle(Triangle triangle, string id)
         {
             this.id = id;
@@ -36,22 +30,19 @@ namespace TriangulatedPolygonAStar.UI
             points[0] = triangle.A.ToPointF();
             points[1] = triangle.B.ToPointF();
             points[2] = triangle.C.ToPointF();
-
             centroid = triangle.CalculateCentroid().ToPointF();
+            edgePen = new Pen(EdgeColor, EdgeWidth);
+            captionBrush = new SolidBrush(TextColor);
+            captionFont = new Font("Arial", FontSize); // TODO os dependent
         }
         
-        internal void IncreaseTraversionCount()
-        {
-            IncreaseTraversionCount(null);
-        }
-
-        internal void IncreaseTraversionCount(TriangleEvaluationResult metadata)
+        public void IncreaseTraversionCount(TriangleEvaluationResult metadata)
         {
             traversionCount++;
             lastEvaluationResult = metadata;
         }
 
-        internal void ResetMetaData()
+        public void ResetMetaData()
         {
             traversionCount = 0;
             lastEvaluationResult = null;
@@ -59,30 +50,21 @@ namespace TriangulatedPolygonAStar.UI
         
         private void DrawTriangle(Graphics canvas)
         {
-            Color baseFillColor = colors["fill"];
-            Color fillColor = baseFillColor;
-            if (colors.ContainsKey("traversionShade"))
-            {
-                Color shadeColor = colors["traversionShade"];
-                int r = Convert.ToInt32(Math.Max(baseFillColor.R - traversionCount * shadeColor.R, 0));
-                int g = Convert.ToInt32(Math.Max(baseFillColor.G - traversionCount * shadeColor.G, 0));
-                int b = Convert.ToInt32(Math.Max(baseFillColor.B - traversionCount * shadeColor.B, 0));
-                fillColor = Color.FromArgb(r, g, b);
-            }
-
-            Brush brush = new SolidBrush(fillColor);
-            Pen pen = new Pen(colors["edge"], widths["edge"]);
-
+            var r = Convert.ToInt32(Math.Max(FillColor.R - traversionCount * TraversionShade.R, 0));
+            var g = Convert.ToInt32(Math.Max(FillColor.G - traversionCount * TraversionShade.G, 0));
+            var b = Convert.ToInt32(Math.Max(FillColor.B - traversionCount * TraversionShade.B, 0));
+            var fillColor = Color.FromArgb(r, g, b);
+            
+            var brush = new SolidBrush(fillColor);
+            
             canvas.FillPolygon(brush, points);
-            canvas.DrawPolygon(pen, points);
+            canvas.DrawPolygon(edgePen, points);
         }
 
         private void DrawMetaData(Graphics canvas)
         {
-            string formatString = "{0} [{1}] {2:0.00}";
-            String label = String.Format(formatString, id, traversionCount, lastEvaluationResult?.GMin);
-            canvas.DrawString(label, new Font("Arial", widths["fontSize"]), new SolidBrush(colors["data"]), centroid);
-
+            var caption = String.Format(MetaDataFormat, id, traversionCount, lastEvaluationResult?.GMin); // TODO is this really useful information?
+            canvas.DrawString(caption, captionFont, captionBrush, centroid);
         }
 
         public void Draw(Graphics canvas)

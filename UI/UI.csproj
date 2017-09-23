@@ -47,18 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Canvas.cs">
+    <Compile Include="Canvas\Canvas.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Canvas.Designer.cs">
+    <Compile Include="Canvas\Canvas.Designer.cs">
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Canvas\IDrawable.cs" />
     <Compile Include="Drawables\DrawableTriangle.cs" />
     <Compile Include="Drawables\GeometryExtensions.cs" />
     <Compile Include="Drawables\GoalPoint.cs" />
-    <Compile Include="Drawables\Interfaces\IDrawable.cs" />
-    <Compile Include="Drawables\Interfaces\IPoint.cs" />
-    <Compile Include="Drawables\PathFinderExtensions.cs" />
+    <Compile Include="Drawables\IPoint.cs" />
     <Compile Include="Drawables\Point.cs" />
     <Compile Include="Drawables\PolyLine.cs" />
     <Compile Include="Drawables\StartPoint.cs" />
@@ -67,13 +66,13 @@
     <Compile Include="Resources\TriangleMaps.cs" />
     <Compile Include="Resources\TrianglesOfPolygonWithOneHole.cs" />
     <Compile Include="Resources\TrianglesOfPolygonWithTwoHole.cs" />
-    <Compile Include="TPAStarDemonstration.cs">
+    <Compile Include="Demo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TPAStarDemonstration.Designer.cs">
-      <DependentUpon>TPAStarDemonstration.cs</DependentUpon>
+    <Compile Include="Demo.Designer.cs">
+      <DependentUpon>Demo.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Canvas.resx">
+    <EmbeddedResource Include="Canvas\Canvas.resx">
       <DependentUpon>Canvas.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -86,8 +85,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="TPAStarDemonstration.resx">
-      <DependentUpon>TPAStarDemonstration.cs</DependentUpon>
+    <EmbeddedResource Include="Demo.resx">
+      <DependentUpon>Demo.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

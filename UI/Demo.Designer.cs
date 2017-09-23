@@ -1,6 +1,6 @@
 ﻿namespace TriangulatedPolygonAStar.UI
 {
-    partial class TPAStarDemonstration
+    partial class Demo
     {
         /// <summary>
         /// Required designer variable.
@@ -87,11 +87,11 @@
             this.display.Name = "display";
             this.display.Size = new System.Drawing.Size(636, 496);
             this.display.TabIndex = 50;
-            this.display.MouseDown += new System.Windows.Forms.MouseEventHandler(this.display_MouseDown);
-            this.display.MouseMove += new System.Windows.Forms.MouseEventHandler(this.display_MouseMove);
-            this.display.MouseUp += new System.Windows.Forms.MouseEventHandler(this.display_MouseUp);
+            this.display.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseDown);
+            this.display.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseMove);
+            this.display.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseUp);
             // 
-            // TPAStarDemonstration
+            // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -101,10 +101,10 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "TPAStarDemonstration";
-            this.Text = "TPAStarDemonstration";
+            this.Name = "Demo";
+            this.Text = "Demo";
 //            this.BackColor = System.Drawing.Color.White;
-            this.Load += new System.EventHandler(this.TPAStarDemonstration_Load);
+            this.Load += new System.EventHandler(this.DemoOnLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 

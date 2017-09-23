@@ -13,7 +13,7 @@ using TriangulatedPolygonAStar.BasicGeometry;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// A canvas user control that can be used for displaying multiple <see cref="DrawMethod"/>s.
+    /// A canvas user control that can be used for displaying multiple <see cref="IDrawable"/> objects.
     /// </summary>
     public partial class Canvas : UserControl
     {
