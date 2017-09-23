@@ -17,39 +17,23 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public partial class Canvas : UserControl
     {
-        List<DrawMethod> drawMethods;
-        List<Dictionary<string, Color>> drawMethodColors;
-        List<Dictionary<string, float>> drawMethodWidths;
-
+        private List<IDrawable> drawables;
+        
         private double displayedObjectWidth;
         private double displayedObjectHeight;
         private float magnify;
 
-        /// <summary>
-        /// A delegate function that can be used to implement drawing functions.
-        /// An instance of a <see cref="DrawMethod"/> can be added to a 
-        /// <see cref="Canvas"/>.One object can implement multiple draw methods, 
-        /// displaying different type of data. Every draw method using the same 
-        /// canvas should also use identical coordinate systems.
-        /// </summary>
-        /// <param name="canvas">The canvas.</param>
-        /// <param name="colors">The colors used for drawing. See the used draw method for details.</param>
-        /// <param name="widths">The widths used for drawing. See the used draw method for details.</param>
-        public delegate void DrawMethod(Graphics canvas, Dictionary<string, Color> colors, Dictionary<string, float> widths);
-        
         /// <summary>
         /// Initializes a new instance of the <see cref="Canvas"/> class.
         /// </summary>
         public Canvas()
         {
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            drawMethods = new List<DrawMethod>();
-            drawMethodColors = new List<Dictionary<string, Color>>();
-            drawMethodWidths = new List<Dictionary<string, float>>();
+            drawables = new List<IDrawable>();
 
             displayedObjectWidth = 1.0;
             displayedObjectHeight = 1.0;
-            updateMagnify();
+            UpdateMagnify();
             
             InitializeComponent();
         }
@@ -57,50 +41,40 @@ namespace TriangulatedPolygonAStar.UI
         /// <summary>
         /// Updates the magnify setting that the displayed object fills the canvas.
         /// </summary>
-        private void updateMagnify() {
+        private void UpdateMagnify() {
             double mx = this.Width / displayedObjectWidth;
             double my = this.Height / displayedObjectHeight;
             magnify = Convert.ToSingle(Math.Min(mx, my));
         }
 
         /// <summary>
-        /// Adds a draw method delegate to the list of called draw methods. 
-        /// Every draw method used on the same canvas should also use identical 
-        /// coordinate system for drawing.
+        /// Adds a drawable object to the list of objects to draw. 
+        /// Every drawable should use identical coordinate system for drawing.
         /// </summary>
-        /// <param name="m">The draw method delegate.</param>
-        /// <param name="l">The hashtable that contains the used colors.</param>
-        /// <param name="w">The hashtable that contains the used widths.</param>
-        public void AddDrawMethod(DrawMethod m, Dictionary<string, Color> l, Dictionary<string, float> w)
+        /// <param name="drawable"></param>
+        public void AddDrawable(IDrawable drawable)
         {
-            drawMethods.Add(m);
-            drawMethodColors.Add(l);
-            drawMethodWidths.Add(w);
+            drawables.Add(drawable);
         }
 
         /// <summary>
-        /// Removes the specified draw method from the list.
+        /// Removes the specified drawable from the list.
         /// </summary>
-        /// <param name="m">The draw method.</param>
-        public void RemoveDrawMethod(DrawMethod m)
+        /// <param name="drawable"></param>
+        public void RemoveDrawable(IDrawable drawable)
         {
-            if (drawMethods.Contains(m))
+            if (drawables.Contains(drawable))
             {
-                int i = drawMethods.IndexOf(m);
-                drawMethods.RemoveAt(i);
-                drawMethodColors.RemoveAt(i);
-                drawMethodWidths.RemoveAt(i);
+                drawables.Remove(drawable);
             }
         }
 
         /// <summary>
-        /// Clears the draw method list.
+        /// Removes every drawable objects.
         /// </summary>
-        public void ClearDrawMethods()
+        public void ClearDrawables()
         {
-            drawMethods.Clear();
-            drawMethodColors.Clear();
-            drawMethodWidths.Clear();
+            drawables.Clear();
         }
 
         /// <summary>
@@ -118,18 +92,12 @@ namespace TriangulatedPolygonAStar.UI
                 mscale.Scale(magnify, magnify, MatrixOrder.Append);
                 canvas.Transform = mscale;
 
-                for (int i = 0; i < drawMethods.Count; i++)
+                foreach (var drawable in drawables)
                 {
-                    try
-                    {
-                        drawMethods[i](canvas, drawMethodColors[i], drawMethodWidths[i]);
-                    }
-                    catch (Exception e)
-                    {
-                        System.Diagnostics.Debug.Write(e.StackTrace);
-                    }
-                    canvas.Transform = mscale;
+                    drawable.Draw(canvas);
+                    canvas.Transform = mscale; // TODO why set again?
                 }
+                
              }
             catch (Exception e)
             {
@@ -149,7 +117,7 @@ namespace TriangulatedPolygonAStar.UI
             get { return displayedObjectWidth; }
             set { 
                 displayedObjectWidth = value; 
-                updateMagnify(); 
+                UpdateMagnify(); 
             }
         }
 
@@ -166,7 +134,7 @@ namespace TriangulatedPolygonAStar.UI
             set
             {
                 displayedObjectHeight = value;
-                updateMagnify();
+                UpdateMagnify();
             }
         }
 
@@ -177,16 +145,16 @@ namespace TriangulatedPolygonAStar.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void Canvas_ClientSizeChanged(object sender, EventArgs e)
         {
-            updateMagnify();
+            UpdateMagnify();
         }
 
         /// <summary>
         /// Gets the absolute position of the specified coordinates on this canvas.
         /// </summary>
-        /// <param name="x">The x coordinate.</param>
-        /// <param name="y">The y coordinate.</param>
+        /// <param name="x">The x coordinate on the canvas</param>
+        /// <param name="y">The y coordinate on the canvas</param>
         /// <returns></returns>
-        public IVector ConvertCanvasPositionToAbsolutePosition(int x, int y)
+        public IVector GetAbsolutePosition(int x, int y)
         {
             return new Vector(x / this.magnify, y / this.magnify);
         }

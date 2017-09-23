@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Text;
-using TriangulatedPolygonAStar;
 using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.UI
 {
-    public class TriangleIcon
+    public class DrawableTriangle : IDrawable
     {
         private static Dictionary<string, Color> colors = new Dictionary<string, Color>
         {
@@ -31,7 +29,7 @@ namespace TriangulatedPolygonAStar.UI
         private PointF[] points;
         private PointF centroid;
 
-        public TriangleIcon(Triangle triangle, string id)
+        public DrawableTriangle(Triangle triangle, string id)
         {
             this.id = id;
             points = new PointF[3];
@@ -59,7 +57,7 @@ namespace TriangulatedPolygonAStar.UI
             lastEvaluationResult = null;
         }
         
-        internal void Draw(Graphics canvas, Dictionary<string, Color> colors_, Dictionary<string, float> widths_)
+        private void DrawTriangle(Graphics canvas)
         {
             Color baseFillColor = colors["fill"];
             Color fillColor = baseFillColor;
@@ -79,12 +77,18 @@ namespace TriangulatedPolygonAStar.UI
             canvas.DrawPolygon(pen, points);
         }
 
-        internal void DrawMetaData(Graphics canvas, Dictionary<string, Color> colors_, Dictionary<string, float> widths_)
+        private void DrawMetaData(Graphics canvas)
         {
             string formatString = "{0} [{1}] {2:0.00}";
             String label = String.Format(formatString, id, traversionCount, lastEvaluationResult?.GMin);
             canvas.DrawString(label, new Font("Arial", widths["fontSize"]), new SolidBrush(colors["data"]), centroid);
 
+        }
+
+        public void Draw(Graphics canvas)
+        {
+            DrawTriangle(canvas);
+            DrawMetaData(canvas);
         }
     }
 }

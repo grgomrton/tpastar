@@ -53,8 +53,15 @@
     <Compile Include="Canvas.Designer.cs">
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometryExtensions.cs" />
-    <Compile Include="PathFinderExtensions.cs" />
+    <Compile Include="Drawables\DrawableTriangle.cs" />
+    <Compile Include="Drawables\GeometryExtensions.cs" />
+    <Compile Include="Drawables\GoalPoint.cs" />
+    <Compile Include="Drawables\Interfaces\IDrawable.cs" />
+    <Compile Include="Drawables\Interfaces\IPoint.cs" />
+    <Compile Include="Drawables\PathFinderExtensions.cs" />
+    <Compile Include="Drawables\Point.cs" />
+    <Compile Include="Drawables\PolyLine.cs" />
+    <Compile Include="Drawables\StartPoint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\TriangleMaps.cs" />
@@ -66,7 +73,6 @@
     <Compile Include="TPAStarDemonstration.Designer.cs">
       <DependentUpon>TPAStarDemonstration.cs</DependentUpon>
     </Compile>
-    <Compile Include="TriangleIcon.cs" />
     <EmbeddedResource Include="Canvas.resx">
       <DependentUpon>Canvas.cs</DependentUpon>
       <SubType>Designer</SubType>

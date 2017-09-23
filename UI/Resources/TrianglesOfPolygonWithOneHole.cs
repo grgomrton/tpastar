@@ -7,31 +7,31 @@ namespace TriangulatedPolygonAStar.UI.Resources
     {
         private static IEnumerable<Triangle> GetTrianglesOfPolygonWithOneHole()
         {
-            var cr0 = new Vector(2, 4);
-            var cr1 = new Vector(2, 3);
-            var cr2 = new Vector(3, 2);
-            var cr3 = new Vector(5, 3);
-            var cr4 = new Vector(7, 2);
-            var cl0 = new Vector(0, 4);
-            var cl1 = new Vector(0, 3);
-            var cl2 = new Vector(3, 1);
-            var cl3 = new Vector(5, 2.5);
-            var cl4 = new Vector(6, 1);
-            var cp0 = new Vector(1, 7);
-            var cp1 = new Vector(6.5, 0);
+            var p0 = new Vector(2.0, 4.0);
+            var p1 = new Vector(2.0, 3.0);
+            var p2 = new Vector(3.0, 2.0);
+            var p3 = new Vector(5.0, 3.0);
+            var p4 = new Vector(7.0, 2.0);
+            var p5 = new Vector(0.0, 4.0);
+            var p6 = new Vector(0.0, 3.0);
+            var p7 = new Vector(3.0, 1.0);
+            var p8 = new Vector(5.0, 2.5);
+            var p9 = new Vector(6.0, 1.0);
+            var p10 = new Vector(1.0, 7.0);
+            var p11 = new Vector(6.5, 0.0);
 
-            Triangle t0 = new Triangle(cp0, cl0, cr0);
-            Triangle t1 = new Triangle(cl0, cr0, cl1);
-            Triangle t2 = new Triangle(cl1, cr0, cr1);
-            Triangle t3 = new Triangle(cl1, cr1, cl2);
-            Triangle t4 = new Triangle(cr1, cl2, cr2);
-            Triangle t5 = new Triangle(cr2, cl2, cr3);
-            Triangle t6 = new Triangle(cl3, cl2, cr3);
-            Triangle t7 = new Triangle(cl3, cl4, cr3);
-            Triangle t8 = new Triangle(cr4, cl4, cr3);
-            Triangle t9 = new Triangle(cr4, cl4, cp1);
-            Triangle t10 = new Triangle(cr0, cp0, cr3);
-            Triangle t11 = new Triangle(cr4, cp0, cr3);
+            Triangle t0 = new Triangle(p10, p5, p0);
+            Triangle t1 = new Triangle(p5, p0, p6);
+            Triangle t2 = new Triangle(p6, p0, p1);
+            Triangle t3 = new Triangle(p6, p1, p7);
+            Triangle t4 = new Triangle(p1, p7, p2);
+            Triangle t5 = new Triangle(p2, p7, p3);
+            Triangle t6 = new Triangle(p8, p7, p3);
+            Triangle t7 = new Triangle(p8, p9, p3);
+            Triangle t8 = new Triangle(p4, p9, p3);
+            Triangle t9 = new Triangle(p4, p9, p11);
+            Triangle t10 = new Triangle(p0, p10, p3);
+            Triangle t11 = new Triangle(p4, p10, p3);
 
             return new [] {t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11};
         }
