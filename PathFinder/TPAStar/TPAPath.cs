@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TriangulatedPolygonAStar
 {
@@ -17,7 +16,7 @@ namespace TriangulatedPolygonAStar
         private double gPart;
         private bool isGoalReached;
         
-        internal TPAPath(IVector startPoint)
+        public TPAPath(IVector startPoint)
         {
             funnel = new FunnelStructure(startPoint);
             currentTriangle = null;
@@ -29,7 +28,7 @@ namespace TriangulatedPolygonAStar
             isGoalReached = false;
         }
 
-        private TPAPath(TPAPath other)
+        public TPAPath(TPAPath other)
         {
             funnel = new FunnelStructure(other.funnel);
             currentTriangle = other.currentTriangle;
@@ -208,7 +207,16 @@ namespace TriangulatedPolygonAStar
         
         private double FindDistanceFromClosestGoalPoint(IEdge edge, IEnumerable<IVector> goals)
         {
-            return goals.Min(point => edge.DistanceFromPoint(point));
+            double minDistance = -1;
+            foreach (var goal in goals)
+            {
+                double distance = edge.DistanceFromPoint(goal);
+                if (minDistance == -1 || distance < minDistance)
+                {
+                    minDistance = distance;
+                }
+            }
+            return minDistance;
         }
 
         public LinkedList<IVector> GetBuiltPath()
@@ -221,7 +229,7 @@ namespace TriangulatedPolygonAStar
         /// It is the sum of the length of the shortest possible path to the end edge of this path, 
         /// and the shortest path between the edge and the closest goal point.
         /// </summary>
-        public double EstimatedMinimalOverallCost
+        public double EstimatedMinimalOverallCost // TODO: too verbose names
         {
             get { return ShortestPossiblePathLength + h; }
         }
@@ -251,9 +259,17 @@ namespace TriangulatedPolygonAStar
             return new TPAPath(this);
         }
 
-        public IEnumerable<IVector> GetReachedGoalPoints(IEnumerable<IVector> goalPoints)
+        public IEnumerable<IVector> GetReachedGoals(IEnumerable<IVector> goalPoints)
         {
-            return goalPoints.Where(point => currentTriangle.ContainsPoint(point));
+            List<IVector> reachedGoals = new List<IVector>();
+            foreach (var goalPoint in goalPoints)
+            {
+                if (currentTriangle.ContainsPoint(goalPoint))
+                {
+                    reachedGoals.Add(goalPoint);
+                }
+            }
+            return reachedGoals;
         }
     }
 }

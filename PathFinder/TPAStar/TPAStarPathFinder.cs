@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
     public class TPAStarPathFinder
     {
         private LinkedList<TPAPath> openSet;
-        private Dictionary<IEdge, double> higherBoundOfPathToEdges;
+        private Dictionary<IEdge, double> higherBounds;
         
         public TPAStarPathFinder()
         {
             openSet = new LinkedList<TPAPath>();
-            higherBoundOfPathToEdges = new Dictionary<IEdge, double>();    
+            higherBounds = new Dictionary<IEdge, double>();    
         }   
         
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
             openSet.Clear();
-            higherBoundOfPathToEdges.Clear();
+            higherBounds.Clear();
             
             TPAPath initialPath = new TPAPath(startPoint);
             TriangleEvaluationResult startTriangleResult = initialPath.StepTo(startTriangle, goals);
@@ -40,7 +39,7 @@ namespace TriangulatedPolygonAStar
                 else
                 {
                     // first level goaltest - if in the triangle on the end of this path contains goalpoints, we add the finalized paths to the openset
-                    IEnumerable<IVector> reachedGoalPoints = bestPath.GetReachedGoalPoints(goals);
+                    IEnumerable<IVector> reachedGoalPoints = bestPath.GetReachedGoals(goals);
                     foreach (IVector goalPoint in reachedGoalPoints)
                     {
                         TPAPath newPath = bestPath.Clone();
@@ -77,9 +76,9 @@ namespace TriangulatedPolygonAStar
         /// <returns></returns>
         private bool PathMightBeShorterThanWhatWeAlreadyFound(TPAPath path)
         {
-            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+            if (higherBounds.ContainsKey(path.CurrentEdge))
             {
-                if (higherBoundOfPathToEdges[path.CurrentEdge] < path.ShortestPossiblePathLength)
+                if (higherBounds[path.CurrentEdge] < path.ShortestPossiblePathLength)
                 {
                     return false;
                 }
@@ -89,16 +88,16 @@ namespace TriangulatedPolygonAStar
         
         private void UpdateHigherBoundsOfPathToEdges(TPAPath path)
         {
-            if (higherBoundOfPathToEdges.ContainsKey(path.CurrentEdge))
+            if (higherBounds.ContainsKey(path.CurrentEdge))
             {
-                if (higherBoundOfPathToEdges[path.CurrentEdge] > path.LongestPossiblePathLength)
+                if (higherBounds[path.CurrentEdge] > path.LongestPossiblePathLength)
                 {
-                    higherBoundOfPathToEdges[path.CurrentEdge] = path.LongestPossiblePathLength;
+                    higherBounds[path.CurrentEdge] = path.LongestPossiblePathLength;
                 }
             }
             else
             {
-                higherBoundOfPathToEdges.Add(path.CurrentEdge, path.LongestPossiblePathLength);
+                higherBounds.Add(path.CurrentEdge, path.LongestPossiblePathLength);
             }
         }
 
