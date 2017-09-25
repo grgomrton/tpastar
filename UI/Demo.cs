@@ -9,9 +9,9 @@ namespace TriangulatedPolygonAStar.UI
 {
     public partial class Demo : Form
     {
-        private IPoint start;
-        private List<IPoint> goals;
-        private IPoint currentlyEditedPoint;
+        private Point start;
+        private List<Point> goals;
+        private Point currentlyEditedPoint;
         
         private IEnumerable<Triangle> triangles;
         private Dictionary<ITriangle, DrawableTriangle> trianglesToDraw;
@@ -24,10 +24,10 @@ namespace TriangulatedPolygonAStar.UI
             InitializeComponent();
             
             start = new StartPoint(new Vector(1, 5));
-            goals = new List<IPoint> { new GoalPoint(new Vector(5.1, 2.6)) };
+            goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
             currentlyEditedPoint = null;
-            
-            triangles = TriangleMaps.TrianglesOfPolygonWithOneHole;
+
+            triangles = TriangleMaps.TrianglesOfPolygonWithTwoHoles;
             trianglesToDraw = CreateTrianglesToDraw(triangles);
             
             path = new PolyLine(Enumerable.Empty<IVector>());
@@ -54,7 +54,7 @@ namespace TriangulatedPolygonAStar.UI
             trianglesToDraw[triangle].IncreaseTraversionCount(result);
         }
 
-        private bool IsPointUnderCursor(IPoint point, MouseEventArgs cursorState)
+        private bool IsPointUnderCursor(Point point, MouseEventArgs cursorState)
         {
             var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
             return cursorAbsolutePosition.DistanceFrom(point.Position) < 2*point.Radius; // TODO why 2 times?

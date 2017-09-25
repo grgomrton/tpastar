@@ -2,7 +2,7 @@
 
 namespace TriangulatedPolygonAStar.UI
 {
-    public abstract class Point : IPoint
+    public abstract class Point : IDrawable
     {
         private float radius;
         private Brush brush;
