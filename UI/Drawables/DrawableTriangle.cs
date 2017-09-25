@@ -63,7 +63,7 @@ namespace TriangulatedPolygonAStar.UI
 
         private void DrawMetaData(Graphics canvas)
         {
-            var caption = String.Format(MetaDataFormat, id, traversionCount, lastEvaluationResult?.GMin); // TODO is this really useful information?
+            var caption = String.Format(MetaDataFormat, id, traversionCount, lastEvaluationResult?.ShortestPathToEdgeLength); // TODO is this really useful information?
             canvas.DrawString(caption, captionFont, captionBrush, centroid);
         }
 

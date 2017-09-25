@@ -16,6 +16,11 @@ namespace TriangulatedPolygonAStar
         private double distanceOfClosestGoalPointToEdge;   // h
         private bool isGoalReached;
         
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TPAPath"/> class which represents
+        /// the result of stepping over the specified set of adjacent triangles.
+        /// </summary>
+        /// <param name="startPoint"></param>
         public TPAPath(IVector startPoint)
         {
             funnel = new FunnelStructure(startPoint);
@@ -96,7 +101,7 @@ namespace TriangulatedPolygonAStar
             return new TPAPath(this);
         }
         
-        public TriangleEvaluationResult StepTo(ITriangle targetTriangle, IEnumerable<IVector> goalPoints)
+        public void StepTo(ITriangle targetTriangle, IEnumerable<IVector> goalPoints)
         {
             if (GoalReached)
             {
@@ -129,11 +134,9 @@ namespace TriangulatedPolygonAStar
                 lengthOfLongestPathFromApexToEdge = CalculateLengthOfLongestPathFromApexToEdge(funnel.Apex);
                 distanceOfClosestGoalPointToEdge = CalculateDistanceFromClosestGoalPoint(currentEdge, goalPoints);
             }
-            
-            return new TriangleEvaluationResult(distanceOfClosestGoalPointToEdge, EstimatedMinimalCost, ShortestPathToEdgeLength, LongestPathToEdgeLength); // TODO move triangleevaluation result creation to pathfinder
         }
 
-        public IEnumerable<IVector> GetReachedGoals(IEnumerable<IVector> goalPoints) // TODO is this the right place for this test?
+        public IEnumerable<IVector> SelectReachedGoals(IEnumerable<IVector> goalPoints)
         {
             List<IVector> reachedGoals = new List<IVector>();
             foreach (var goalPoint in goalPoints)

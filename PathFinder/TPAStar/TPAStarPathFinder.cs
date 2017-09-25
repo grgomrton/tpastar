@@ -15,66 +15,61 @@ namespace TriangulatedPolygonAStar
         
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
+            // TODO add argument check or define result for unexpected inputs
             openSet.Clear();
             higherBounds.Clear();
             
             TPAPath initialPath = new TPAPath(startPoint);
-            TriangleEvaluationResult startTriangleResult = initialPath.StepTo(startTriangle, goals);
-            FireTriangleExploredEvent(startTriangle, startTriangleResult);
+            initialPath.StepTo(startTriangle, goals);
             openSet.AddFirst(initialPath);
+            FireTriangleExploredEvent(startTriangle, initialPath);
             
             TPAPath optimalPath = initialPath;
             bool done = false;
-            while ((openSet.Count > 0) && (!done))
+            while ((openSet.Count > 0) && !done)
             {
                 TPAPath bestPath = openSet.First.Value;
                 openSet.RemoveFirst();
                 
-                // two-level goaltest - second level
-                if (bestPath.GoalReached) // if the first path of the openset is a finalized path to one of the goalVectorts
-                {                          // then this is an optimal path, beacuse even the lower bound of every other path is bigger than the cost of this full path
+                // if the first path of the openset is a finalized path to one of the goal points
+                // then this is an optimal path, beacuse even the lower bound of every other path is higher than the cost of this fully built path
+                if (bestPath.GoalReached)    
+                {                            
                     optimalPath = bestPath;
                     done = true;
                 }
                 else
                 {
-                    // first level goaltest - if in the triangle on the end of this path contains goalpoints, we add the finalized paths to the openset
-                    IEnumerable<IVector> reachedGoalPoints = bestPath.GetReachedGoals(goals);
+                    // if the triangle on the end of this path contains goalpoints, 
+                    // we add finalized paths from the current path to the contained goals
+                    IEnumerable<IVector> reachedGoalPoints = bestPath.SelectReachedGoals(goals);
                     foreach (IVector goalPoint in reachedGoalPoints)
                     {
                         TPAPath newPath = bestPath.Clone();
                         newPath.FinalizePath(goalPoint);
-                        AddToOpenSetOrderedByEstimatedOverallCost(newPath);
+                        InsertToOpenSet(newPath);
                     }
                     
-                    // adding new paths
+                    // further explore the triangle map through the current path
                     IEnumerable<ITriangle> neighbourTriangles = bestPath.ExplorableTriangles;
-                    foreach (ITriangle t in neighbourTriangles)
+                    foreach (ITriangle neighbour in neighbourTriangles)
                     {
                         TPAPath newPath = bestPath.Clone();
-                        TriangleEvaluationResult result = newPath.StepTo(t, goals);
-                        FireTriangleExploredEvent(t, result);
-                        
-                        if (PathMightBeShorterThanWhatWeAlreadyFound(newPath))
+                        newPath.StepTo(neighbour, goals);
+                        if (IsPathGoodCandidate(newPath))
                         {
-                            AddToOpenSetOrderedByEstimatedOverallCost(newPath);
+                            InsertToOpenSet(newPath);
                             UpdateHigherBoundsOfPathToEdges(newPath);
                         }
+                        
+                        FireTriangleExploredEvent(neighbour, newPath);
                     }
                 }
             }
             return optimalPath.GetBuiltPath();
         }
 
-        /// <summary>
-        /// We exclude paths whose even the shortest possible path to the their edge is longer than
-        /// the one, we already found during exploration. We also prevent the algorithm to enter 
-        /// a loop around a hole in a polygon, but do not exclude possible shorter paths we found
-        /// only later during triangle traversion.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        private bool PathMightBeShorterThanWhatWeAlreadyFound(TPAPath path)
+        private bool IsPathGoodCandidate(TPAPath path)
         {
             if (higherBounds.ContainsKey(path.CurrentEdge))
             {
@@ -85,7 +80,10 @@ namespace TriangulatedPolygonAStar
             }
             return true;
         }
-        
+
+        // by maintaining higher-bounds to edges we prevent the algorithm to enter into
+        // a loop around a polygon hole, and prevent the re-evaluation of paths already 
+        // known to be bad candidates
         private void UpdateHigherBoundsOfPathToEdges(TPAPath path)
         {
             if (higherBounds.ContainsKey(path.CurrentEdge))
@@ -101,7 +99,8 @@ namespace TriangulatedPolygonAStar
             }
         }
 
-        private void AddToOpenSetOrderedByEstimatedOverallCost(TPAPath path)
+        // open set is a list of paths ordered by their minimal overall cost
+        private void InsertToOpenSet(TPAPath path)
         {
             if ((openSet.First == null) || 
                 (openSet.First.Value.EstimatedMinimalCost > path.EstimatedMinimalCost))
@@ -120,11 +119,12 @@ namespace TriangulatedPolygonAStar
             }
         }
 
-        private void FireTriangleExploredEvent(ITriangle triangle, TriangleEvaluationResult result)
+        private void FireTriangleExploredEvent(ITriangle triangle, TPAPath resultingPath)
         {
             if (TriangleExplored != null)
             {
-                TriangleExplored(triangle, result);
+                TriangleEvaluationResult evaluationEventArgs = new TriangleEvaluationResult(resultingPath);
+                TriangleExplored(triangle, evaluationEventArgs);
             }
         }
         
