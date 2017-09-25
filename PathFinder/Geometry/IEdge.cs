@@ -1,7 +1,7 @@
 ﻿namespace TriangulatedPolygonAStar
 {
     /// <summary>
-    /// Represents a line segment between two endpoints.
+    /// Represents a line segment between two points in the two-dimensional space.
     /// </summary>
     public interface IEdge
     {
@@ -16,8 +16,8 @@
         /// Returns the closest point on this edge from the specified point.
         /// </summary>
         /// <param name="point">The point to measure the distance from.</param>
-        /// <returns>The closest point to the point of the <see cref="Edge"/>.</returns>
-        IVector ClosestPointOnEdgeFrom(IVector point);
+        /// <returns>The closest point of the edge to the specified point.</returns>
+        IVector ClosestPointTo(IVector point);
         
         /// <summary>
         /// The first endpoint of the edge. 

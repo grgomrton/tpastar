@@ -90,7 +90,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             return (u >= 0) && (v >= 0) && (u + v <= 1); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
 
-        public IEdge GetCommonEdge(ITriangle other)
+        public IEdge GetCommonEdgeWith(ITriangle other)
         {
             if (!adjacentEdges.ContainsKey(other))
             {

@@ -29,7 +29,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         }
 
         // source: http://www.gamedev.net/topic/444154-closest-point-on-a-line/
-        public IVector ClosestPointOnEdgeFrom(IVector p)    // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
+        public IVector ClosestPointTo(IVector p)    // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
         {                                                   // segmentClamp = true
             IVector closest;
             var ap = p.Minus(A);                            // Vector AP = P - A:

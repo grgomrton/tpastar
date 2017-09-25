@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
+    /// <summary>
+    /// Represents a triangle in the two-dimensional space.
+    /// </summary>
     public interface ITriangle
     {
         /// <summary>
@@ -34,7 +37,7 @@ namespace TriangulatedPolygonAStar
         /// <param name="other">The adjacent triangle</param>
         /// <returns>The common edge.</returns>
         /// <exception cref="ArgumentException">In case the triangles have no common edge</exception>
-        IEdge GetCommonEdge(ITriangle other);
+        IEdge GetCommonEdgeWith(ITriangle other);
         
     }
 }

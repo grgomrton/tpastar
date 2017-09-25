@@ -159,7 +159,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t1 = new Triangle(t1a, t1b, t1c);
             Triangle t2 = new Triangle(t2a, t2b, t2c);
 
-            Action gettingCommonEdge = () => t1.GetCommonEdge(t2);
+            Action gettingCommonEdge = () => t1.GetCommonEdgeWith(t2);
 
             gettingCommonEdge.ShouldThrow<ArgumentException>()
                 .And.Message.Should().Contain("neighbour");
@@ -179,7 +179,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t2 = new Triangle(t2a, t2b, t2c);
             t1.SetNeighbours(new [] {t2});
             
-            var commonEdge = t1.GetCommonEdge(t2);
+            var commonEdge = t1.GetCommonEdgeWith(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
         }
@@ -198,7 +198,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t2 = new Triangle(t2c, t2a, t2b);
             t1.SetNeighbours(new [] {t2});
 
-            var commonEdge = t1.GetCommonEdge(t2);
+            var commonEdge = t1.GetCommonEdgeWith(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
         }
@@ -217,7 +217,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t2 = new Triangle(t2c, t2a, t2b);
             t1.SetNeighbours(new [] {t2});
 
-            var commonEdge = t1.GetCommonEdge(t2);
+            var commonEdge = t1.GetCommonEdgeWith(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
         }
@@ -236,7 +236,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t2 = new Triangle(t2c, t2b, t2a);
             t1.SetNeighbours(new [] {t2});
             
-            var commonEdge = t1.GetCommonEdge(t2);
+            var commonEdge = t1.GetCommonEdgeWith(t2);
 
             commonEdge.ShouldBeEquivalentTo(expectedCommonEdge);
         }

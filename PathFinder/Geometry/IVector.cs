@@ -1,5 +1,8 @@
 ﻿namespace TriangulatedPolygonAStar
 {
+    /// <summary>
+    /// Represents a point in the two-dimensional space.
+    /// </summary>
     public interface IVector
     {
         /// <summary>

@@ -48,7 +48,7 @@ namespace TriangulatedPolygonAStar
                     }
                     
                     // adding new paths
-                    var neighbourTriangles = bestPath.ExplorableTriangles;
+                    IEnumerable<ITriangle> neighbourTriangles = bestPath.ExplorableTriangles;
                     foreach (ITriangle t in neighbourTriangles)
                     {
                         TPAPath newPath = bestPath.Clone();
@@ -78,7 +78,7 @@ namespace TriangulatedPolygonAStar
         {
             if (higherBounds.ContainsKey(path.CurrentEdge))
             {
-                if (higherBounds[path.CurrentEdge] < path.ShortestPossiblePathLength)
+                if (higherBounds[path.CurrentEdge] < path.ShortestPathToEdgeLength)
                 {
                     return false;
                 }
@@ -90,29 +90,29 @@ namespace TriangulatedPolygonAStar
         {
             if (higherBounds.ContainsKey(path.CurrentEdge))
             {
-                if (higherBounds[path.CurrentEdge] > path.LongestPossiblePathLength)
+                if (higherBounds[path.CurrentEdge] > path.LongestPathToEdgeLength)
                 {
-                    higherBounds[path.CurrentEdge] = path.LongestPossiblePathLength;
+                    higherBounds[path.CurrentEdge] = path.LongestPathToEdgeLength;
                 }
             }
             else
             {
-                higherBounds.Add(path.CurrentEdge, path.LongestPossiblePathLength);
+                higherBounds.Add(path.CurrentEdge, path.LongestPathToEdgeLength);
             }
         }
 
         private void AddToOpenSetOrderedByEstimatedOverallCost(TPAPath path)
         {
             if ((openSet.First == null) || 
-                (openSet.First.Value.EstimatedMinimalOverallCost > path.EstimatedMinimalOverallCost))
+                (openSet.First.Value.EstimatedMinimalCost > path.EstimatedMinimalCost))
             {
                 openSet.AddFirst(path);
             }
             else
             {
-                var targetNode = openSet.First;
+                LinkedListNode<TPAPath> targetNode = openSet.First;
                 while ((targetNode.Next != null) && 
-                       (targetNode.Next.Value.EstimatedMinimalOverallCost < path.EstimatedMinimalOverallCost))
+                       (targetNode.Next.Value.EstimatedMinimalCost < path.EstimatedMinimalCost))
                 {
                     targetNode = targetNode.Next;
                 }
