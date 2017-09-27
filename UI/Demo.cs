@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TriangulatedPolygonAStar.BasicGeometry;
 using TriangulatedPolygonAStar.UI.Resources;
@@ -18,6 +21,8 @@ namespace TriangulatedPolygonAStar.UI
         
         private TPAStarPathFinder pathFinder;
         private PolyLine path;
+
+        private static int TimeOutInMillseconds = 1000;
         
         public Demo()
         {
@@ -70,8 +75,27 @@ namespace TriangulatedPolygonAStar.UI
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start.Position));
             if (startTriangle != null)
             {
-                var builtPath = pathFinder.FindPath(start.Position, startTriangle, goals.Select(point => point.Position));
-                path.SetPoints(builtPath);
+                var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;  
+                
+                Action<Task<IEnumerable<IVector>>> visualizePath = pathFindingOutcome => // TODO couldnt this be made without defining anonymus-class like things?
+                {
+                    if (pathFindingOutcome.IsFaulted)
+                    {
+                        MessageBox.Show("Finding path failed due to timeout or unexpected configuration. Details: \n\n" + pathFindingOutcome?.Exception?.ToString());
+                    }
+                    else
+                    {
+                        path.SetPoints(pathFindingOutcome.Result);
+                    }
+                };
+
+                Task<IEnumerable<IVector>>.Factory // TODO couldnt this be done with async and await calls?
+                    .StartNew(() =>
+                            pathFinder.FindPath(start.Position, startTriangle,
+                                goals.Select(point => point.Position)),
+                        cancellationToken)
+                    .ContinueWith(visualizePath, cancellationToken)
+                    .Wait(2 * TimeOutInMillseconds);
             }
             else
             {
