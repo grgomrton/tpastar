@@ -170,96 +170,100 @@ namespace TriangulatedPolygonAStar
 
             if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
             {
-                IVector closestPoint = edge.ClosestPointTo(apex.Value);
+                IVector closestPointOfEdgeToApex = edge.ClosestPointTo(apex.Value);
                 IVector apexPoint = apex.Value;
-                IVector left_1 = apex.Previous.Value;
-                IVector right_1 = apex.Next.Value;
+                IVector apexToLeftOne = apex.Previous.Value.Minus(apex.Value);
+                IVector apexToRightOne = apex.Next.Value.Minus(apex.Value);
+                IVector apexToClosestPointOnEdge = closestPointOfEdgeToApex.Minus(apexPoint);
 
-                IVector val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
-                IVector var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
-                IVector vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
-
-                // 
-                if (val.IsInCounterClockWiseDirectionFrom(vacp))
+                if (apexToLeftOne.IsInCounterClockWiseDirectionFrom(apexToClosestPointOnEdge))
                 {
-                    if (var.IsInClockWiseDirectionFrom(vacp))
+                    if (apexToRightOne.IsInClockWiseDirectionFrom(apexToClosestPointOnEdge))
                     {
                         // easy way, closest point is visible from apex
-                        minpathlength += apexPoint.DistanceFrom(closestPoint);
+                        minpathlength = apexPoint.DistanceFrom(closestPointOfEdgeToApex);
                     }
                     else
                     {
-                        // we have to march on the right side of the funnel, to see the edge
-                        LinkedListNode<IVector> node = apex;
-
-                        while ((var.IsInCounterClockWiseDirectionFrom(vacp)) && (node.Next.Next != null)) // TODO: isn't there a way to make this more compact?
-                        {
-                            minpathlength += node.Value.DistanceFrom(node.Next.Value);
-
-                            node = node.Next;
-
-                            closestPoint = edge.ClosestPointTo(node.Value);
-                            apexPoint = node.Value;
-                            left_1 = node.Previous.Value;
-                            right_1 = node.Next.Value;
-
-                            val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
-                            var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
-                            vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
-                        }
-
-                        closestPoint = edge.ClosestPointTo(node.Value);
-                        minpathlength += node.Value.DistanceFrom(closestPoint);
+                        minpathlength = WalkOnRightSideOfFunnelUntilClosestPointBecomesVisible(apex, edge);
                     }
                 }
                 else
                 {
-                    // we have to march on the left side of the funnel, to see the edge
-                    LinkedListNode<IVector> node = apex;
-
-                    while ((val.IsInClockWiseDirectionFrom(vacp)) && (node.Previous.Previous != null))
-                    {
-                        minpathlength += node.Value.DistanceFrom(node.Previous.Value);
-
-                        node = node.Previous;
-
-                        closestPoint = edge.ClosestPointTo(node.Value);
-                        apexPoint = node.Value;
-                        left_1 = node.Previous.Value;
-                        right_1 = node.Next.Value;
-
-                        val = left_1.Minus(apexPoint); // vector from apex to the left part of the funnel
-                        var = right_1.Minus(apexPoint); // vector from apex to the right part of the funnel
-                        vacp = closestPoint.Minus(apexPoint); // vector from apex to the closest point
-                    }
-
-                    closestPoint = edge.ClosestPointTo(node.Value);
-                    minpathlength += node.Value.DistanceFrom(closestPoint);
+                    minpathlength = WalkOnLeftSideOfFunnelUntilClosestPointBecomesVisible(apex, edge);
                 }
             }
             return minpathlength;
         }
 
+        private static double WalkOnRightSideOfFunnelUntilClosestPointBecomesVisible(LinkedListNode<IVector> startNode, IEdge edge)
+        {
+            double pathLength = 0;
+            LinkedListNode<IVector> currentNode = startNode;
+            
+            IVector closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
+            IVector currentNodeToRightOne = currentNode.Next.Value.Minus(currentNode.Value);
+            IVector currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            
+            while (currentNodeToRightOne.IsInCounterClockWiseDirectionFrom(currentNodeToClosestPointOnEdge) && (currentNode.Next.Next != null))
+            {
+                pathLength += currentNode.Value.DistanceFrom(currentNode.Next.Value);
+                currentNode = currentNode.Next;
+                
+                closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
+                currentNodeToRightOne = currentNode.Next.Value.Minus(currentNode.Value);
+                currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            }
+
+            pathLength += currentNode.Value.DistanceFrom(edge.ClosestPointTo(currentNode.Value));
+
+            return pathLength;
+        }
+        
+        private static double WalkOnLeftSideOfFunnelUntilClosestPointBecomesVisible(LinkedListNode<IVector> startNode, IEdge edge)
+        {
+            double pathLength = 0;
+            LinkedListNode<IVector> currentNode = startNode;
+            
+            IVector closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
+            IVector currentNodeToRightOne = currentNode.Previous.Value.Minus(currentNode.Value);
+            IVector currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            
+            while (currentNodeToRightOne.IsInCounterClockWiseDirectionFrom(currentNodeToClosestPointOnEdge) && (currentNode.Previous.Previous != null))
+            {
+                pathLength += currentNode.Value.DistanceFrom(currentNode.Previous.Value);
+                currentNode = currentNode.Previous;
+                
+                closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
+                currentNodeToRightOne = currentNode.Previous.Value.Minus(currentNode.Value);
+                currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            }
+
+            pathLength += currentNode.Value.DistanceFrom(edge.ClosestPointTo(currentNode.Value));
+
+            return pathLength;
+        }
+        
         private static double CalculateLengthOfLongestPathFromApexToEdge(LinkedListNode<IVector> apex)
         {
-            LinkedListNode<IVector> node = apex;
-            double maxLeft = 0;
-            double maxRight = 0;
+            double leftPathLength = 0;
+            double rightPathLength = 0;
 
-            while (node.Previous != null)
+            LinkedListNode<IVector> currentNode = apex;
+            while (currentNode.Previous != null)
             {
-                maxLeft += node.Value.DistanceFrom(node.Previous.Value);
-                node = node.Previous;
+                leftPathLength += currentNode.Value.DistanceFrom(currentNode.Previous.Value);
+                currentNode = currentNode.Previous;
             }
 
-            node = apex;
-            while (node.Next != null)
+            currentNode = apex;
+            while (currentNode.Next != null)
             {
-                maxRight += node.Value.DistanceFrom(node.Next.Value);
-                node = node.Next;
+                rightPathLength += currentNode.Value.DistanceFrom(currentNode.Next.Value);
+                currentNode = currentNode.Next;
             }
 
-            return Math.Max(maxLeft, maxRight);
+            return Math.Max(leftPathLength, rightPathLength);
         }
 
         private static double CalculateLengthOfAlreadyBuiltPath(LinkedList<IVector> path)

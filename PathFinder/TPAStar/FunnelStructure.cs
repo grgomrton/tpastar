@@ -5,7 +5,7 @@ namespace TriangulatedPolygonAStar
 {
     public class FunnelStructure
     {
-        private LinkedList<IVector> funnel; // from the apex view, the left side is the first element, the last one is on the right side
+        private LinkedList<IVector> funnel;
         private LinkedListNode<IVector> apex;
         private LinkedList<IVector> path;
         
@@ -44,7 +44,7 @@ namespace TriangulatedPolygonAStar
 
             if (commonSide == Side.Both)
             {
-                throw new ArgumentException("Illegal new edge: edge is identical with the edge defined by the funnel endpoints",
+                throw new ArgumentException("Illegal new edge: edge endpoints are identical with funnel endpoints",
                     nameof(edge));
             }
             else if (commonSide == Side.Left)
@@ -65,7 +65,7 @@ namespace TriangulatedPolygonAStar
                 }
                 else
                 {
-                    throw new ArgumentException("Illegal new edge: funnel end and new edge do not have common vertex", nameof(edge));
+                    throw new ArgumentException("Illegal new edge: funnel end and new edge do not share any vertex", nameof(edge));
                 }
             }
         }
@@ -81,6 +81,7 @@ namespace TriangulatedPolygonAStar
             }
         }
 
+        // from the apex view, the left side is the first element, the last one is on the right side
         private void InitFunnel(IEdge firstEdge)
         {
             IVector startPoint = apex.Value;
@@ -136,27 +137,26 @@ namespace TriangulatedPolygonAStar
             while (popped && (funnel.Count >= 3))
             {
                 popped = false;
-                LinkedListNode<IVector> last = funnel.Last;
-                IVector right = last.Value;
-                IVector right_1 = last.Previous.Value;
-                IVector right_2 = last.Previous.Previous.Value;
-                IVector v1 = right_1.Minus(right);
-                IVector v2 = right_2.Minus(right);
-                if (apex != last.Previous)
+                IVector rightEnd = funnel.Last.Value;
+                IVector secondFromRight = funnel.Last.Previous.Value;
+                IVector thirdFromRight = funnel.Last.Previous.Previous.Value;
+                IVector lastToSecondFromRight = secondFromRight.Minus(rightEnd);
+                IVector lastToThirdFromRight = thirdFromRight.Minus(rightEnd);
+                if (apex != funnel.Last.Previous)
                 {
-                    if (v1.IsInCounterClockWiseDirectionFrom(v2))
+                    if (lastToSecondFromRight.IsInCounterClockWiseDirectionFrom(lastToThirdFromRight))
                     {
-                        funnel.Remove(last.Previous);
+                        funnel.Remove(funnel.Last.Previous);
                         popped = true;
                     }
                 }
                 else
                 {
-                    if (v1.IsInClockWiseDirectionFrom(v2))
+                    if (lastToSecondFromRight.IsInClockWiseDirectionFrom(lastToThirdFromRight))
                     {
-                        funnel.Remove(last.Previous);
-                        path.AddLast(last.Previous.Value);
-                        apex = last.Previous;
+                        path.AddLast(thirdFromRight);
+                        funnel.Remove(funnel.Last.Previous);
+                        apex = funnel.Last.Previous;
                         popped = true;
                     }
                 }
@@ -171,27 +171,26 @@ namespace TriangulatedPolygonAStar
             while (popped && (funnel.Count >= 3))
             {
                 popped = false;
-                LinkedListNode<IVector> first = funnel.First;
-                IVector left = first.Value;
-                IVector left_1 = first.Next.Value;
-                IVector left_2 = first.Next.Next.Value;
-                IVector v1 = left_1.Minus(left);
-                IVector v2 = left_2.Minus(left);
-                if (apex != first.Next)
+                IVector leftEnd = funnel.First.Value;
+                IVector secondFromLeft = funnel.First.Next.Value;
+                IVector thirdFromLeft = funnel.First.Next.Next.Value;
+                IVector firstToSecondFromLeft = secondFromLeft.Minus(leftEnd);
+                IVector firstToThirdFromLeft = thirdFromLeft.Minus(leftEnd);
+                if (apex != funnel.First.Next)
                 {
-                    if (v1.IsInClockWiseDirectionFrom(v2))
+                    if (firstToSecondFromLeft.IsInClockWiseDirectionFrom(firstToThirdFromLeft))
                     {
-                        funnel.Remove(first.Next);
+                        funnel.Remove(funnel.First.Next);
                         popped = true;
                     }
                 }
                 else
                 {
-                    if (v1.IsInCounterClockWiseDirectionFrom(v2))
+                    if (firstToSecondFromLeft.IsInCounterClockWiseDirectionFrom(firstToThirdFromLeft))
                     {
-                        funnel.Remove(first.Next);
-                        path.AddLast(first.Next.Value);
-                        apex = first.Next;
+                        path.AddLast(thirdFromLeft);
+                        funnel.Remove(funnel.First.Next);
+                        apex = funnel.First.Next;
                         popped = true;
                     }
                 }

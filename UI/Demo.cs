@@ -81,7 +81,7 @@ namespace TriangulatedPolygonAStar.UI
                 {
                     if (pathFindingOutcome.IsFaulted)
                     {
-                        MessageBox.Show("Finding path failed due to timeout or unexpected configuration. Details: \n\n" + pathFindingOutcome?.Exception?.ToString());
+                        throw pathFindingOutcome.Exception;
                     }
                     else
                     {
@@ -89,13 +89,21 @@ namespace TriangulatedPolygonAStar.UI
                     }
                 };
 
-                Task<IEnumerable<IVector>>.Factory // TODO couldnt this be done with async and await calls?
-                    .StartNew(() =>
-                            pathFinder.FindPath(start.Position, startTriangle,
-                                goals.Select(point => point.Position)),
-                        cancellationToken)
-                    .ContinueWith(visualizePath, cancellationToken)
-                    .Wait(2 * TimeOutInMillseconds);
+                try
+                {
+                    Task<IEnumerable<IVector>>.Factory // TODO couldn't this be done with async and await calls?
+                        .StartNew(() =>
+                                pathFinder.FindPath(start.Position, startTriangle,
+                                    goals.Select(point => point.Position)),
+                            cancellationToken)
+                        .ContinueWith(visualizePath, cancellationToken)
+                        .Wait(2 * TimeOutInMillseconds);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Finding path failed due to timeout or unexpected configuration. Details: \n\n" + e.ToString());
+                }
+
             }
             else
             {
@@ -150,7 +158,7 @@ namespace TriangulatedPolygonAStar.UI
             if (cursorState.Button == MouseButtons.Right)
             {
                 var goalToDelete = goals.FirstOrDefault(goal => IsPointUnderCursor(goal, cursorState));
-                if (goalToDelete != null && goals.Count > 1)
+                if (goalToDelete != null)
                 {
                     goals.Remove(goalToDelete);
                     display.RemoveDrawable(goalToDelete);

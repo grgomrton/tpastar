@@ -16,7 +16,6 @@ namespace TriangulatedPolygonAStar
         
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
-            // TODO add argument check or define result for unexpected inputs
             openSet.Clear();
             higherBounds.Clear();
             
@@ -33,7 +32,7 @@ namespace TriangulatedPolygonAStar
                 openSet.RemoveFirst();
                 
                 // if the first path of the openset is a finalized path to one of the goal points
-                // then this is an optimal path, beacuse even the lower bound of every other path is higher than the cost of this fully built path
+                // then this is an optimal path, beacuse even the lower bound of every other path is higher than the cost of this path
                 if (bestPath.GoalReached)    
                 {                            
                     optimalPath = bestPath;
