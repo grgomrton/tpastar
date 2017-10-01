@@ -12,7 +12,6 @@ namespace TriangulatedPolygonAStar.UI
         private static float EdgeWidth = 0.01f;
         private static Color TextColor = Color.Black;
         private static float FontSize = 0.12f;
-        private static string MetaDataFormat = "{0} ({1}) {2:0.00}";
         
         private string id;
         private int traversionCount;
@@ -30,7 +29,7 @@ namespace TriangulatedPolygonAStar.UI
             points[0] = triangle.A.ToPointF();
             points[1] = triangle.B.ToPointF();
             points[2] = triangle.C.ToPointF();
-            centroid = triangle.CalculateCentroid().ToPointF();
+            centroid = triangle.CalculateCentroid().Minus(new Vector(0.8, 0.8)).ToPointF();
             edgePen = new Pen(EdgeColor, EdgeWidth);
             captionBrush = new SolidBrush(TextColor);
             captionFont = new Font("Arial", FontSize); // TODO os dependent
@@ -63,7 +62,11 @@ namespace TriangulatedPolygonAStar.UI
 
         private void DrawMetaData(Graphics canvas)
         {
-            var caption = String.Format(MetaDataFormat, id, traversionCount, lastEvaluationResult?.ShortestPathToEdgeLength); // TODO is this really useful information?
+            var caption = String.Format("{0} ({1}) gMin: {2:0.00}, f: {3:0.00}", 
+                id, 
+                traversionCount, 
+                lastEvaluationResult?.ShortestPathToEdgeLength,
+                lastEvaluationResult?.EstimatedMinimalCost);
             canvas.DrawString(caption, captionFont, captionBrush, centroid);
         }
 

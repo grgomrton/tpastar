@@ -14,7 +14,7 @@
         public TriangleEvaluationResult(TPAPath path)
         {
             CurrentEdge = path.CurrentEdge;
-            EstimatedMinimalCost = path.EstimatedMinimalCost;
+            EstimatedMinimalCost = path.MinimalTotalCost;
             ShortestPathToEdgeLength = path.ShortestPathToEdgeLength;
             LongestPathToEdgeLength = path.LongestPathToEdgeLength;
         }
