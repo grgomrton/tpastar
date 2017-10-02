@@ -14,7 +14,7 @@ namespace TriangulatedPolygonAStar.UI
     {
         private List<IDrawable> drawables;
         
-        private double displayedObjectWidth;
+        private double displayedObjectWidth; 
         private double displayedObjectHeight;
         private float magnify;
 
@@ -79,24 +79,22 @@ namespace TriangulatedPolygonAStar.UI
         protected override void OnPaint(PaintEventArgs pe)
         {            
             pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;            
-            try
+            Graphics canvas = pe.Graphics;
+            Matrix mscale = new Matrix();
+            mscale.Scale(magnify, magnify, MatrixOrder.Append);
+            canvas.Transform = mscale;
+
+            foreach (var drawable in drawables)
             {
-                Graphics canvas = pe.Graphics;
-
-                Matrix mscale = new Matrix();
-                mscale.Scale(magnify, magnify, MatrixOrder.Append);
-                canvas.Transform = mscale;
-
-                foreach (var drawable in drawables)
+                try
                 {
                     drawable.Draw(canvas);
-                    canvas.Transform = mscale;
                 }
-                
-             }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.Write(e.StackTrace);
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.Write(e.StackTrace);
+                }
+                canvas.Transform = mscale;
             }
         }
 
