@@ -130,68 +130,64 @@ namespace TriangulatedPolygonAStar
         private void AddToRightSideOfFunnel(IVector point)
         {
             funnel.AddLast(point);
+            IVector rightEndPoint = point;
             
             bool popped = true;
-            while (popped && (funnel.Count >= 3))
+            while (popped && (funnel.Last.Previous != apex))
             {
                 popped = false;
-                IVector rightEnd = funnel.Last.Value;
-                IVector secondFromRight = funnel.Last.Previous.Value;
-                IVector thirdFromRight = funnel.Last.Previous.Previous.Value;
-                IVector lastToSecondFromRight = secondFromRight.Minus(rightEnd);
-                IVector lastToThirdFromRight = thirdFromRight.Minus(rightEnd);
-                if (apex != funnel.Last.Previous)
+                LinkedListNode<IVector> secondItemFromRight = funnel.Last.Previous;
+                LinkedListNode<IVector> thirdItemFromRight = funnel.Last.Previous.Previous;
+                IVector backOne = secondItemFromRight.Value.Minus(rightEndPoint);
+                IVector backTwo = thirdItemFromRight.Value.Minus(rightEndPoint);
+                if (backTwo.IsInClockWiseDirectionFrom(backOne))
                 {
-                    if (lastToSecondFromRight.IsInCounterClockWiseDirectionFrom(lastToThirdFromRight))
-                    {
-                        funnel.Remove(funnel.Last.Previous);
-                        popped = true;
-                    }
+                    funnel.Remove(secondItemFromRight);
+                    popped = true;
                 }
-                else
+            }
+            if (apex != funnel.First)
+            {
+                IVector apexToRightEnd = funnel.Last.Value.Minus(apex.Value);
+                IVector apexToOneToTheLeft = apex.Previous.Value.Minus(apex.Value);
+                if (apexToRightEnd.IsInCounterClockWiseDirectionFrom(apexToOneToTheLeft))
                 {
-                    if (lastToSecondFromRight.IsInClockWiseDirectionFrom(lastToThirdFromRight))
-                    {
-                        path.AddLast(thirdFromRight);
-                        funnel.Remove(funnel.Last.Previous);
-                        apex = funnel.Last.Previous;
-                        popped = true;
-                    }
-                }
+                    path.AddLast(apex.Previous.Value);
+                    funnel.Remove(apex);
+                    apex = funnel.Last.Previous;
+                }                
             }
         }
 
         private void AddToLeftSideOfFunnel(IVector point)
         {
             funnel.AddFirst(point);
+            IVector leftEndPoint = point;
             
             bool popped = true;
-            while (popped && (funnel.Count >= 3))
+            while (popped && (funnel.First.Next != apex))
             {
                 popped = false;
-                IVector leftEnd = funnel.First.Value;
-                IVector secondFromLeft = funnel.First.Next.Value;
-                IVector thirdFromLeft = funnel.First.Next.Next.Value;
-                IVector firstToSecondFromLeft = secondFromLeft.Minus(leftEnd);
-                IVector firstToThirdFromLeft = thirdFromLeft.Minus(leftEnd);
-                if (apex != funnel.First.Next)
+                LinkedListNode<IVector> secondItemFromLeft = funnel.First.Next;
+                LinkedListNode<IVector> thirdItemFromLeft = funnel.First.Next.Next;
+                IVector backOne = secondItemFromLeft.Value.Minus(leftEndPoint);
+                IVector backTwo = thirdItemFromLeft.Value.Minus(leftEndPoint);
+                if (backTwo.IsInCounterClockWiseDirectionFrom(backOne))
                 {
-                    if (firstToSecondFromLeft.IsInClockWiseDirectionFrom(firstToThirdFromLeft))
-                    {
-                        funnel.Remove(funnel.First.Next);
-                        popped = true;
-                    }
+                    funnel.Remove(secondItemFromLeft);
+                    popped = true;
                 }
-                else
+            }
+            if (apex != funnel.Last)
+            {
+                IVector apexToLeftEnd = funnel.First.Value.Minus(apex.Value);
+                IVector apexToOneToTheRight = apex.Next.Value.Minus(apex.Value);
+                if (apexToLeftEnd.IsInClockWiseDirectionFrom(apexToOneToTheRight))
                 {
-                    if (firstToSecondFromLeft.IsInCounterClockWiseDirectionFrom(firstToThirdFromLeft))
-                    {
-                        path.AddLast(thirdFromLeft);
-                        funnel.Remove(funnel.First.Next);
-                        apex = funnel.First.Next;
-                        popped = true;
-                    }
-                }
+                    path.AddLast(apex.Next.Value);
+                    funnel.Remove(apex);
+                    apex = funnel.First.Next;
+                }                
             }
         }
         
