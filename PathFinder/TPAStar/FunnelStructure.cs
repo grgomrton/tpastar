@@ -146,8 +146,10 @@ namespace TriangulatedPolygonAStar
                     popped = true;
                 }
             }
-            if (apex != funnel.First)
+            popped = true;
+            while ((apex != funnel.First) && popped)
             {
+                popped = false;
                 IVector apexToRightEnd = funnel.Last.Value.Minus(apex.Value);
                 IVector apexToOneToTheLeft = apex.Previous.Value.Minus(apex.Value);
                 if (apexToRightEnd.IsInCounterClockWiseDirectionFrom(apexToOneToTheLeft))
@@ -155,6 +157,7 @@ namespace TriangulatedPolygonAStar
                     path.AddLast(apex.Previous.Value);
                     funnel.Remove(apex);
                     apex = funnel.Last.Previous;
+                    popped = true;
                 }                
             }
         }
@@ -165,7 +168,7 @@ namespace TriangulatedPolygonAStar
             IVector leftEndPoint = point;
             
             bool popped = true;
-            while (popped && (funnel.First.Next != apex))
+            while (popped && (funnel.First.Next != apex)) // TODO this is now two iterations through the funnel
             {
                 popped = false;
                 LinkedListNode<IVector> secondItemFromLeft = funnel.First.Next;
@@ -178,8 +181,10 @@ namespace TriangulatedPolygonAStar
                     popped = true;
                 }
             }
-            if (apex != funnel.Last)
+            popped = true;
+            while ((apex != funnel.Last) && popped)
             {
+                popped = false;
                 IVector apexToLeftEnd = funnel.First.Value.Minus(apex.Value);
                 IVector apexToOneToTheRight = apex.Next.Value.Minus(apex.Value);
                 if (apexToLeftEnd.IsInClockWiseDirectionFrom(apexToOneToTheRight))
@@ -187,6 +192,7 @@ namespace TriangulatedPolygonAStar
                     path.AddLast(apex.Next.Value);
                     funnel.Remove(apex);
                     apex = funnel.First.Next;
+                    popped = true;
                 }                
             }
         }
