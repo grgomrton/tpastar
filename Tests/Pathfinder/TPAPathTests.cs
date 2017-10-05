@@ -24,11 +24,14 @@ namespace TriangulatedPolygonAStar.Tests
             var startPoint = new Vector(7.5, 10.0);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var path = new TPAPath(startPoint, t2);
-            
-            path.StepTo(t3, goalPoints);
-            
-            var explorableNeighbours = path.ExplorableTriangles;
-            explorableNeighbours.Contains(t2).Should().BeFalse();
+
+            var pathsAfterSteppingIntoT2 = path.ExploreNeighbourTriangles(goalPoints);
+            var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
+            var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
+
+            pathsAfterSteppingIntoT2.Count().Should().Be(1);
+            theOnlyPathThatShouldBeCreated.CurrentTriangle.ShouldBeEquivalentTo(t3);
+            pathsAfterSteppingIntoT3.Count().Should().Be(0);
         }
 
         [Test]
@@ -50,12 +53,13 @@ namespace TriangulatedPolygonAStar.Tests
             t3.SetNeighbours(new [] {t2, t4});
             var s = new Vector(9.0, 11.5);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var path = new TPAPath(s);
+            var initialPath = new TPAPath(s, t3);
 
-            path.StepTo(t3, goalPoints);
-            
-            path.ExplorableTriangles.Contains(t2).Should().BeTrue();
-            path.ExplorableTriangles.Contains(t4).Should().BeTrue();
+            var pathsAfterSteppingIntoT3 = initialPath.ExploreNeighbourTriangles(goalPoints);
+
+            pathsAfterSteppingIntoT3.Count().Should().Be(2);
+            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t2));
+            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t4));
         }
         
         [Test]
@@ -83,14 +87,15 @@ namespace TriangulatedPolygonAStar.Tests
             t5.SetNeighbours(new[] {t4});
             var s = new Vector(9.0, 11.5);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var path = new TPAPath(s);
+            var initialPath = new TPAPath(s, t2);
             
-            path.StepTo(t2, goalPoints);
-            path.StepTo(t3, goalPoints);
-            
-            var explorableNeighbours = path.ExplorableTriangles;
-            explorableNeighbours.Contains(t4).Should().BeTrue();
-            explorableNeighbours.Contains(t2).Should().BeFalse();
+            var pathsAfterSteppingIntoT2 = initialPath.ExploreNeighbourTriangles(goalPoints);
+            var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
+            var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
+
+            pathsAfterSteppingIntoT2.Count().Should().Be(1);
+            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t4));
+            pathsAfterSteppingIntoT3.Should().NotContain(path => path.CurrentTriangle.Equals(t2));
         }
         
     }

@@ -52,6 +52,7 @@
     <Compile Include="Geometry\TriangleTests.cs" />
     <Compile Include="Geometry\VectorTests.cs" />
     <Compile Include="Pathfinder\FunnelStructureTests.cs" />
+    <Compile Include="Pathfinder\TPAPathTests.cs" />
     <Compile Include="Pathfinder\TPAStarTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
