@@ -36,11 +36,11 @@ namespace TriangulatedPolygonAStar
             get { return apex; }
         }
         
-        public void StepTo(IEdge edge)
+        public void StepOver(IEdge edge)
         {
-            Side commonSide = DetermineSideSharedByFunnelAndNewEdge(edge, funnel);
-            IVector leftEnd = funnel.First.Value; // Left vertex in funnel
-            IVector rightEnd = funnel.Last.Value; // Right vertex in funnel
+            Side commonSide = DetermineSideSharedBy(edge, funnel);
+            IVector leftEnd = funnel.First.Value;
+            IVector rightEnd = funnel.Last.Value;
 
             if (commonSide == Side.Both)
             {
@@ -100,10 +100,10 @@ namespace TriangulatedPolygonAStar
             // else { } we have nothing to do, we were standing on the edge, this edge is not needed to be added
         }
 
-        private static Side DetermineSideSharedByFunnelAndNewEdge(IEdge edge, LinkedList<IVector> funnel)
+        private static Side DetermineSideSharedBy(IEdge edge, LinkedList<IVector> funnel)
         {
-            IVector leftEnd = funnel.First.Value; // Left vertex in funnel
-            IVector rightEnd = funnel.Last.Value; // Right vertex in funnel
+            IVector leftEnd = funnel.First.Value;
+            IVector rightEnd = funnel.Last.Value;
             bool leftEndEqualsA = leftEnd.Equals(edge.A);
             bool leftEndEqualsB = leftEnd.Equals(edge.B);
             bool rightEndEqualsA = rightEnd.Equals(edge.A);
@@ -151,8 +151,8 @@ namespace TriangulatedPolygonAStar
             {
                 popped = false;
                 IVector apexToRightEnd = funnel.Last.Value.Minus(apex.Value);
-                IVector apexToOneToTheLeft = apex.Previous.Value.Minus(apex.Value);
-                if (apexToRightEnd.IsInCounterClockWiseDirectionFrom(apexToOneToTheLeft))
+                IVector apexToOneLeft = apex.Previous.Value.Minus(apex.Value);
+                if (apexToRightEnd.IsInCounterClockWiseDirectionFrom(apexToOneLeft))
                 {
                     path.AddLast(apex.Previous.Value);
                     funnel.Remove(apex);
@@ -168,7 +168,7 @@ namespace TriangulatedPolygonAStar
             IVector leftEndPoint = point;
             
             bool popped = true;
-            while (popped && (funnel.First.Next != apex)) // TODO this is now two iterations through the funnel
+            while (popped && (funnel.First.Next != apex))
             {
                 popped = false;
                 LinkedListNode<IVector> secondItemFromLeft = funnel.First.Next;
@@ -186,8 +186,8 @@ namespace TriangulatedPolygonAStar
             {
                 popped = false;
                 IVector apexToLeftEnd = funnel.First.Value.Minus(apex.Value);
-                IVector apexToOneToTheRight = apex.Next.Value.Minus(apex.Value);
-                if (apexToLeftEnd.IsInClockWiseDirectionFrom(apexToOneToTheRight))
+                IVector apexToOneRight = apex.Next.Value.Minus(apex.Value);
+                if (apexToLeftEnd.IsInClockWiseDirectionFrom(apexToOneRight))
                 {
                     path.AddLast(apex.Next.Value);
                     funnel.Remove(apex);

@@ -4,7 +4,7 @@ namespace TriangulatedPolygonAStar
 {
     public class TPAStarPathFinder
     {
-        private LinkedList<TPAPath> candidates; // open set
+        private LinkedList<TPAPath> candidates;             // open set
         private Dictionary<IEdge, double> higherBounds;
         
         public TPAStarPathFinder()
@@ -19,7 +19,7 @@ namespace TriangulatedPolygonAStar
             higherBounds.Clear();
             
             TPAPath initialPath = new TPAPath(startPoint, startTriangle);
-            candidates.AddFirst(initialPath);
+            AddToCandidates(initialPath);
             FireTriangleExploredEvent(initialPath);
             
             TPAPath optimalPath = initialPath;
@@ -29,9 +29,7 @@ namespace TriangulatedPolygonAStar
                 TPAPath candidate = candidates.First.Value;
                 candidates.RemoveFirst();
                 
-                // if the lowest-cost path of the openset is a finalized path then this is an optimal path, 
-                // because even the lower bound of every other candidate is higher than the total cost of this one
-                if (candidate.IsFinalized)    
+                if (candidate.Finalized)    
                 {                            
                     optimalPath = candidate;
                     done = true;
@@ -40,8 +38,7 @@ namespace TriangulatedPolygonAStar
                 {
                     if (candidate.ReachedAnyOf(goals) && !candidate.FinalPathsHaveBeenBuilt)
                     {
-                        IEnumerable<TPAPath> finalizedPaths = candidate.BuildFinalizedPaths(goals);
-                        foreach (TPAPath path in finalizedPaths)
+                        foreach (TPAPath path in candidate.BuildFinalizedPaths(goals))
                         {
                             AddToCandidates(path);
                         }
@@ -52,16 +49,15 @@ namespace TriangulatedPolygonAStar
                     }
                     else
                     {
-                        IEnumerable<TPAPath> newCandidates = candidate.ExploreNeighbourTriangles(goals);
-                        foreach (TPAPath newCandidate in newCandidates)
+                        foreach (TPAPath path in candidate.ExploreNeighbourTriangles(goals))
                         {
-                            if (IsGoodCandidate(newCandidate))
+                            if (IsGoodCandidate(path))
                             {
-                                AddToCandidates(newCandidate);
-                                UpdateHigherBoundToReachedEdge(newCandidate);
+                                AddToCandidates(path);
+                                UpdateHigherBoundToReachedEdge(path);
                             }
                             
-                            FireTriangleExploredEvent(newCandidate);
+                            FireTriangleExploredEvent(path);
                         }
                     }
                 }
@@ -69,8 +65,6 @@ namespace TriangulatedPolygonAStar
             return optimalPath.Path;
         }
 
-        // By maintaining higher-bounds to edges we prevent the algorithm to enter into
-        // a loop around a polygon hole, and also the evaluation of known to be bad candidates
         private bool IsGoodCandidate(TPAPath path)
         {
             bool isGoodCandidate = true;
@@ -99,7 +93,6 @@ namespace TriangulatedPolygonAStar
             }
         }
 
-        // open set is a list of paths ordered by their minimal overall cost
         private void AddToCandidates(TPAPath path)
         {
             if ((candidates.First == null) || 

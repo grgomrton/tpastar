@@ -13,7 +13,7 @@ namespace TriangulatedPolygonAStar
         private double alreadyBuiltPathLength;                 // gPart
         private double lengthOfShortestPathFromApexToEdge;     // dgMin
         private double lengthOfLongestPathFromApexToEdge;      // dgMax
-        private double distanceOfClosestGoalPointToEdge;       // h
+        private double distanceFromClosestGoalPoint;           // h
 
         private bool finalPathsHaveBeenBuilt;
         private bool isFinalized;
@@ -33,7 +33,7 @@ namespace TriangulatedPolygonAStar
             alreadyBuiltPathLength = 0;
             lengthOfShortestPathFromApexToEdge = 0;
             lengthOfLongestPathFromApexToEdge = 0;
-            distanceOfClosestGoalPointToEdge = 0; 
+            distanceFromClosestGoalPoint = 0; 
             finalPathsHaveBeenBuilt = false;
             isFinalized = false;
         }
@@ -46,36 +46,9 @@ namespace TriangulatedPolygonAStar
             alreadyBuiltPathLength = other.alreadyBuiltPathLength;
             lengthOfShortestPathFromApexToEdge = other.lengthOfShortestPathFromApexToEdge;
             lengthOfLongestPathFromApexToEdge = other.lengthOfLongestPathFromApexToEdge;
-            distanceOfClosestGoalPointToEdge = other.distanceOfClosestGoalPointToEdge;
+            distanceFromClosestGoalPoint = other.distanceFromClosestGoalPoint;
             finalPathsHaveBeenBuilt = other.finalPathsHaveBeenBuilt;
             isFinalized = other.isFinalized;
-        }
-
-        /// <summary>
-        /// The length of the possibly shortest path from the start to the closest goal point along the set of triangles
-        /// stepped over until this point.
-        /// </summary>
-        public double MinimalTotalCost
-        {
-            get { return ShortestPathToEdgeLength + distanceOfClosestGoalPointToEdge; }
-        }
-
-        /// <summary>
-        /// The length of the possibly shortest path from the start to the current edge along the set of triangles
-        /// stepped over while building this path.
-        /// </summary>
-        public double ShortestPathToEdgeLength
-        {
-            get { return alreadyBuiltPathLength + lengthOfShortestPathFromApexToEdge; }
-        }
-
-        /// <summary>
-        /// The length of the longest possible path from the start to the current edge along the set of triangles
-        /// stepped over while building this path.
-        /// </summary>
-        public double LongestPathToEdgeLength
-        {
-            get { return alreadyBuiltPathLength + lengthOfLongestPathFromApexToEdge; }
         }
 
         /// <summary>
@@ -93,6 +66,33 @@ namespace TriangulatedPolygonAStar
         {
             get { return currentEdge; }
         }
+        
+        /// <summary>
+        /// The length of the possibly shortest path from the start to the current edge along the set of triangles
+        /// stepped over while building this path.
+        /// </summary>
+        public double ShortestPathToEdgeLength
+        {
+            get { return alreadyBuiltPathLength + lengthOfShortestPathFromApexToEdge; }
+        }
+
+        /// <summary>
+        /// The length of the longest possible path from the start to the current edge along the set of triangles
+        /// stepped over while building this path.
+        /// </summary>
+        public double LongestPathToEdgeLength
+        {
+            get { return alreadyBuiltPathLength + lengthOfLongestPathFromApexToEdge; }
+        }
+        
+        /// <summary>
+        /// The length of the possibly shortest path from the start to the closest goal point along the set of triangles
+        /// stepped over until this point.
+        /// </summary>
+        public double MinimalTotalCost
+        {
+            get { return ShortestPathToEdgeLength + distanceFromClosestGoalPoint; }
+        }
 
         public bool FinalPathsHaveBeenBuilt
         {
@@ -102,7 +102,7 @@ namespace TriangulatedPolygonAStar
         /// <summary>
         /// Indicates, whether a goal point has been added to the end of this path and therefore is finalized.
         /// </summary>
-        public bool IsFinalized
+        public bool Finalized
         {
             get { return isFinalized; }
         }
@@ -133,63 +133,56 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// Indicates, whether after building final paths to the reached goal points in the current triangle
-        /// there is any other goal that might be reached during further exploration.
+        /// Indicates, whether after building final paths to the reached goal points
+        /// there is any other goal pont that might be reached by further exploration.
         /// </summary>
         public bool IsAnyOtherGoalThatMightBeReached
         {
-            get { return distanceOfClosestGoalPointToEdge > InitialValueForMinimumFinding; }
+            get { return distanceFromClosestGoalPoint > InitialValueForMinimumFinding; }
         }
 
         public IEnumerable<TPAPath> ExploreNeighbourTriangles(IEnumerable<IVector> goals)
         {
-            List<TPAPath> newCandidates = new List<TPAPath>();
-            foreach (ITriangle explorableNeighbour in explorableTriangles)
+            List<TPAPath> pathsToNeighbours = new List<TPAPath>();
+            foreach (ITriangle neighbour in explorableTriangles)
             {
-                TPAPath newCandidate = this.Clone(); // TODO cloning can be spared if there is only one explorale neighbour
-                newCandidate.StepTo(explorableNeighbour, goals);
-                newCandidates.Add(newCandidate);
+                TPAPath newPath = this.Clone();
+                newPath.StepTo(neighbour, goals);
+                pathsToNeighbours.Add(newPath);
             }
-            return newCandidates;
+            return pathsToNeighbours;
         }
 
-        public IEnumerable<TPAPath> BuildFinalizedPaths(IEnumerable<IVector> goalPoints)
+        public IEnumerable<TPAPath> BuildFinalizedPaths(IEnumerable<IVector> goals)
         {
             List<TPAPath> finalPaths = new List<TPAPath>();
-            foreach (var goalPoint in goalPoints)
+            foreach (var goal in goals)
             {
-                if (currentTriangle.ContainsPoint(goalPoint))
+                if (currentTriangle.ContainsPoint(goal))
                 {
                     TPAPath newPath = this.Clone();
-                    newPath.FinalizePath(goalPoint);
+                    newPath.FinalizePath(goal);
                     finalPaths.Add(newPath);
                 }
             }
             bool shouldIncludeGoalsInTriangle = false;
             if (currentEdge != null)
             {
-                distanceOfClosestGoalPointToEdge = 
-                    FindMinimalDistanceBetween(currentEdge, goalPoints, shouldIncludeGoalsInTriangle, currentTriangle);
+                distanceFromClosestGoalPoint = 
+                    MinimalDistanceBetween(currentEdge, goals, shouldIncludeGoalsInTriangle, currentTriangle);
             }
             else
             {
-                distanceOfClosestGoalPointToEdge = 
-                    FindMinimalDistanceBetween(funnel.Apex.Value, goalPoints, shouldIncludeGoalsInTriangle, currentTriangle);
+                distanceFromClosestGoalPoint = 
+                    MinimalDistanceBetween(funnel.Apex.Value, goals, shouldIncludeGoalsInTriangle, currentTriangle);
             }
 
             finalPathsHaveBeenBuilt = true;
             return finalPaths;
         }
         
-        private TPAPath Clone()
-        {
-            return new TPAPath(this);
-        }
-        
         private void StepTo(ITriangle targetTriangle, IEnumerable<IVector> goalPoints)
         {
-            finalPathsHaveBeenBuilt = false;
-
             currentEdge = currentTriangle.GetCommonEdgeWith(targetTriangle);
             LinkedList<ITriangle> explorableNeighbourList = new LinkedList<ITriangle>();
             foreach (ITriangle neighbour in targetTriangle.Neighbours)
@@ -202,27 +195,33 @@ namespace TriangulatedPolygonAStar
             explorableTriangles = explorableNeighbourList;
             currentTriangle = targetTriangle;
 
-            funnel.StepTo(currentEdge);
-            alreadyBuiltPathLength = LengthOfAlreadyBuiltPath(funnel.Path);
-            lengthOfShortestPathFromApexToEdge = CalculateLengthOfShortestPathFromApexToEdge(currentEdge, funnel.Apex);
-            lengthOfLongestPathFromApexToEdge = CalculateLengthOfLongestPathFromApexToEdge(funnel.Apex);
+            funnel.StepOver(currentEdge);
+            alreadyBuiltPathLength = LengthOfBuiltPathInFunnel(funnel.Path);
+            lengthOfShortestPathFromApexToEdge = LengthOfShortestPathFromApexToEdge(currentEdge, funnel.Apex);
+            lengthOfLongestPathFromApexToEdge = LengthOfLongestPathFromApexToEdge(funnel.Apex);
             
+            finalPathsHaveBeenBuilt = false;
             bool shouldIncludeGoalsInTriangle = true;
-            distanceOfClosestGoalPointToEdge =
-                FindMinimalDistanceBetween(currentEdge, goalPoints, shouldIncludeGoalsInTriangle, currentTriangle);
+            distanceFromClosestGoalPoint =
+                MinimalDistanceBetween(currentEdge, goalPoints, shouldIncludeGoalsInTriangle, currentTriangle);
         }
         
         private void FinalizePath(IVector goalPoint)
         {
             funnel.FinalizePath(goalPoint);
-            alreadyBuiltPathLength = LengthOfAlreadyBuiltPath(funnel.Path);
+            alreadyBuiltPathLength = LengthOfBuiltPathInFunnel(funnel.Path);
             lengthOfShortestPathFromApexToEdge = 0;
             lengthOfLongestPathFromApexToEdge = 0;
-            distanceOfClosestGoalPointToEdge = 0;
+            distanceFromClosestGoalPoint = 0;
             isFinalized = true;
         }
         
-        private static double CalculateLengthOfShortestPathFromApexToEdge(IEdge edge, LinkedListNode<IVector> apex) // TODO pass funnel
+        private TPAPath Clone()
+        {
+            return new TPAPath(this);
+        }
+        
+        private static double LengthOfShortestPathFromApexToEdge(IEdge edge, LinkedListNode<IVector> apex)
         {
             double minpathlength = 0;
 
@@ -260,19 +259,19 @@ namespace TriangulatedPolygonAStar
             double pathLength = 0;
             LinkedListNode<IVector> currentNode = startNode;
 
-            IVector closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
-            IVector currentNodeToRightOne = currentNode.Next.Value.Minus(currentNode.Value);
-            IVector currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            IVector closestPointOnEdge = edge.ClosestPointTo(currentNode.Value);
+            IVector currentToOneRight = currentNode.Next.Value.Minus(currentNode.Value);
+            IVector currentToClosestPoint = closestPointOnEdge.Minus(currentNode.Value);
 
-            while (currentNodeToRightOne.IsInCounterClockWiseDirectionFrom(currentNodeToClosestPointOnEdge) &&
+            while (currentToOneRight.IsInCounterClockWiseDirectionFrom(currentToClosestPoint) &&
                    (currentNode.Next.Next != null))
             {
                 pathLength += currentNode.Value.DistanceFrom(currentNode.Next.Value);
                 currentNode = currentNode.Next;
 
-                closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
-                currentNodeToRightOne = currentNode.Next.Value.Minus(currentNode.Value);
-                currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+                closestPointOnEdge = edge.ClosestPointTo(currentNode.Value);
+                currentToOneRight = currentNode.Next.Value.Minus(currentNode.Value);
+                currentToClosestPoint = closestPointOnEdge.Minus(currentNode.Value);
             }
 
             pathLength += currentNode.Value.DistanceFrom(edge.ClosestPointTo(currentNode.Value));
@@ -286,19 +285,19 @@ namespace TriangulatedPolygonAStar
             double pathLength = 0;
             LinkedListNode<IVector> currentNode = startNode;
 
-            IVector closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
-            IVector currentNodeToRightOne = currentNode.Previous.Value.Minus(currentNode.Value);
-            IVector currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+            IVector closestPointOnEdge = edge.ClosestPointTo(currentNode.Value);
+            IVector currentToOneLeft = currentNode.Previous.Value.Minus(currentNode.Value);
+            IVector currentToClosestPoint = closestPointOnEdge.Minus(currentNode.Value);
 
-            while (currentNodeToRightOne.IsInCounterClockWiseDirectionFrom(currentNodeToClosestPointOnEdge) &&
+            while (currentToOneLeft.IsInClockWiseDirectionFrom(currentToClosestPoint) &&
                    (currentNode.Previous.Previous != null))
             {
                 pathLength += currentNode.Value.DistanceFrom(currentNode.Previous.Value);
                 currentNode = currentNode.Previous;
 
-                closestPointOfEdgeToCurrentNode = edge.ClosestPointTo(currentNode.Value);
-                currentNodeToRightOne = currentNode.Previous.Value.Minus(currentNode.Value);
-                currentNodeToClosestPointOnEdge = closestPointOfEdgeToCurrentNode.Minus(currentNode.Value);
+                closestPointOnEdge = edge.ClosestPointTo(currentNode.Value);
+                currentToOneLeft = currentNode.Previous.Value.Minus(currentNode.Value);
+                currentToClosestPoint = closestPointOnEdge.Minus(currentNode.Value);
             }
 
             pathLength += currentNode.Value.DistanceFrom(edge.ClosestPointTo(currentNode.Value));
@@ -306,7 +305,7 @@ namespace TriangulatedPolygonAStar
             return pathLength;
         }
 
-        private static double CalculateLengthOfLongestPathFromApexToEdge(LinkedListNode<IVector> apex)
+        private static double LengthOfLongestPathFromApexToEdge(LinkedListNode<IVector> apex)
         {
             double leftPathLength = 0;
             double rightPathLength = 0;
@@ -328,7 +327,7 @@ namespace TriangulatedPolygonAStar
             return Math.Max(leftPathLength, rightPathLength);
         }
 
-        private static double LengthOfAlreadyBuiltPath(LinkedList<IVector> path)
+        private static double LengthOfBuiltPathInFunnel(LinkedList<IVector> path)
         {
             double length = 0;
             LinkedListNode<IVector> currentNode = path.First;
@@ -340,7 +339,7 @@ namespace TriangulatedPolygonAStar
             return length;
         }
 
-        private static double FindMinimalDistanceBetween(
+        private static double MinimalDistanceBetween(
             IEdge edge, IEnumerable<IVector> targetPoints, 
             bool shouldIncludePointsInTriangle, ITriangle triangle)
         {
@@ -361,7 +360,7 @@ namespace TriangulatedPolygonAStar
             return minDistance;
         }
 
-        private static double FindMinimalDistanceBetween( // TODO IDistanceMeasurableFromPoint ?
+        private static double MinimalDistanceBetween( // TODO IDistanceMeasurableFromPoint ?
             IVector point, IEnumerable<IVector> targetPoints, 
             bool shouldIncludePointsInTriangle, ITriangle currentTriangle)
         {

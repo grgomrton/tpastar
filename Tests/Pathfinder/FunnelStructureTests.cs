@@ -17,7 +17,7 @@ namespace TriangulatedPolygonAStar.Tests
             var apex = new Vector(2.0, 1.0);
             var funnel = new FunnelStructure(apex);
             
-            funnel.StepTo(edge);
+            funnel.StepOver(edge);
 
             var funnelPoints = funnel.Apex.List;
             funnelPoints.Count.Should().Be(1);
@@ -33,7 +33,7 @@ namespace TriangulatedPolygonAStar.Tests
             var apex = new Vector(2.0, 0.0);
             var funnel = new FunnelStructure(apex);
             
-            funnel.StepTo(edge);
+            funnel.StepOver(edge);
 
             var funnelVertices = funnel.Apex.List.ToList();
             funnelVertices.Count.Should().Be(3);
@@ -55,9 +55,9 @@ namespace TriangulatedPolygonAStar.Tests
             var edge3 = new Edge(v1, v4);
             var funnel = new FunnelStructure(apex);
             
-            funnel.StepTo(edge1);
-            funnel.StepTo(edge2);
-            funnel.StepTo(edge3);
+            funnel.StepOver(edge1);
+            funnel.StepOver(edge2);
+            funnel.StepOver(edge3);
 
             var funnelVertices = funnel.Apex.List.ToList();
             funnelVertices.Count.Should().Be(5);
