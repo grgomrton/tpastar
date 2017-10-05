@@ -13,16 +13,10 @@
         /// <param name="path"></param>
         public TriangleEvaluationResult(TPAPath path)
         {
-            CurrentEdge = path.CurrentEdge;
             EstimatedMinimalCost = path.MinimalTotalCost;
             ShortestPathToEdgeLength = path.ShortestPathToEdgeLength;
             LongestPathToEdgeLength = path.LongestPathToEdgeLength;
-        }
-        
-        /// <summary>
-        /// The edge through which the triangle was entered into.
-        /// </summary>
-        public IEdge CurrentEdge { get; private set; }        
+        }  
 
         /// <summary>
         /// The length of the possibly shortest path from the start to the closest goal point along the set of triangles

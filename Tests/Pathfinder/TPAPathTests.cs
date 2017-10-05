@@ -23,9 +23,8 @@ namespace TriangulatedPolygonAStar.Tests
             t3.SetNeighbours(new [] {t2});
             var startPoint = new Vector(7.5, 10.0);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var path = new TPAPath(startPoint);
+            var path = new TPAPath(startPoint, t2);
             
-            path.StepTo(t2, goalPoints);
             path.StepTo(t3, goalPoints);
             
             var explorableNeighbours = path.ExplorableTriangles;
