@@ -90,7 +90,7 @@ namespace TriangulatedPolygonAStar.UI
                 foreach (var drawable in drawables)
                 {
                     drawable.Draw(canvas);
-                    canvas.Transform = mscale; // TODO why set again?
+                    canvas.Transform = mscale;
                 }
                 
              }

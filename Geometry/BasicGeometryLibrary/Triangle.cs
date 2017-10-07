@@ -14,7 +14,6 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         private Vector c;
         private Dictionary<ITriangle, Edge> adjacentEdges;
 
-        // TODO add comment
         public Triangle(Vector a, Vector b, Vector c)
         {
             this.a = a;

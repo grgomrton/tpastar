@@ -61,7 +61,7 @@ namespace TriangulatedPolygonAStar.UI
         private bool IsPointUnderCursor(Point point, MouseEventArgs cursorState)
         {
             var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
-            return cursorAbsolutePosition.DistanceFrom(point.Position) < 2*point.Radius; // TODO why 2 times?
+            return cursorAbsolutePosition.DistanceFrom(point.Position) < 2*point.Radius;
         }
         
         private void FindPathToGoal()
@@ -76,7 +76,7 @@ namespace TriangulatedPolygonAStar.UI
             {
                 var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;  
                 
-                Action<Task<IEnumerable<IVector>>> visualizePath = pathFindingOutcome => // TODO couldnt this be made without defining anonymus-class like things?
+                Action<Task<IEnumerable<IVector>>> visualizePath = pathFindingOutcome =>
                 {
                     if (pathFindingOutcome.IsFaulted)
                     {
@@ -90,7 +90,7 @@ namespace TriangulatedPolygonAStar.UI
 
                 try
                 {
-                    Task<IEnumerable<IVector>>.Factory // TODO couldn't this be done with async and await calls?
+                    Task<IEnumerable<IVector>>.Factory
                         .StartNew(() =>
                                 pathFinder.FindPath(start.Position, startTriangle,
                                     goals.Select(point => point.Position)),

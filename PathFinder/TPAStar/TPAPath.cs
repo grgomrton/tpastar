@@ -360,7 +360,7 @@ namespace TriangulatedPolygonAStar
             return minDistance;
         }
 
-        private static double MinimalDistanceBetween( // TODO IDistanceMeasurableFromPoint ?
+        private static double MinimalDistanceBetween(
             IVector point, IEnumerable<IVector> targetPoints, 
             bool shouldIncludePointsInTriangle, ITriangle currentTriangle)
         {

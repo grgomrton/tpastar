@@ -179,7 +179,5 @@ namespace TriangulatedPolygonAStar.Tests
                 .ContinueWith(pathAssertion, cancelAfterTimeout)
                 .Wait(2 * TimeOutInMillseconds);
         }
-        
-        // TODO add test for not entering the same triangle due to exceeding edge threshold
     }
 }

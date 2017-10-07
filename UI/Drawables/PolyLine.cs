@@ -24,7 +24,7 @@ namespace TriangulatedPolygonAStar.UI
             this.points = points;
             linePen = new Pen(LineColor, LineWidth);
             captionBrush = new SolidBrush(TextColor);
-            captionFont = new Font("Arial", FontSize, FontStyle.Bold); // TODO some os independent font?
+            captionFont = new Font("Arial", FontSize, FontStyle.Bold);
         }
         
         public void Draw(Graphics canvas)

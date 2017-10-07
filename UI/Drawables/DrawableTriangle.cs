@@ -32,7 +32,7 @@ namespace TriangulatedPolygonAStar.UI
             centroid = triangle.CalculateCentroid().Minus(new Vector(0.8, 0.8)).ToPointF();
             edgePen = new Pen(EdgeColor, EdgeWidth);
             captionBrush = new SolidBrush(TextColor);
-            captionFont = new Font("Arial", FontSize); // TODO os dependent
+            captionFont = new Font("Arial", FontSize);
         }
         
         public void IncreaseTraversionCount(TriangleEvaluationResult metadata)
