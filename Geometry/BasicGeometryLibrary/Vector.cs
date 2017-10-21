@@ -41,12 +41,12 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public bool IsInCounterClockWiseDirectionFrom(IVector other)
         {
-             return ZComponentOfCrossProductWith(other) < -FloatingPointComparisonSettings.Tolerance;
+             return ZComponentOfCrossProductWith(other) < -VectorEqualityCheck.Tolerance;
         }
 
         public bool IsInClockWiseDirectionFrom(IVector other)
         {
-            return ZComponentOfCrossProductWith(other) > FloatingPointComparisonSettings.Tolerance;
+            return ZComponentOfCrossProductWith(other) > VectorEqualityCheck.Tolerance;
         }
 
         private double ZComponentOfCrossProductWith(IVector other)
@@ -59,8 +59,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             Vector other = obj as Vector;
             if (other != null)
             {
-                return (Math.Abs(X - other.X) < FloatingPointComparisonSettings.Tolerance) &&
-                       (Math.Abs(Y - other.Y) < FloatingPointComparisonSettings.Tolerance);
+                return other.DistanceFrom(this) < VectorEqualityCheck.Tolerance;
             }
             else
             {

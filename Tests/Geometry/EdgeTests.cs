@@ -8,7 +8,13 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class EdgeTests
     {
-        private static double Precision = 0.00001;
+        private static double AssertionPrecision = 0.00001;
+        
+        [OneTimeSetUp]
+        public void SetupVectorLibrary()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
         
         [Test]
         public void DistanceFromPointShouldBeZeroIfPointFallsOnLeftEdgeEndpoint()
@@ -20,7 +26,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(0.0, Precision);
+            distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -33,7 +39,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(0.0, Precision);
+            distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -46,7 +52,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(0.0, Precision);
+            distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -59,7 +65,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(1.5, Precision);
+            distance.Should().BeApproximately(1.5, AssertionPrecision);
         }
         
         [Test]
@@ -73,7 +79,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(squareRootTwo, Precision);
+            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
         
         [Test]
@@ -87,7 +93,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(squareRootFive, Precision);
+            distance.Should().BeApproximately(squareRootFive, AssertionPrecision);
         }
         
         [Test]
@@ -101,7 +107,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = edge.DistanceFromPoint(pointToCheck);
 
-            distance.Should().BeApproximately(squareRootTwo, Precision);
+            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]

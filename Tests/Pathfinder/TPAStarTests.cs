@@ -16,6 +16,12 @@ namespace TriangulatedPolygonAStar.Tests
         private static int TimeOutInMillseconds = 1000;
         // in order to have timeout support, assert and act sections are switched
         
+        [OneTimeSetUp]
+        public void SetupVectorLibrary()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
+        
         [Test]
         public void pathBetweenStartAndGoalInTheSameTriangleShouldBeAStraightLine()
         {

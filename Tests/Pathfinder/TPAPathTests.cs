@@ -8,6 +8,12 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class TPAPathTests
     {
+        [OneTimeSetUp]
+        public void SetupVectorLibrary()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
+        
         [Test]
         public void afterSteppingIntoATriangleExplorableTrianglesShouldNotContainThePreviousOne()
         {

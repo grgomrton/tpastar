@@ -9,6 +9,12 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class TriangleTests
     {
+        [OneTimeSetUp]
+        public void SetupVectorLibrary()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
+        
         [Test]
         public void TwoTrianglesLyingBetweenSamePointsShouldBeEqualEvenIfDefinedWithDifferentVectorInstances()
         {

@@ -8,6 +8,12 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class FunnelStructureTests
     {
+        [OneTimeSetUp]
+        public void SetupVectorLibrary()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
+        
         [Test]
         public void funnelShouldNotAddVertexIfFirstEdgeLiesOnApex()
         {

@@ -7,7 +7,13 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class VectorTests
     {
-        private const double Precision = 0.0001;
+        private static double AssertionPrecision = 0.0001;
+
+        [SetUp]
+        public void BeforeEachTest()
+        {
+            VectorEqualityCheck.Tolerance = 0.001;
+        }
         
         [Test]
         public void DistanceOfTwoVectorsShouldBeTheirCartesianDistanceInTwoDimension()
@@ -18,7 +24,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = v1.DistanceFrom(v2);
 
-            distance.Should().BeApproximately(squareRootTwo, Precision);
+            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]
@@ -30,7 +36,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = v2.DistanceFrom(v1);
 
-            distance.Should().BeApproximately(squareRootTwo, Precision);
+            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]
@@ -40,7 +46,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var distance = v2.DistanceFrom(v2);
 
-            distance.Should().BeApproximately(0.0, Precision);
+            distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
 
         // values come from examples on www.onlinemathlearning.com
@@ -53,12 +59,12 @@ namespace TriangulatedPolygonAStar.Tests
 
             var result = v1.Minus(v2);
 
-            v1.X.Should().BeApproximately(2.0, Precision);
-            v1.Y.Should().BeApproximately(1.0, Precision);
-            v2.X.Should().BeApproximately(3.0, Precision);
-            v2.Y.Should().BeApproximately(-2.0, Precision);
-            result.X.Should().BeApproximately(-1.0, Precision);
-            result.Y.Should().BeApproximately(3.0, Precision);
+            v1.X.Should().BeApproximately(2.0, AssertionPrecision);
+            v1.Y.Should().BeApproximately(1.0, AssertionPrecision);
+            v2.X.Should().BeApproximately(3.0, AssertionPrecision);
+            v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
+            result.X.Should().BeApproximately(-1.0, AssertionPrecision);
+            result.Y.Should().BeApproximately(3.0, AssertionPrecision);
         }
 
         // values come from examples on www.onlinemathlearning.com
@@ -70,12 +76,12 @@ namespace TriangulatedPolygonAStar.Tests
 
             var result = v1.Plus(v2);
             
-            v1.X.Should().BeApproximately(2.0, Precision);
-            v1.Y.Should().BeApproximately(3.0, Precision);
-            v2.X.Should().BeApproximately(2.0, Precision);
-            v2.Y.Should().BeApproximately(-2.0, Precision);
-            result.X.Should().BeApproximately(4.0, Precision);
-            result.Y.Should().BeApproximately(1.0, Precision);
+            v1.X.Should().BeApproximately(2.0, AssertionPrecision);
+            v1.Y.Should().BeApproximately(3.0, AssertionPrecision);
+            v2.X.Should().BeApproximately(2.0, AssertionPrecision);
+            v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
+            result.X.Should().BeApproximately(4.0, AssertionPrecision);
+            result.Y.Should().BeApproximately(1.0, AssertionPrecision);
         }
         
         [Test]
@@ -222,14 +228,53 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void VectorsDifferingInOneCoordinateWithOneWholeIntegerShouldNotBeEqual()
+        public void VectorsDifferingExactlyTheSameAmountAsTheToleranceShouldNotBeEqual()
         {
-            object u = new Vector(2.5, 3.0);
-            object v = new Vector(3.5, 3.0);
+            VectorEqualityCheck.Tolerance = 0.01;
+            var u = new Vector(1.0, 1.0);
+            var v = new Vector(1.01, 1.0);
 
             var equalityCheckResult = u.Equals(v);
 
             equalityCheckResult.Should().BeFalse();
         }
+        
+        [Test]
+        public void VectorsDifferingLessThanTheToleranceShouldBeEqual()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var u = new Vector(1.0, 1.0);
+            var v = new Vector(1.005, 1.0);
+
+            var equalityCheckResult = u.Equals(v);
+
+            equalityCheckResult.Should().BeTrue();
+        }
+
+        
+        [Test]
+        public void VectorsDifferingMoreThanTheToleranceShouldNotBeEqual()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var u = new Vector(1.01, 1.01);
+            var v = new Vector(1.0, 1.0);
+
+            var equalityCheckResult = u.Equals(v);
+
+            equalityCheckResult.Should().BeFalse();
+        }
+        
+        [Test]
+        public void VectorsDifferingInBothCoordinatesButAreCloserThanToleranceShouldBeEqual()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var u = new Vector(1.001, 1.0);
+            var v = new Vector(1.001, 1.0);
+
+            var equalityCheckResult = u.Equals(v);
+
+            equalityCheckResult.Should().BeTrue();
+        }
+        
     }
 }
