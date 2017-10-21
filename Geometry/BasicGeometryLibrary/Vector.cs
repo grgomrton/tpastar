@@ -41,12 +41,12 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public bool IsInCounterClockWiseDirectionFrom(IVector other)
         {
-             return ZComponentOfCrossProductWith(other) < -VectorEqualityCheck.Tolerance;
+             return ZComponentOfCrossProductWith(other) <= 0.0;
         }
 
         public bool IsInClockWiseDirectionFrom(IVector other)
         {
-            return ZComponentOfCrossProductWith(other) > VectorEqualityCheck.Tolerance;
+            return ZComponentOfCrossProductWith(other) >= 0.0;
         }
 
         private double ZComponentOfCrossProductWith(IVector other)

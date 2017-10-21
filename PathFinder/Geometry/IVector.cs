@@ -47,7 +47,7 @@
 
         /// <summary>
         /// Returns whether the current vector is in counter-clockwise direction from <paramref name="other"/>.
-        /// Paralel vectors are treated as non-counter-clockwise.
+        /// Parallel vectors should pass the counter-clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation to.</param>
         /// <returns>Result of clockwise test.</returns>
@@ -55,7 +55,7 @@
 
         /// <summary>
         /// Returns whether the current vector is in clockwise direction from <paramref name="other"/>.
-        /// Paralel vectors are treated as non-clockwise.
+        /// Parallel vectors should pass the clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation to.</param>
         /// <returns>Result of counter-clockwise test.</returns>

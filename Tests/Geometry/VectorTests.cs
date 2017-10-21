@@ -129,7 +129,21 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void ParallelVectorsShouldNotBeDetectedClockwise()
+        public void ParallelVectorsShouldBeDeterminedClockwise()
+        {
+            var p1 = new Vector(1.0, 1.0);
+            var p2 = new Vector(3.0, 1.0);
+            var pm = new Vector(2.0, 1.0);
+            var pmToP1 = p1.Minus(pm);
+            var pmToP2 = p2.Minus(pm);
+
+            var result = pmToP1.IsInClockWiseDirectionFrom(pmToP2);
+
+            result.Should().BeTrue();
+        }
+        
+        [Test]
+        public void ParallelVectorsShouldBeDeterminedCounterClockwise()
         {
             var p1 = new Vector(1.0, 1.0);
             var p2 = new Vector(3.0, 1.0);
@@ -139,21 +153,7 @@ namespace TriangulatedPolygonAStar.Tests
 
             var result = pmToP1.IsInCounterClockWiseDirectionFrom(pmToP2);
 
-            result.Should().BeFalse();
-        }
-        
-        [Test]
-        public void ParallelVectorsShouldNotBeDeterminedCounterClockwise()
-        {
-            var pm = new Vector(2.0, 1.0);
-            var p1 = new Vector(2.0, 2.0);
-            var p2 = new Vector(3.0, 1.0);
-            var pmToP1 = p1.Minus(pm);
-            var pmToP2 = p2.Minus(pm);
-
-            var result = pmToP1.IsInClockWiseDirectionFrom(pmToP2);
-
-            result.Should().BeFalse();
+            result.Should().BeTrue();
         }
         
         [Test]
