@@ -350,7 +350,7 @@ namespace TriangulatedPolygonAStar
                 bool shouldEvaluate = !pointFallsInTriangle || (pointFallsInTriangle && shouldIncludePointsInTriangle);
                 if (shouldEvaluate)
                 {
-                    double distance = edge.DistanceFromPoint(targetPoint);
+                    double distance = edge.DistanceFrom(targetPoint);
                     if (minDistance < 0 || distance < minDistance)
                     {
                         minDistance = distance;

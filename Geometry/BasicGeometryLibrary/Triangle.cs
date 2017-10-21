@@ -9,32 +9,45 @@ namespace TriangulatedPolygonAStar.BasicGeometry
     /// </summary>
     public class Triangle : ITriangle
     {
-        private Vector a;
-        private Vector b;
-        private Vector c;
+        private Vector[] vertices;
         private Dictionary<ITriangle, Edge> adjacentEdges;
 
         public Triangle(Vector a, Vector b, Vector c)
         {
-            this.a = a;
-            this.b = b;
-            this.c = c;
+            if (a == null)
+            {
+                throw new ArgumentNullException(nameof(a));
+            }
+            if (b == null)
+            {
+                throw new ArgumentNullException(nameof(b));
+            }
+            if (c == null)
+            {
+                throw new ArgumentNullException(nameof(c));
+            }
+            if (a.Equals(b) || a.Equals(c) || b.Equals(c))
+            {
+                throw new ArgumentOutOfRangeException("One or more of the specified vertices are equal with each other");
+            }
+            
+            this.vertices = new[] {a, b, c};
             this.adjacentEdges = new Dictionary<ITriangle, Edge>();
         }
 
         public IVector A
         {
-            get { return a; }
+            get { return vertices[0]; }
         }
 
         public IVector B
         {
-            get { return b; }
+            get { return vertices[1]; }
         }
 
         public IVector C
         {
-            get { return c; }
+            get { return vertices[2]; }
         }
 
         public IEnumerable<ITriangle> Neighbours
@@ -44,6 +57,14 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public void SetNeighbours(IEnumerable<Triangle> neighbours)
         {
+            if (neighbours == null)
+            {
+                throw new ArgumentNullException(nameof(neighbours));
+            }
+            if (neighbours.Any(item => item == null))
+            {
+                throw new ArgumentException("One or more of the specified neighbours is null", nameof(neighbours));
+            }
             if (neighbours.Count() > 3)
             {
                 throw new ArgumentOutOfRangeException("Maximum allowed amount of neighbour triangles is 3", nameof(neighbours));
@@ -64,20 +85,54 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             adjacentEdges = edgeSet;
         }
 
-        // Based on: http://www.blackpawn.com/texts/pointinpoly/default.html
-        public bool ContainsPoint(IVector p)
+        public IEdge GetCommonEdgeWith(ITriangle other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            if (!adjacentEdges.ContainsKey(other))
+            {
+                throw new ArgumentException("The specified triangle cannot be found among the neighbours", nameof(other));
+            }
+            
+            return adjacentEdges[other];
+        }
+        
+        /// <summary>
+        /// Determines the set of vertices shared by this triangle and the specified one.
+        /// </summary>
+        /// <param name="other">The other triangle to compare this triangle with</param>
+        /// <returns></returns>
+        public IEnumerable<Vector> GetCommonVerticesWith(Triangle other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
+            return vertices.Intersect(other.vertices);
+        }
+        
+        // Based on: http://www.blackpawn.com/texts/pointinpoly/default.html
+        public bool ContainsPoint(IVector point)
+        {
+            if (point == null)
+            {
+                throw new ArgumentNullException(nameof(point));
+            }
+            
             // Compute vectors
             IVector v0 = C.Minus(A); // v0 = C - A
             IVector v1 = B.Minus(A); // v1 = B - A
-            IVector v2 = p.Minus(a); // v2 = P - A
+            IVector v2 = point.Minus(A); // v2 = P - A
 
             // Lower bounds taking into consideration vector equality check parameters
             double borderWidth = VectorEqualityCheck.Tolerance; 
             double abs0 = v0.Length();
             double abs1 = v1.Length();
-            double lowU = abs0 > 0.0 ? borderWidth / abs0 : 0.0;
-            double lowV = abs1 > 0.0 ? borderWidth / abs1 : 0.0;
+            double lowU = borderWidth / abs0;
+            double lowV = borderWidth / abs1;
             
             // Compute dot products
             double dot00 = v0.DotProduct(v0); // dot00 = dot(v0, v0)
@@ -95,18 +150,14 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             // The higher bound is increased by the applicable border size for the u and v weights
             return (u > -lowU) && (v > -lowV) && (u + v < 1.0 + lowU * u + lowV * v); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
-
-        public IEdge GetCommonEdgeWith(ITriangle other)
-        {
-            if (!adjacentEdges.ContainsKey(other))
-            {
-                throw new ArgumentException("The specified triangle cannot be found among the neighbours", nameof(other));
-            }
-            return adjacentEdges[other];
-        }
-
+        
         public override bool Equals(object other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
             Triangle otherTriangle = other as Triangle;
             if (otherTriangle != null)
             {
@@ -120,19 +171,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         public override int GetHashCode()
         {
-            return a.GetHashCode() ^ b.GetHashCode() ^ c.GetHashCode();
-        }
-
-        /// <summary>
-        /// Determines the set of vertices shared by this triangle and the specified one.
-        /// </summary>
-        /// <param name="other">The other triangle to compare this triangle with</param>
-        /// <returns></returns>
-        public IEnumerable<Vector> GetCommonVerticesWith(Triangle other)
-        {
-            var myTriangleVertices = new [] { a, b, c };
-            var otherTriangleVertices = new [] { other.a, other.b, other.c };
-            return myTriangleVertices.Intersect(otherTriangleVertices);
+            return vertices[0].GetHashCode() ^ vertices[1].GetHashCode() ^ vertices[2].GetHashCode();
         }
                
     }

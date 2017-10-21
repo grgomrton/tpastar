@@ -13,53 +13,85 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             X = x;
             Y = y;
         }
-        
-        public double DistanceFrom(IVector other)
+
+        public double X
         {
-            return
-                Math.Sqrt(Math.Pow(X - other.X, 2) + Math.Pow(Y - other.Y, 2));
+            get; 
+            private set;
         }
 
+        public double Y
+        {
+            get; 
+            private set;
+        }
+        
         public IVector Plus(IVector other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
             return new Vector(X + other.X, Y + other.Y);
         }
 
         public IVector Minus(IVector other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
             return new Vector(X - other.X, Y - other.Y);
         }
 
-        public IVector MultiplyByScalar(double scalar)
+        public IVector Times(double scalar)
         {
             return new Vector(scalar * X, scalar * Y);
         }
-
-        public double X { get; private set; }
         
-        public double Y { get; private set; }
+        public double DistanceFrom(IVector other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
+            return other.Minus(this).Length();
+        }
 
         public bool IsInCounterClockWiseDirectionFrom(IVector other)
         {
-             return ZComponentOfCrossProductWith(other) <= 0.0;
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
+            return ZComponentOfCrossProductWith(other) <= 0.0;
         }
 
         public bool IsInClockWiseDirectionFrom(IVector other)
         {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            
             return ZComponentOfCrossProductWith(other) >= 0.0;
         }
 
-        private double ZComponentOfCrossProductWith(IVector other)
+        public override bool Equals(object other)
         {
-            return X * other.Y - Y * other.X;
-        }
-
-        public override bool Equals(object obj)
-        {
-            Vector other = obj as Vector;
-            if (other != null)
+            if (other == null)
             {
-                return other.DistanceFrom(this) < VectorEqualityCheck.Tolerance;
+                throw new ArgumentNullException(nameof(other));
+            }
+            
+            Vector otherVector = other as Vector;
+            if (otherVector != null)
+            {
+                return otherVector.DistanceFrom(this) < VectorEqualityCheck.Tolerance;
             }
             else
             {
@@ -76,10 +108,17 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             return String.Format("({0:0.00}, {1:0.00})", X, Y);
         }
+        
+        private double ZComponentOfCrossProductWith(IVector other)
+        {
+            return X * other.Y - Y * other.X;
+        }
+        
     }
     
     public static class VectorExtensions
     {
+        
         public static double DotProduct(this IVector a, IVector b)
         {
             return a.X * b.X +
@@ -90,5 +129,6 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             return Math.Sqrt(Math.Pow(a.X, 2) + Math.Pow(a.Y, 2));
         }
+        
     }
 }

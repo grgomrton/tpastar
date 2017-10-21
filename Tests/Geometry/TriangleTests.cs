@@ -369,7 +369,7 @@ namespace TriangulatedPolygonAStar.Tests
             var p = new Vector(1.00447213595, 0.50894427191);
             var bcEdge = new Edge(b, c);
 
-            var bcEdgeDistanceFromPoint = bcEdge.DistanceFromPoint(p);
+            var bcEdgeDistanceFromPoint = bcEdge.DistanceFrom(p);
             var pointInTriangleTestResult = t.ContainsPoint(p);
             
             bcEdgeDistanceFromPoint.Should().BeApproximately(vectorDistanceTolerance, floatingPointEqualityPrecision);
@@ -388,7 +388,7 @@ namespace TriangulatedPolygonAStar.Tests
             var p = new Vector(1.0, 0.52);
             var bcEdge = new Edge(b, c);
             
-            var bcEdgeDistanceFromPoint = bcEdge.DistanceFromPoint(p);
+            var bcEdgeDistanceFromPoint = bcEdge.DistanceFrom(p);
             var pointInTriangleTestResult = t.ContainsPoint(p);
 
             bcEdgeDistanceFromPoint.Should().BeGreaterThan(vectorDistanceTolerance);
@@ -406,6 +406,19 @@ namespace TriangulatedPolygonAStar.Tests
             var p = new Vector(-0.001, -0.001);
 
             t.ContainsPoint(p).Should().BeTrue();
+        }
+
+        [Test]
+        public void DistortedTrianglesShouldNotBeCreated() 
+        {
+            var a = new Vector(0.0, 1.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+
+            Action triangleInstantiation = () => new Triangle(a, b, c);
+
+            triangleInstantiation.ShouldThrow<ArgumentException>()
+                .And.Message.Should().Contain("equal");
         }
     }
 }

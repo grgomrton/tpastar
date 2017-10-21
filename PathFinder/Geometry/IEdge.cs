@@ -6,11 +6,23 @@
     public interface IEdge
     {
         /// <summary>
+        /// The first endpoint of the edge. 
+        /// No specific order of the endpoints is expected.
+        /// </summary>
+        IVector A { get; }
+
+        /// <summary>
+        /// The second endpoint of the edge. 
+        /// No specific order of the endpoints is expected.
+        /// </summary>
+        IVector B { get; }
+        
+        /// <summary>
         /// Returns the distances between the the specified point and the edge.
         /// </summary>
         /// <param name="point">The point to measure the distance from.</param>
         /// <returns>The distance between the closest point of the edge and the specified point.</returns>
-        double DistanceFromPoint(IVector point);
+        double DistanceFrom(IVector point);
 
         /// <summary>
         /// Returns the closest point on this edge from the specified point.
@@ -20,23 +32,13 @@
         IVector ClosestPointTo(IVector point);
 
         /// <summary>
-        /// Indicates, whether the specified point lies on this edge.
+        /// Indicates, whether the specified point lies on this edge. A point is
+        /// considered to by lying on the edge if the closest point to the edge from
+        /// this point considered to be equal with the point itself.
         /// </summary>
         /// <param name="point">The point to check</param>
         /// <returns><c>true</c> if the point falls on this edge, otherwise <c>false</c></returns>
         bool PointLiesOnEdge(IVector point);
-        
-        /// <summary>
-        /// The first endpoint of the edge. 
-        /// No specific geometrical property of the endpoints is expected.
-        /// </summary>
-        IVector A { get; }
-
-        /// <summary>
-        /// The second endpoint of the edge. 
-        /// No specific geometrical property of the endpoints is expected.
-        /// </summary>
-        IVector B { get; }
         
         /// <summary>
         /// Determines whether the specified object represents the same edge 

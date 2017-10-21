@@ -24,7 +24,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(2.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
@@ -37,7 +37,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(4.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
@@ -50,7 +50,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(3.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(0.0, AssertionPrecision);
         }
@@ -63,7 +63,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(3.0, 2.5);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(1.5, AssertionPrecision);
         }
@@ -77,7 +77,7 @@ namespace TriangulatedPolygonAStar.Tests
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootTwo = 1.41421;
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
@@ -91,7 +91,7 @@ namespace TriangulatedPolygonAStar.Tests
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootFive = 2.23607;
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(squareRootFive, AssertionPrecision);
         }
@@ -105,7 +105,7 @@ namespace TriangulatedPolygonAStar.Tests
             var squareRootTwo = 1.41421;
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFromPoint(pointToCheck);
+            var distance = edge.DistanceFrom(pointToCheck);
 
             distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
@@ -153,6 +153,18 @@ namespace TriangulatedPolygonAStar.Tests
             var equalityCheckResult = firstEdge.Equals(secondEdge);
 
             equalityCheckResult.Should().BeTrue();
+        }
+        
+        [Test]
+        public void DistortedEdgesShouldNotBeCreated() 
+        {
+            var a = new Vector(0.0, 1.0);
+            var b = new Vector(0.0, 1.0);
+
+            Action edgeInstantiation = () => new Edge(a, b);
+
+            edgeInstantiation.ShouldThrow<ArgumentException>()
+                .And.Message.Should().Contain("equal");
         }
     }
 }
