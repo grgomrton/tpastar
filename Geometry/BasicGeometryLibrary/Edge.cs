@@ -18,6 +18,11 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             this.v2 = v2;
         }
 
+        public bool PointLiesOnEdge(IVector point)
+        {
+            return this.DistanceFromPoint(point) < VectorEqualityCheck.Tolerance;
+        }
+
         public IVector A
         {
             get { return v1; }

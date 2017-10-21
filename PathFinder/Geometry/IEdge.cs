@@ -18,6 +18,13 @@
         /// <param name="point">The point to measure the distance from.</param>
         /// <returns>The closest point of the edge to the specified point.</returns>
         IVector ClosestPointTo(IVector point);
+
+        /// <summary>
+        /// Indicates, whether the specified point lies on this edge.
+        /// </summary>
+        /// <param name="point">The point to check</param>
+        /// <returns><c>true</c> if the point falls on this edge, otherwise <c>false</c></returns>
+        bool PointLiesOnEdge(IVector point);
         
         /// <summary>
         /// The first endpoint of the edge. 

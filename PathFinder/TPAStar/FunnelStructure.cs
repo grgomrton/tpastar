@@ -84,20 +84,22 @@ namespace TriangulatedPolygonAStar
         // from the apex view, the left side is the first element, the last one is on the right side
         private void InitFunnel(IEdge firstEdge)
         {
-            IVector apexToEdgeA = firstEdge.A.Minus(apex.Value);
-            IVector apexToEdgeB = firstEdge.B.Minus(apex.Value);
+            if (!firstEdge.PointLiesOnEdge(apex.Value))
+            {
+                IVector apexToEdgeA = firstEdge.A.Minus(apex.Value);
+                IVector apexToEdgeB = firstEdge.B.Minus(apex.Value);
 
-            if (apexToEdgeA.IsInCounterClockWiseDirectionFrom(apexToEdgeB))
-            {
-                funnel.AddFirst(firstEdge.A);
-                funnel.AddLast(firstEdge.B);
+                if (apexToEdgeA.IsInCounterClockWiseDirectionFrom(apexToEdgeB))
+                {
+                    funnel.AddFirst(firstEdge.A);
+                    funnel.AddLast(firstEdge.B);
+                }
+                else if (apexToEdgeA.IsInClockWiseDirectionFrom(apexToEdgeB))
+                {
+                    funnel.AddFirst(firstEdge.B);
+                    funnel.AddLast(firstEdge.A);
+                }
             }
-            else if (apexToEdgeA.IsInClockWiseDirectionFrom(apexToEdgeB))
-            {
-                funnel.AddFirst(firstEdge.B);
-                funnel.AddLast(firstEdge.A);
-            }
-            // else { } we have nothing to do, we were standing on the edge, this edge is not needed to be added
         }
 
         private static Side DetermineSideSharedBy(IEdge edge, LinkedList<IVector> funnel)
