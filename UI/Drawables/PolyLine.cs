@@ -29,15 +29,18 @@ namespace TriangulatedPolygonAStar.UI
         
         public void Draw(Graphics canvas)
         {
-            var vertices = points.Select(point => point.ToPointF()).ToArray();
-            canvas.DrawLines(linePen, vertices);
-              
-            var lastPoint = vertices.Last(); 
-            var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
+            if (points.Count() > 1)
+            {
+                var vertices = points.Select(point => point.ToPointF()).ToArray();
+                canvas.DrawLines(linePen, vertices);                
+                
+                var lastPoint = vertices.Last(); 
+                var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
             
-            var lineLength = points.Zip(points.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+                var lineLength = points.Zip(points.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
             
-            canvas.DrawString(String.Format(CaptionFormat, lineLength), captionFont, captionBrush, captionPosition);
+                canvas.DrawString(String.Format(CaptionFormat, lineLength), captionFont, captionBrush, captionPosition);
+            }
         }
 
         public void SetPoints(IEnumerable<IVector> points)
