@@ -9,8 +9,8 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class TriangleTests
     {
-        [OneTimeSetUp]
-        public void SetupVectorLibrary()
+        [SetUp]
+        public void BeforeEachTest()
         {
             VectorEqualityCheck.Tolerance = 0.001;
         }
@@ -302,6 +302,71 @@ namespace TriangulatedPolygonAStar.Tests
 
             neighbours.Should().NotBeNull();
             neighbours.Count().Should().Be(0);
+        }
+
+        [Test]
+        public void PointThatFallsBehindABEdgeButIsCloserThanVectorDistanceToleranceShouldBeContainedByTriangle()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(-0.005, 0.5);
+
+            t.ContainsPoint(p).Should().BeTrue();
+        }
+        
+        [Test]
+        public void PointThatFallsBehindACEdgeButIsCloserThanVectorDistanceToleranceShouldBeContainedByTriangle()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(1.0, -0.005);
+
+            t.ContainsPoint(p).Should().BeTrue();
+        }
+       
+        [Test]
+        public void PointThatFallsExactlyOnBCEdgeShouldBeContainedByTriangle()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(1.0, 0.5);
+
+            t.ContainsPoint(p).Should().BeTrue();
+        }
+        
+        [Test]
+        public void PointThatFallsBehindBCEdgeButIsCloserThanVectorDistanceToleranceShouldBeContainedByTriangle()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(1.0, 0.501);
+
+            t.ContainsPoint(p).Should().BeTrue();
+        }
+        
+        [Test]
+        public void PointThatFallsBehindFirstEndpointButIsCloserThanVectorDistanceToleranceShouldBeContainedByTriangle()
+        {
+            VectorEqualityCheck.Tolerance = 0.01;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(-0.001, -0.001);
+
+            t.ContainsPoint(p).Should().BeTrue();
         }
     }
 }

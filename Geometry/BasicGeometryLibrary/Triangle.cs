@@ -85,9 +85,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             double v = (dot00 * dot12 - dot01 * dot02) * invDenom; // v = (dot00 * dot12 - dot01 * dot02) * invDenom
 
             // Check if point is in triangle
-            // Smaller modification - point can fall on the edge of the triangle
-            // Here I need smaller than or equal with one in order to accept edge points
-            return (u >= 0) && (v >= 0) && (u + v < 1.0 + VectorEqualityCheck.Tolerance); // return (u >= 0) && (v >= 0) && (u + v < 1)
+            return (u >= 0) && (v >= 0) && (u + v < 1.0); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
 
         public IEdge GetCommonEdgeWith(ITriangle other)
