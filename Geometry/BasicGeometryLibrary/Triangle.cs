@@ -64,7 +64,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             adjacentEdges = edgeSet;
         }
 
-        // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
+        // Based on: http://www.blackpawn.com/texts/pointinpoly/default.html
         public bool ContainsPoint(IVector p)
         {
             // Compute vectors
@@ -72,6 +72,13 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             IVector v1 = B.Minus(A); // v1 = B - A
             IVector v2 = p.Minus(a); // v2 = P - A
 
+            // Lower bounds taking into consideration vector equality check parameters
+            double borderWidth = VectorEqualityCheck.Tolerance; 
+            double abs0 = v0.Length();
+            double abs1 = v1.Length();
+            double lowU = abs0 > 0.0 ? borderWidth / abs0 : 0.0;
+            double lowV = abs1 > 0.0 ? borderWidth / abs1 : 0.0;
+            
             // Compute dot products
             double dot00 = v0.DotProduct(v0); // dot00 = dot(v0, v0)
             double dot01 = v0.DotProduct(v1); // dot01 = dot(v0, v1)
@@ -83,9 +90,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             double invDenom = 1 / (dot00 * dot11 - dot01 * dot01); // invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
             double u = (dot11 * dot02 - dot01 * dot12) * invDenom; // u = (dot11 * dot02 - dot01 * dot12) * invDenom
             double v = (dot00 * dot12 - dot01 * dot02) * invDenom; // v = (dot00 * dot12 - dot01 * dot02) * invDenom
-
+   
             // Check if point is in triangle
-            return (u >= 0) && (v >= 0) && (u + v < 1.0); // return (u >= 0) && (v >= 0) && (u + v < 1)
+            // The higher bound is increased by the applicable border size for the u and v weights
+            return (u > -lowU) && (v > -lowV) && (u + v < 1.0 + lowU * u + lowV * v); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
 
         public IEdge GetCommonEdgeWith(ITriangle other)

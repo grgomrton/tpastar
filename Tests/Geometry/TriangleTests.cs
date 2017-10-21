@@ -357,6 +357,45 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
+        public void PointThatFallsBehindBCInADistanceEqualsVectorDistanceToleranceShouldNotBeContainedByTriangle()
+        {
+            var vectorDistanceTolerance = 0.01;
+            var floatingPointEqualityPrecision = 0.00001;
+            VectorEqualityCheck.Tolerance = vectorDistanceTolerance;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(1.00447213595, 0.50894427191);
+            var bcEdge = new Edge(b, c);
+
+            var bcEdgeDistanceFromPoint = bcEdge.DistanceFromPoint(p);
+            var pointInTriangleTestResult = t.ContainsPoint(p);
+            
+            bcEdgeDistanceFromPoint.Should().BeApproximately(vectorDistanceTolerance, floatingPointEqualityPrecision);
+            pointInTriangleTestResult.Should().BeFalse();
+        }
+        
+        [Test]
+        public void PointThatFallsBehindBCEdgeAndIsInHigherDistanceThanVectorDistanceToleranceShouldNotBeContainedByTriangle()
+        {
+            var vectorDistanceTolerance = 0.01;
+            VectorEqualityCheck.Tolerance = vectorDistanceTolerance;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(2.0, 0.0);
+            var t = new Triangle(a, b, c);
+            var p = new Vector(1.0, 0.52);
+            var bcEdge = new Edge(b, c);
+            
+            var bcEdgeDistanceFromPoint = bcEdge.DistanceFromPoint(p);
+            var pointInTriangleTestResult = t.ContainsPoint(p);
+
+            bcEdgeDistanceFromPoint.Should().BeGreaterThan(vectorDistanceTolerance);
+            pointInTriangleTestResult.Should().BeFalse();
+        }
+        
+        [Test]
         public void PointThatFallsBehindFirstEndpointButIsCloserThanVectorDistanceToleranceShouldBeContainedByTriangle()
         {
             VectorEqualityCheck.Tolerance = 0.01;

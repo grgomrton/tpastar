@@ -85,5 +85,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             return a.X * b.X +
                    a.Y * b.Y;
         }
+
+        public static double Length(this IVector a)
+        {
+            return Math.Sqrt(Math.Pow(a.X, 2) + Math.Pow(a.Y, 2));
+        }
     }
 }
