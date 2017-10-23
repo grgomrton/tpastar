@@ -237,9 +237,9 @@ namespace TriangulatedPolygonAStar.Tests
             var t2a = new Vector(3.0, 1.0);
             var t2b = new Vector(2.0, 0.0);
             var t2c = new Vector(1.0, 1.0);
-            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
             Triangle t1 = new Triangle(t1a, t1b, t1c);
             Triangle t2 = new Triangle(t2c, t2b, t2a);
+            var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
             t1.SetNeighbours(new [] {t2});
             
             var commonEdge = t1.GetCommonEdgeWith(t2);
@@ -259,7 +259,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t1 = new Triangle(t1a, t1b, t1c);
             Triangle t2 = new Triangle(t2a, t2c, t2b);
             
-            t1.SetNeighbours(new [] {t2});
+            t1.SetNeighbours(new[] {t2});
             var neighbours = t1.Neighbours;
 
             neighbours.Count().Should().Be(1);
@@ -282,7 +282,7 @@ namespace TriangulatedPolygonAStar.Tests
             var t4c = new Vector(5.0, 15.0);
             var t4 = new Triangle(t4a, t4b, t4c);
             
-            t3.SetNeighbours(new [] {t2, t4});
+            t3.SetNeighbours(new[] {t2, t4});
             var neighbours = t3.Neighbours;
 
             neighbours.Count().Should().Be(2);
@@ -357,7 +357,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void PointThatFallsBehindBCInADistanceEqualsVectorDistanceToleranceShouldNotBeContainedByTriangle()
+        public void PointThatFallsBehindBCEdgeInADistanceEqualsVectorDistanceToleranceShouldNotBeContainedByTriangle()
         {
             var vectorDistanceTolerance = 0.01;
             var floatingPointEqualityPrecision = 0.00001;
@@ -409,7 +409,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void DistortedTrianglesShouldNotBeCreated() 
+        public void DistortedTriangleShouldNotBeCreated() 
         {
             var a = new Vector(0.0, 1.0);
             var b = new Vector(0.0, 1.0);

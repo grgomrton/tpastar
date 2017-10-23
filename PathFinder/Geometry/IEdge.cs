@@ -32,9 +32,7 @@
         IVector ClosestPointTo(IVector point);
 
         /// <summary>
-        /// Indicates, whether the specified point lies on this edge. A point is
-        /// considered to by lying on the edge if the closest point to the edge from
-        /// this point considered to be equal with the point itself.
+        /// Indicates, whether the specified point lies on this edge.
         /// </summary>
         /// <param name="point">The point to check</param>
         /// <returns><c>true</c> if the point falls on this edge, otherwise <c>false</c></returns>
@@ -52,7 +50,7 @@
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// An integer value that specifies a hash value for this instance. 
         /// </returns>
         int GetHashCode();
     }

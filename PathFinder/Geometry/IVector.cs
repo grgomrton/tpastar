@@ -30,9 +30,9 @@
         IVector Minus(IVector other);
 
         /// <summary>
-        /// Returns the result of multiplying this vector with a floating point number.
+        /// Returns the result of multiplying this vector with a scalar value.
         /// </summary>
-        /// <param name="scalar">The number to multiply with</param>
+        /// <param name="scalar">The value to multiply with</param>
         /// <returns>The result of the multiplication.</returns>
         IVector Times(double scalar);
 
@@ -47,7 +47,7 @@
         /// Returns whether the current vector is in clockwise direction from <paramref name="other"/>.
         /// Parallel vectors should pass the clockwise test.
         /// </summary>
-        /// <param name="other">The vector to determine the orientation to.</param>
+        /// <param name="other">The vector to determine the orientation from.</param>
         /// <returns>Result of counter-clockwise test.</returns>
         bool IsInClockWiseDirectionFrom(IVector other);
         
@@ -55,7 +55,7 @@
         /// Returns whether the current vector is in counter-clockwise direction from <paramref name="other"/>.
         /// Parallel vectors should pass the counter-clockwise test.
         /// </summary>
-        /// <param name="other">The vector to determine the orientation to.</param>
+        /// <param name="other">The vector to determine the orientation from.</param>
         /// <returns>Result of clockwise test.</returns>
         bool IsInCounterClockWiseDirectionFrom(IVector other);
         

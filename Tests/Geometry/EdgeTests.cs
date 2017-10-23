@@ -156,7 +156,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void DistortedEdgesShouldNotBeCreated() 
+        public void DistortedEdgeShouldNotBeCreated() 
         {
             var a = new Vector(0.0, 1.0);
             var b = new Vector(0.0, 1.0);

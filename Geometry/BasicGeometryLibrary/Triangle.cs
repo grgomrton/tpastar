@@ -114,7 +114,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             return vertices.Intersect(other.vertices);
         }
         
-        // Based on: http://www.blackpawn.com/texts/pointinpoly/default.html
+        // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
         public bool ContainsPoint(IVector point)
         {
             if (point == null)

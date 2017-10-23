@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
+    /// <summary>
+    /// Represents the state of a traversal through the triangle graph along a specific set of adjacent triangles.
+    /// </summary>
     public class TPAPath
     {
         private ITriangle currentTriangle;
@@ -21,10 +24,11 @@ namespace TriangulatedPolygonAStar
         private static double InitialValueForMinimumFinding = -1.0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TPAPath"/> class which represents
-        /// the result of stepping over the specified set of adjacent triangles.
+        /// Initializes a new instance of the <see cref="TPAPath"/> class which can be used 
+        /// to explore the triangle graph.
         /// </summary>
-        /// <param name="startPoint"></param>
+        /// <param name="startPoint">The point where the traversion originates from</param>
+        /// <param name="startTriangle">The triangle which contains the start point</param>
         public TPAPath(IVector startPoint, ITriangle startTriangle)
         {
             funnel = new FunnelStructure(startPoint);
@@ -60,7 +64,8 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// The edge where we entered the current triangle.
+        /// The edge where we entered the current triangle. 
+        /// Until we step to the first neighbour triangle from the start triangle, this value is null.
         /// </summary>
         public IEdge CurrentEdge
         {
@@ -68,8 +73,8 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// The length of the possibly shortest path from the start to the current edge along the set of triangles
-        /// stepped over while building this path.
+        /// The length of the possibly shortest path from the start point to the current edge along the set of triangles
+        /// that has been stepped over.
         /// </summary>
         public double ShortestPathToEdgeLength
         {
@@ -77,8 +82,8 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// The length of the longest possible path from the start to the current edge along the set of triangles
-        /// stepped over while building this path.
+        /// The length of the longest possible path from the start point to the current edge along the set of triangles
+        /// that has been stepped over.
         /// </summary>
         public double LongestPathToEdgeLength
         {
@@ -86,21 +91,31 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// The length of the possibly shortest path from the start to the closest goal point along the set of triangles
-        /// stepped over until this point.
+        /// The length of the possibly shortest path from the start point to the closest goal point along the set of 
+        /// triangles that has been stepped over.
+        /// Before the final paths have been at a specific state of an exploration, the goals that fall in the current 
+        /// triangle are taken into account by calculating the minimal total cost. 
+        /// Once the final paths have been built only goals that fall outside the current triangle are included in 
+        /// this value.
         /// </summary>
         public double MinimalTotalCost
         {
             get { return ShortestPathToEdgeLength + distanceFromClosestGoalPoint; }
         }
 
+        /// <summary>
+        /// Indicates whether the final paths to the goals contained by the current triangle have been acquired.
+        /// </summary>
         public bool FinalPathsHaveBeenBuilt
         {
             get { return finalPathsHaveBeenBuilt; }
         }
         
         /// <summary>
-        /// Indicates, whether a goal point has been added to the end of this path and therefore is finalized.
+        /// Indicates, whether a goal point has been reached and added as the last point of the path. 
+        /// Once a goal is reached, further exploration of neighbour triangles is not permitted.
+        /// In this case the built path contains the euclidean-shortest path from the start to the reached goal point 
+        /// along the triangles stepped through by this traversion.
         /// </summary>
         public bool Finalized
         {
@@ -108,7 +123,12 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Returns the path that has been built during this exploration.
+        /// Returns the path that has been built during this traversal of the triangle graph.
+        /// While the exploration along this path has not reached any goal point, this path
+        /// contains only a partial path along the triangles. The partial path does not necessarily
+        /// reach the current triangle.
+        /// Once a goal point is reached and added to this path, this field contains the euclidean-shortest
+        /// path between the start and the goal point along the triangles that has been stepped over during exploration. 
         /// </summary>
         public LinkedList<IVector> Path
         {
@@ -118,8 +138,8 @@ namespace TriangulatedPolygonAStar
         /// <summary>
         /// Indicates, whether the current triangle that this path is standing on contains any of the specified points.
         /// </summary>
-        /// <param name="points">To points to check whether any of them is reached</param>
-        /// <returns>true, if any of the points fall inside the current triangle, false otherwise</returns>
+        /// <param name="points">To points to check</param>
+        /// <returns>true if any of the points fall inside the current triangle, otherwise false</returns>
         public bool ReachedAnyOf(IEnumerable<IVector> points)
         {
             foreach (IVector point in points)
@@ -133,14 +153,20 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// Indicates, whether after building final paths to the reached goal points
-        /// there is any other goal pont that might be reached by further exploration.
+        /// Indicates, whether there is any goal point that does not fall into the current triangle
+        /// of this path.
         /// </summary>
         public bool IsAnyOtherGoalThatMightBeReached
         {
             get { return distanceFromClosestGoalPoint > InitialValueForMinimumFinding; }
         }
 
+        /// <summary>
+        /// Returns the set of paths which can be built by proceeding the graph exploration with the approachable 
+        /// neighbours of the current triangle.
+        /// </summary>
+        /// <param name="goals">The possible goal points</param>
+        /// <returns>The set of the resulting paths, among each one of them is standing on one of the approachable neighbour triangles</returns>
         public IEnumerable<TPAPath> ExploreNeighbourTriangles(IEnumerable<IVector> goals)
         {
             List<TPAPath> pathsToNeighbours = new List<TPAPath>();
@@ -153,6 +179,11 @@ namespace TriangulatedPolygonAStar
             return pathsToNeighbours;
         }
 
+        /// <summary>
+        /// Returns the finalized paths to the goal points which fall inside the triangle this path currently stands on.
+        /// </summary>
+        /// <param name="goals">The possible goal points</param>
+        /// <returns>The set of finalized paths to the reached goal points</returns>
         public IEnumerable<TPAPath> BuildFinalizedPaths(IEnumerable<IVector> goals)
         {
             List<TPAPath> finalPaths = new List<TPAPath>();

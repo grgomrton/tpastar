@@ -37,7 +37,7 @@ namespace TriangulatedPolygonAStar.UI
                 var lastPoint = vertices.Last(); 
                 var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
             
-                var lineLength = points.Zip(points.Skip(1), (v1, v2) => v1.DistanceFrom(v2)).Sum();
+                var lineLength = points.Zip(points.Skip(1), (v1, v2) => Math.Sqrt(Math.Pow(v2.X - v1.X, 2) + Math.Pow(v2.Y - v1.Y, 2))).Sum();
             
                 canvas.DrawString(String.Format(CaptionFormat, lineLength), captionFont, captionBrush, captionPosition);
             }

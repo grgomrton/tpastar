@@ -59,12 +59,12 @@ namespace TriangulatedPolygonAStar.Tests
 
             var result = v1.Minus(v2);
 
+            result.X.Should().BeApproximately(-1.0, AssertionPrecision);
+            result.Y.Should().BeApproximately(3.0, AssertionPrecision);
             v1.X.Should().BeApproximately(2.0, AssertionPrecision);
             v1.Y.Should().BeApproximately(1.0, AssertionPrecision);
             v2.X.Should().BeApproximately(3.0, AssertionPrecision);
             v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
-            result.X.Should().BeApproximately(-1.0, AssertionPrecision);
-            result.Y.Should().BeApproximately(3.0, AssertionPrecision);
         }
 
         // values come from examples on www.onlinemathlearning.com
@@ -76,12 +76,12 @@ namespace TriangulatedPolygonAStar.Tests
 
             var result = v1.Plus(v2);
             
+            result.X.Should().BeApproximately(4.0, AssertionPrecision);
+            result.Y.Should().BeApproximately(1.0, AssertionPrecision);
             v1.X.Should().BeApproximately(2.0, AssertionPrecision);
             v1.Y.Should().BeApproximately(3.0, AssertionPrecision);
             v2.X.Should().BeApproximately(2.0, AssertionPrecision);
             v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
-            result.X.Should().BeApproximately(4.0, AssertionPrecision);
-            result.Y.Should().BeApproximately(1.0, AssertionPrecision);
         }
         
         [Test]
