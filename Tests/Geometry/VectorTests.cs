@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -277,7 +278,8 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void VectorsWithOneCoordinateWithDifferentFloorValueButCloserThanToleranceShouldHaveTheSameHashCode()
+        [Ignore("No generic solution can be given due to the transitivity requirement of equals. This problem needs to be mitigated on application level.")]
+        public void VectorsHavingOneCoordinateWithDifferentFloorValueButActuallyCloserThanToleranceShouldHaveTheSameHashCode()
         {
             VectorEqualityCheck.Tolerance = 0.1;
             var u = new Vector(1.0, 1.995);
@@ -292,19 +294,15 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void VectorsWithCoordinatesCloseToBoundaryAndCloserThanToleranceShouldHaveTheSameHashCode()
+        public void VectorHavingACoordinateThatExceedsIntegerRepresentationBoundaryShouldHaveValidHashCode()
         {
             VectorEqualityCheck.Tolerance = 0.1;
-            var u = new Vector(1.09, 2.09);
-            var v = new Vector(1.11, 2.11);
+            var u = new Vector(Int32.MaxValue + 1.0, 10.0);
 
-            var equalityCheckResult = u.Equals(v);
-            var hashCodeOfU = u.GetHashCode();
-            var hashCodeOfV = v.GetHashCode();
+            Action acquiringHashCode = () => u.GetHashCode();
 
-            equalityCheckResult.Should().BeTrue();
-            hashCodeOfU.ShouldBeEquivalentTo(hashCodeOfV);
-        }
+            acquiringHashCode.ShouldNotThrow();
+        } 
         
     }
 }
