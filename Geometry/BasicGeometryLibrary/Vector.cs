@@ -101,7 +101,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
  
         public override int GetHashCode()
         {
-            return (int) ((X + Y) % Int32.MaxValue);
+            return (int) ((X - VectorEqualityCheck.Tolerance + Y - VectorEqualityCheck.Tolerance) % Int32.MaxValue);
         }
 
         public override string ToString()
