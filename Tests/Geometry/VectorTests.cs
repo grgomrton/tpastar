@@ -291,5 +291,20 @@ namespace TriangulatedPolygonAStar.Tests
             hashCodeOfU.ShouldBeEquivalentTo(hashCodeOfV);
         }
         
+        [Test]
+        public void VectorsWithCoordinatesCloseToBoundaryAndCloserThanToleranceShouldHaveTheSameHashCode()
+        {
+            VectorEqualityCheck.Tolerance = 0.1;
+            var u = new Vector(1.09, 2.09);
+            var v = new Vector(1.11, 2.11);
+
+            var equalityCheckResult = u.Equals(v);
+            var hashCodeOfU = u.GetHashCode();
+            var hashCodeOfV = v.GetHashCode();
+
+            equalityCheckResult.Should().BeTrue();
+            hashCodeOfU.ShouldBeEquivalentTo(hashCodeOfV);
+        }
+        
     }
 }
