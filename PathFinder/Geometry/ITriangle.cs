@@ -23,19 +23,18 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// Determines whether the specifified point falls inside the triangle.
-        /// Points that lie on the edges are expected to be determined as 
-        /// contained points.
+        /// Points that lie on the edges are expected to be determined as contained points.
         /// </summary>
-        /// <param name="point">To point to check</param>
-        /// <returns>true if the specified point falls inside the triangle; otherwise, false.</returns>
+        /// <param name="point">The point to check</param>
+        /// <returns>true if the specified point falls inside the triangle, otherwise false.</returns>
         bool ContainsPoint(IVector point); 
         
         /// <summary>
-        /// Determines whether the specified object represents the same triangle 
-        /// as this one.
+        /// Determines whether the specified object represents 
+        /// the same triangle as this one.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns>true if the specified object is equal to the current triangle, otherwise false.</returns>
         bool Equals(object other);
     }
 }

@@ -18,7 +18,7 @@
         IVector B { get; }
         
         /// <summary>
-        /// Returns the distances between the the specified point and the edge.
+        /// Returns the cartesian distances between the specified point and the edge.
         /// </summary>
         /// <param name="point">The point to measure the distance from.</param>
         /// <returns>The distance between the closest point of the edge and the specified point.</returns>
@@ -35,12 +35,12 @@
         /// Indicates, whether the specified point lies on this edge.
         /// </summary>
         /// <param name="point">The point to check</param>
-        /// <returns><c>true</c> if the point falls on this edge, otherwise <c>false</c></returns>
+        /// <returns>true if the point falls on this edge, otherwise false</returns>
         bool PointLiesOnEdge(IVector point);
         
         /// <summary>
         /// Determines whether the specified object represents the same edge 
-        /// as the current edge.
+        /// as this one.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
@@ -49,9 +49,7 @@
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
-        /// <returns>
-        /// An integer value that specifies a hash value for this instance. 
-        /// </returns>
+        /// <returns>An integer value that specifies a hash value for this instance.</returns>
         int GetHashCode();
     }
 }

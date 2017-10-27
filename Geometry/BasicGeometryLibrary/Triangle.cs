@@ -4,136 +4,143 @@ using System.Linq;
 
 namespace TriangulatedPolygonAStar.BasicGeometry
 {
-    /// <summary>
-    /// Represents a triangle by three corner point.
-    /// </summary>
+    /// <inheritdoc />
     public class Triangle : ITriangle
     {
-        private Vector[] vertices;
+        private readonly Vector[] vertices;
         private Dictionary<ITriangle, Edge> adjacentEdges;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Triangle"/> class by three corner points.
+        /// No specific order of the corner points is expected. 
+        /// Distorted triangles which has two or more identical corner point cannot be created.
+        /// </summary>
+        /// <param name="a">The first corner point</param>
+        /// <param name="b">The second corner point</param>
+        /// <param name="c">The third corner point</param>
         public Triangle(Vector a, Vector b, Vector c)
         {
-            if (a == null)
-            {
-                throw new ArgumentNullException(nameof(a));
-            }
-            if (b == null)
-            {
-                throw new ArgumentNullException(nameof(b));
-            }
-            if (c == null)
-            {
-                throw new ArgumentNullException(nameof(c));
-            }
+            CheckForNullArgument(a, nameof(a));
+            CheckForNullArgument(b, nameof(b));
+            CheckForNullArgument(c, nameof(c));
             if (a.Equals(b) || a.Equals(c) || b.Equals(c))
             {
-                throw new ArgumentOutOfRangeException("One or more of the specified vertices are equal with each other");
+                throw new ArgumentOutOfRangeException(
+                    "One or more of the specified vertices overlap each other");
             }
-            
-            this.vertices = new[] {a, b, c};
-            this.adjacentEdges = new Dictionary<ITriangle, Edge>();
+
+            vertices = new[] {a, b, c};
+            adjacentEdges = new Dictionary<ITriangle, Edge>();
         }
 
+        /// <summary>
+        /// The first corner of the triangle.
+        /// </summary>
         public IVector A
         {
             get { return vertices[0]; }
         }
 
+        /// <summary>
+        /// The second corner of the triangle.
+        /// </summary>
         public IVector B
         {
             get { return vertices[1]; }
         }
 
+        /// <summary>
+        /// The third corner of the triangle.
+        /// </summary>
         public IVector C
         {
             get { return vertices[2]; }
         }
 
+        /// <inheritdoc />
         public IEnumerable<ITriangle> Neighbours
         {
             get { return adjacentEdges.Keys; }
         }
 
+        /// <summary>
+        /// Sets the neighbours of this triangle. 
+        /// Every neighbour triangle is expected to share exactly two vertices with this one. 
+        /// The maximum amount of neighbours is three.
+        /// </summary>
+        /// <param name="neighbours">The neighbours to be set</param>
         public void SetNeighbours(IEnumerable<Triangle> neighbours)
         {
-            if (neighbours == null)
-            {
-                throw new ArgumentNullException(nameof(neighbours));
-            }
+            CheckForNullArgument(neighbours, nameof(neighbours));
             if (neighbours.Any(item => item == null))
             {
                 throw new ArgumentException("One or more of the specified neighbours is null", nameof(neighbours));
             }
             if (neighbours.Count() > 3)
             {
-                throw new ArgumentOutOfRangeException("Maximum allowed amount of neighbour triangles is 3", nameof(neighbours));
+                throw new ArgumentOutOfRangeException(
+                    "The amount of specified neighbours exceed the maximual amount of three", nameof(neighbours));
             }
             if (neighbours.Any(triangle => triangle.GetCommonVerticesWith(this).Count() != 2))
             {
                 throw new ArgumentException(
-                    "One or more of the specified triangles are not adjacent with this triangle", nameof(neighbours));
+                    "One or more of the specified triangles are not adjacent with this one", nameof(neighbours));
             }
-            
+
             var edgeSet = new Dictionary<ITriangle, Edge>();
             foreach (Triangle neighbour in neighbours)
             {
-                var commonVertices = GetCommonVerticesWith(neighbour);
-                var adjacentEdge = new Edge(commonVertices.ElementAt(0), commonVertices.ElementAt(1));
+                var commonVertices = GetCommonVerticesWith(neighbour).ToArray();
+                var adjacentEdge = new Edge(commonVertices[0], commonVertices[1]);
                 edgeSet.Add(neighbour, adjacentEdge);
             }
             adjacentEdges = edgeSet;
         }
 
+        /// <inheritdoc />
         public IEdge GetCommonEdgeWith(ITriangle other)
         {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
+            CheckForNullArgument(other, nameof(other));
             if (!adjacentEdges.ContainsKey(other))
             {
-                throw new ArgumentException("The specified triangle cannot be found among the neighbours", nameof(other));
+                throw new ArgumentException("The specified triangle cannot be found among the neighbours",
+                    nameof(other));
             }
-            
+
             return adjacentEdges[other];
         }
-        
+
         /// <summary>
         /// Determines the set of vertices shared by this triangle and the specified one.
+        /// If no shared vertex exists, an empty set is returned.
         /// </summary>
         /// <param name="other">The other triangle to compare this triangle with</param>
-        /// <returns></returns>
+        /// <returns>The set of common vertices</returns>
         public IEnumerable<Vector> GetCommonVerticesWith(Triangle other)
         {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            
+            CheckForNullArgument(other, nameof(other));
+
             return vertices.Intersect(other.vertices);
         }
-        
+
         // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
+        /// <inheritdoc />
         public bool ContainsPoint(IVector point)
         {
-            if (point == null)
-            {
-                throw new ArgumentNullException(nameof(point));
-            }
-            
+            CheckForNullArgument(point, nameof(point));
+
             // Compute vectors
             IVector v0 = C.Minus(A); // v0 = C - A
             IVector v1 = B.Minus(A); // v1 = B - A
             IVector v2 = point.Minus(A); // v2 = P - A
 
             // Lower bounds taking into consideration vector equality check parameters
-            double borderWidth = VectorEqualityCheck.Tolerance; 
-            double abs0 = v0.Length();
-            double abs1 = v1.Length();
-            double lowU = borderWidth / abs0;
-            double lowV = borderWidth / abs1;
-            
+            double boundaryWidth = VectorEqualityCheck.Tolerance;
+            double mgn0 = v0.Length();
+            double mgn1 = v1.Length();
+            double lowU = boundaryWidth / mgn0;
+            double lowV = boundaryWidth / mgn1;
+
             // Compute dot products
             double dot00 = v0.DotProduct(v0); // dot00 = dot(v0, v0)
             double dot01 = v0.DotProduct(v1); // dot01 = dot(v0, v1)
@@ -145,19 +152,18 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             double invDenom = 1 / (dot00 * dot11 - dot01 * dot01); // invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
             double u = (dot11 * dot02 - dot01 * dot12) * invDenom; // u = (dot11 * dot02 - dot01 * dot12) * invDenom
             double v = (dot00 * dot12 - dot01 * dot02) * invDenom; // v = (dot00 * dot12 - dot01 * dot02) * invDenom
-   
+
             // Check if point is in triangle
             // The higher bound is increased by the applicable border size for the u and v weights
-            return (u > -lowU) && (v > -lowV) && (u + v < 1.0 + lowU * u + lowV * v); // return (u >= 0) && (v >= 0) && (u + v < 1)
+            return (u > -lowU) && (v > -lowV) &&
+                   (u + v < 1.0 + lowU * u + lowV * v); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
-        
+
+        /// <inheritdoc cref="ITriangle.Equals(object)" />
         public override bool Equals(object other)
         {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            
+            CheckForNullArgument(other, nameof(other));
+
             Triangle otherTriangle = other as Triangle;
             if (otherTriangle != null)
             {
@@ -169,10 +175,18 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             }
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return vertices[0].GetHashCode() ^ vertices[1].GetHashCode() ^ vertices[2].GetHashCode();
         }
-               
+
+        private static void CheckForNullArgument(object value, string parameterName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(parameterName);
+            }
+        }
     }
 }

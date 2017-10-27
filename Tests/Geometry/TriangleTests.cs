@@ -418,7 +418,7 @@ namespace TriangulatedPolygonAStar.Tests
             Action triangleInstantiation = () => new Triangle(a, b, c);
 
             triangleInstantiation.ShouldThrow<ArgumentException>()
-                .And.Message.Should().Contain("equal");
+                .And.Message.Should().Contain("overlap");
         }
     }
 }

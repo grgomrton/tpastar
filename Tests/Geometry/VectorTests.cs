@@ -278,7 +278,9 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        [Ignore("No generic solution can be given due to the transitivity requirement of equals. This problem needs to be mitigated on application level.")]
+        [Ignore("No matter how one partitions the space, there will always be two points closer than tolerance " +
+                "which fall into different sides, meaning this problem seems to be perminent. " +
+                "It can be mitigated on application level.")]
         public void VectorsHavingOneCoordinateWithDifferentFloorValueButActuallyCloserThanToleranceShouldHaveTheSameHashCode()
         {
             VectorEqualityCheck.Tolerance = 0.1;

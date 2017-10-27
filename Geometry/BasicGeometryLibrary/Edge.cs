@@ -2,74 +2,70 @@
 
 namespace TriangulatedPolygonAStar.BasicGeometry
 {
+    /// <inheritdoc />
     public class Edge : IEdge
     {
-        private Vector a;
-        private Vector b;
+        private readonly Vector a;
+        private readonly Vector b;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Edge"/> class.
+        /// Initializes a new instance of the <see cref="Edge"/> class by two endpoints. 
+        /// Distorted segments which consist of overlapping points cannot be created.
         /// </summary>
-        /// <param name="a">The first endpoint.</param>
-        /// <param name="b">The second endpoint.</param>
-        /// <exception cref="ArgumentException">If the specified endpoints are equal with each other</exception>
+        /// <param name="a">The first endpoint of the edge.</param>
+        /// <param name="b">The second endpoint of the edge.</param>
         public Edge(Vector a, Vector b)
         {
-            if (a == null)
-            {
-                throw new ArgumentNullException(nameof(a));
-            }
-            if (b == null)
-            {
-                throw new ArgumentNullException(nameof(b));
-            }
+            CheckForNullArgument(a, nameof(a));
+            CheckForNullArgument(b, nameof(b));
             if (a.Equals(b))
             {
                 throw new ArgumentException("The specified endpoints are equal");
             }
-            
+
             this.a = a;
             this.b = b;
         }
 
+        /// <inheritdoc />
         public IVector A
         {
             get { return a; }
         }
 
+        /// <inheritdoc />
         public IVector B
         {
             get { return b; }
         }
 
+        /// <summary>
+        /// Indicates, whether the specified point lies on this edge. 
+        /// A point is considered to be lying on the edge if the closest point on the edge equals with the point itself.
+        /// </summary>
+        /// <param name="point">The point to check</param>
+        /// <returns>true if the point falls on this edge, otherwise false</returns>
         public bool PointLiesOnEdge(IVector point)
         {
-            if (point == null)
-            {
-                throw new ArgumentNullException(nameof(point));
-            }
-            
-            return this.DistanceFrom(point) < VectorEqualityCheck.Tolerance;
+            CheckForNullArgument(point, nameof(point));
+
+            return DistanceFrom(point) < VectorEqualityCheck.Tolerance;
         }
-        
+
+        /// <inheritdoc />
         public double DistanceFrom(IVector point)
         {
-            if (point == null)
-            {
-                throw new ArgumentNullException(nameof(point));
-            }
-            
+            CheckForNullArgument(point, nameof(point));
+
             return point.DistanceFrom(ClosestPointTo(point));
         }
-        
+
         // source: http://www.gamedev.net/topic/444154-closest-point-on-a-line/
-        public IVector ClosestPointTo(IVector point)            // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
-        {                                                   // segmentClamp = true
-            if (point == null)
-            {
-                throw new ArgumentNullException(nameof(point));
-            }
-            
+        /// <inheritdoc />
+        public IVector ClosestPointTo(IVector point)        // Vector GetClosetPoint(Vector A, Vector B, Vector P, bool segmentClamp){
+        {
+            CheckForNullArgument(point, nameof(point));      
+                                                            // segmentClamp = true
             var ap = point.Minus(A);                        // Vector AP = P - A:
             var ab = B.Minus(A);                            // Vector AB = B - A;
             var ab2 = ab.X * ab.X + ab.Y * ab.Y;            // float ab2 = AB.x*AB.x + AB.y*AB.y;
@@ -80,21 +76,20 @@ namespace TriangulatedPolygonAStar.BasicGeometry
                                                             //   else if (t > 1.0f) t = 1.0f;    
                                                             // }
             var closest = A.Plus(ab.Times(t));              // Vector Closest = A + AB * t;
-            
+
             return closest;
         }
 
+        /// <inheritdoc cref="IEdge.Equals(object)" />
         public override bool Equals(object other)
         {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-            
+            CheckForNullArgument(other, nameof(other));
+
             Edge otherEdge = other as Edge;
             if (otherEdge != null)
             {
-                return ((otherEdge.A.Equals(this.A) && otherEdge.B.Equals(this.B)) || (otherEdge.A.Equals(this.B) && otherEdge.B.Equals(this.A)));
+                return ((otherEdge.A.Equals(this.A) && otherEdge.B.Equals(this.B)) ||
+                        (otherEdge.A.Equals(this.B) && otherEdge.B.Equals(this.A)));
             }
             else
             {
@@ -102,10 +97,18 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             }
         }
 
+        /// <inheritdoc cref="IEdge.GetHashCode" />
         public override int GetHashCode()
         {
             return a.GetHashCode() ^ b.GetHashCode();
         }
 
+        private static void CheckForNullArgument(object value, string parameterName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(parameterName);
+            }
+        }
     }
 }
