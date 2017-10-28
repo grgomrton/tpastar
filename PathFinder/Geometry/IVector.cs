@@ -6,12 +6,12 @@
     public interface IVector
     {
         /// <summary>
-        /// The coordinate of this vector on the horizontal axis.
+        /// The horizontal component of the vector.
         /// </summary>
         double X { get; }
 
         /// <summary>
-        /// The coordinate of this vector on the vertical axis.
+        /// The vertical component of the vector.
         /// </summary>
         double Y { get; }
 

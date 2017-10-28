@@ -9,7 +9,7 @@ namespace TriangulatedPolygonAStar.Tests
     public class TPAPathTests
     {
         [OneTimeSetUp]
-        public void SetupVectorLibrary()
+        public void BeforeTheseTestCases()
         {
             VectorEqualityCheck.Tolerance = 0.001;
         }
@@ -20,11 +20,11 @@ namespace TriangulatedPolygonAStar.Tests
             var t2a = new Vector(10.0, 7.5);
             var t2b = new Vector(10.0, 12.5);
             var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c);
+            var t2 = new Triangle(t2a, t2b, t2c, 0);
             var t3a = new Vector(5.0, 10.0);
             var t3b = new Vector(10.0, 12.5);
             var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c);
+            var t3 = new Triangle(t3a, t3b, t3c, 1);
             t2.SetNeighbours(new [] {t3});
             t3.SetNeighbours(new [] {t2});
             var startPoint = new Vector(7.5, 10.0);
@@ -46,15 +46,15 @@ namespace TriangulatedPolygonAStar.Tests
             var t2a = new Vector(10.0, 7.5);
             var t2b = new Vector(10.0, 12.5);
             var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c);
+            var t2 = new Triangle(t2a, t2b, t2c, 0);
             var t3a = new Vector(5.0, 10.0);
             var t3b = new Vector(10.0, 12.5);
             var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c);
+            var t3 = new Triangle(t3a, t3b, t3c, 1);
             var t4a = new Vector(10.0, 12.5);
             var t4b = new Vector(12.5, 15.0);
             var t4c = new Vector(5.0, 15.0);
-            var t4 = new Triangle(t4a, t4b, t4c);
+            var t4 = new Triangle(t4a, t4b, t4c, 2);
             t2.SetNeighbours(new [] {t3});
             t3.SetNeighbours(new [] {t2, t4});
             var s = new Vector(9.0, 11.5);
@@ -74,19 +74,19 @@ namespace TriangulatedPolygonAStar.Tests
             var t2a = new Vector(10.0, 7.5);
             var t2b = new Vector(10.0, 12.5);
             var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c);
+            var t2 = new Triangle(t2a, t2b, t2c, 0);
             var t3a = new Vector(5.0, 10.0);
             var t3b = new Vector(10.0, 12.5);
             var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c);
+            var t3 = new Triangle(t3a, t3b, t3c, 1);
             var t4a = new Vector(10.0, 12.5);
             var t4b = new Vector(12.5, 15.0);
             var t4c = new Vector(5.0, 15.0);
-            var t4 = new Triangle(t4a, t4b, t4c);
+            var t4 = new Triangle(t4a, t4b, t4c, 2);
             var t5a = new Vector(15.0, 12.5);
             var t5b = new Vector(12.5, 15.0);
             var t5c = new Vector(10.0, 12.5);
-            var t5 = new Triangle(t5a, t5b, t5c);
+            var t5 = new Triangle(t5a, t5b, t5c, 3);
             t2.SetNeighbours(new [] {t3});
             t3.SetNeighbours(new [] {t2, t4});
             t4.SetNeighbours(new [] {t3, t5});

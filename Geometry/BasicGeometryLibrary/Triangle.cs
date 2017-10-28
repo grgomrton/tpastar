@@ -7,30 +7,34 @@ namespace TriangulatedPolygonAStar.BasicGeometry
     /// <inheritdoc />
     public class Triangle : ITriangle
     {
+        private readonly int id;
         private readonly Vector[] vertices;
-        private Dictionary<ITriangle, Edge> adjacentEdges;
+        private IEnumerable<Triangle> neighbours;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="Triangle"/> class by three corner points.
-        /// No specific order of the corner points is expected. 
-        /// Distorted triangles which has two or more identical corner point cannot be created.
+        /// Initializes a new instance of <see cref="Triangle"/> class by its three corner points.
+        /// No specific order of the points is expected. 
+        /// Distorted triangles which has two or more identical corner are not supported.
+        /// Triangles that lie between the same points should have identical ids,
+        /// otherwise edges acquired from <see cref="GetCommonEdgeWith"/> might produce different hashes for equal edges.
         /// </summary>
         /// <param name="a">The first corner point</param>
         /// <param name="b">The second corner point</param>
         /// <param name="c">The third corner point</param>
-        public Triangle(Vector a, Vector b, Vector c)
+        /// <param name="id">The unique identifier of the triangle</param>
+        public Triangle(Vector a, Vector b, Vector c, int id)
         {
             CheckForNullArgument(a, nameof(a));
             CheckForNullArgument(b, nameof(b));
             CheckForNullArgument(c, nameof(c));
             if (a.Equals(b) || a.Equals(c) || b.Equals(c))
             {
-                throw new ArgumentOutOfRangeException(
-                    "One or more of the specified vertices overlap each other");
+                throw new ArgumentOutOfRangeException("One or more of the specified vertices overlap each other");
             }
 
+            this.id = id;
             vertices = new[] {a, b, c};
-            adjacentEdges = new Dictionary<ITriangle, Edge>();
+            neighbours = Enumerable.Empty<Triangle>();
         }
 
         /// <summary>
@@ -57,10 +61,18 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             get { return vertices[2]; }
         }
 
+        /// <summary>
+        /// The unique identifier of this triangle.
+        /// </summary>
+        public int Id
+        {
+            get { return id; }
+        }
+        
         /// <inheritdoc />
         public IEnumerable<ITriangle> Neighbours
         {
-            get { return adjacentEdges.Keys; }
+            get { return neighbours; }
         }
 
         /// <summary>
@@ -86,28 +98,22 @@ namespace TriangulatedPolygonAStar.BasicGeometry
                 throw new ArgumentException(
                     "One or more of the specified triangles are not adjacent with this one", nameof(neighbours));
             }
-
-            var edgeSet = new Dictionary<ITriangle, Edge>();
-            foreach (Triangle neighbour in neighbours)
-            {
-                var commonVertices = GetCommonVerticesWith(neighbour).ToArray();
-                var adjacentEdge = new Edge(commonVertices[0], commonVertices[1]);
-                edgeSet.Add(neighbour, adjacentEdge);
-            }
-            adjacentEdges = edgeSet;
+            
+            this.neighbours = neighbours;
         }
 
         /// <inheritdoc />
         public IEdge GetCommonEdgeWith(ITriangle other)
         {
             CheckForNullArgument(other, nameof(other));
-            if (!adjacentEdges.ContainsKey(other))
+            if (!neighbours.Any(triangle => triangle.Equals(other)))
             {
                 throw new ArgumentException("The specified triangle cannot be found among the neighbours",
                     nameof(other));
             }
-
-            return adjacentEdges[other];
+            
+            var neighbour = neighbours.First(triangle => triangle.Equals(other));
+            return new Edge(this, neighbour);
         }
 
         /// <summary>
@@ -119,8 +125,8 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         public IEnumerable<Vector> GetCommonVerticesWith(Triangle other)
         {
             CheckForNullArgument(other, nameof(other));
-
-            return vertices.Intersect(other.vertices);
+            
+            return vertices.Where(point => other.vertices.Any(otherVertex => otherVertex.Equals(point)));
         }
 
         // Source: http://www.blackpawn.com/texts/pointinpoly/default.html
@@ -162,23 +168,24 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <inheritdoc cref="ITriangle.Equals(object)" />
         public override bool Equals(object other)
         {
-            CheckForNullArgument(other, nameof(other));
-
             Triangle otherTriangle = other as Triangle;
             if (otherTriangle != null)
             {
                 return GetCommonVerticesWith(otherTriangle).Count() == 3;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns a hash code for this instance. 
+        /// <see cref="GetHashCode"/> provides a useful distribution only if the uniqueness requirement holds in the system
+        /// described in 
+        /// <see cref="Triangle(TriangulatedPolygonAStar.BasicGeometry.Vector,TriangulatedPolygonAStar.BasicGeometry.Vector,TriangulatedPolygonAStar.BasicGeometry.Vector,int)"/>.
+        /// </summary>
+        /// <returns>An integer value that specifies a hash value for this instance</returns>
         public override int GetHashCode()
         {
-            return vertices[0].GetHashCode() ^ vertices[1].GetHashCode() ^ vertices[2].GetHashCode();
+            return id;
         }
 
         private static void CheckForNullArgument(object value, string parameterName)

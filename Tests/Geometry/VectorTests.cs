@@ -23,9 +23,7 @@ namespace TriangulatedPolygonAStar.Tests
             IVector v2 = new Vector(2.0, 2.0);
             var squareRootTwo = 1.41421;
 
-            var distance = v1.DistanceFrom(v2);
-
-            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
+            v1.DistanceFrom(v2).Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]
@@ -35,9 +33,7 @@ namespace TriangulatedPolygonAStar.Tests
             IVector v2 = new Vector(2.0, 2.0);
             var squareRootTwo = 1.41421;
 
-            var distance = v2.DistanceFrom(v1);
-
-            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
+            v2.DistanceFrom(v1).Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]
@@ -45,15 +41,26 @@ namespace TriangulatedPolygonAStar.Tests
         {
             IVector v2 = new Vector(2.0, 2.0);
 
-            var distance = v2.DistanceFrom(v2);
-
-            distance.Should().BeApproximately(0.0, AssertionPrecision);
+            v2.DistanceFrom(v2).Should().BeApproximately(0.0, AssertionPrecision);
         }
 
+        [Test]
+        public void SubtractionShouldNotChangeInputParameters()
+        {
+            IVector v1 = new Vector(2.0, 1.0);
+            IVector v2 = new Vector(3.0, -2.0);
+
+            v1.Minus(v2);
+
+            v1.X.Should().BeApproximately(2.0, AssertionPrecision);
+            v1.Y.Should().BeApproximately(1.0, AssertionPrecision);
+            v2.X.Should().BeApproximately(3.0, AssertionPrecision);
+            v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);  
+        }
+        
         // values come from examples on www.onlinemathlearning.com
         [Test]
-        public void
-            SubtractingAnotherVectorShouldResultInNewVectorContainingCoordinatesSubtractedTheSecondOneFromTheFirst()
+        public void SubtractingAnotherVectorShouldResultInNewVectorContainingCoordinatesSubtractedTheSecondOneFromTheFirst()
         {
             IVector v1 = new Vector(2.0, 1.0);
             IVector v2 = new Vector(3.0, -2.0);
@@ -62,9 +69,19 @@ namespace TriangulatedPolygonAStar.Tests
 
             result.X.Should().BeApproximately(-1.0, AssertionPrecision);
             result.Y.Should().BeApproximately(3.0, AssertionPrecision);
+        }
+
+        [Test]
+        public void AdditionShouldNotChangeInputParameters()
+        {
+            IVector v1 = new Vector(2.0, 3.0);
+            IVector v2 = new Vector(2.0, -2.0);
+
+            v1.Plus(v2);
+            
             v1.X.Should().BeApproximately(2.0, AssertionPrecision);
-            v1.Y.Should().BeApproximately(1.0, AssertionPrecision);
-            v2.X.Should().BeApproximately(3.0, AssertionPrecision);
+            v1.Y.Should().BeApproximately(3.0, AssertionPrecision);
+            v2.X.Should().BeApproximately(2.0, AssertionPrecision);
             v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
         }
 
@@ -79,10 +96,6 @@ namespace TriangulatedPolygonAStar.Tests
             
             result.X.Should().BeApproximately(4.0, AssertionPrecision);
             result.Y.Should().BeApproximately(1.0, AssertionPrecision);
-            v1.X.Should().BeApproximately(2.0, AssertionPrecision);
-            v1.Y.Should().BeApproximately(3.0, AssertionPrecision);
-            v2.X.Should().BeApproximately(2.0, AssertionPrecision);
-            v2.Y.Should().BeApproximately(-2.0, AssertionPrecision);
         }
         
         [Test]
@@ -91,9 +104,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(0.0, 1.0);
             var v = new Vector(1.0, 0.0);
 
-            var result = v.IsInClockWiseDirectionFrom(u);
-
-            result.Should().BeTrue();
+            v.IsInClockWiseDirectionFrom(u).Should().BeTrue();
         }
         
         [Test]
@@ -102,9 +113,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(0.0, 1.0);
             var v = new Vector(-1.0, 0.0);
 
-            var result = v.IsInCounterClockWiseDirectionFrom(u);
-
-            result.Should().BeTrue();
+            v.IsInCounterClockWiseDirectionFrom(u).Should().BeTrue();
         }
         
         [Test]
@@ -113,9 +122,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(0.0, 1.0);
             var v = new Vector(-1.0, 0.0);
 
-            var result = v.IsInClockWiseDirectionFrom(u);
-
-            result.Should().BeFalse();
+            v.IsInClockWiseDirectionFrom(u).Should().BeFalse();
         }
         
         [Test]
@@ -124,9 +131,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(0.0, 1.0);
             var v = new Vector(1.0, 0.0);
 
-            var result = v.IsInCounterClockWiseDirectionFrom(u);
-
-            result.Should().BeFalse();
+            v.IsInCounterClockWiseDirectionFrom(u).Should().BeFalse();
         }
         
         [Test]
@@ -138,9 +143,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pmToP1 = p1.Minus(pm);
             var pmToP2 = p2.Minus(pm);
 
-            var result = pmToP1.IsInClockWiseDirectionFrom(pmToP2);
-
-            result.Should().BeTrue();
+            pmToP1.IsInClockWiseDirectionFrom(pmToP2).Should().BeTrue();
         }
         
         [Test]
@@ -152,9 +155,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pmToP1 = p1.Minus(pm);
             var pmToP2 = p2.Minus(pm);
 
-            var result = pmToP1.IsInCounterClockWiseDirectionFrom(pmToP2);
-
-            result.Should().BeTrue();
+            pmToP1.IsInCounterClockWiseDirectionFrom(pmToP2).Should().BeTrue();
         }
         
         [Test]
@@ -165,10 +166,8 @@ namespace TriangulatedPolygonAStar.Tests
             var pm = new Vector(2.0, 1.0);
             var pmToP1 = p1.Minus(pm);
             var pmToP2 = p2.Minus(pm);
-            
-            var result = pmToP2.IsInClockWiseDirectionFrom(pmToP1);
 
-            result.Should().BeTrue();
+            pmToP2.IsInClockWiseDirectionFrom(pmToP1).Should().BeTrue();
         }
         
         [Test]
@@ -179,10 +178,8 @@ namespace TriangulatedPolygonAStar.Tests
             var pm = new Vector(2.0, 1.0);
             var pmToP1 = p1.Minus(pm);
             var pmToP2 = p2.Minus(pm);
-            
-            var result = pmToP1.IsInCounterClockWiseDirectionFrom(pmToP2);
 
-            result.Should().BeTrue();
+            pmToP1.IsInCounterClockWiseDirectionFrom(pmToP2).Should().BeTrue();
         }
 
         [Test]
@@ -191,9 +188,7 @@ namespace TriangulatedPolygonAStar.Tests
             IVector u = new Vector(2.5, 3.6);
             IVector v = new Vector(2.5, 3.6);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeTrue();
+            u.Equals(v).Should().BeTrue();
         }
         
         [Test]
@@ -202,9 +197,7 @@ namespace TriangulatedPolygonAStar.Tests
             IVector u = new Vector(2.5, 3.6);
             IVector v = new Vector(2.5, 3.6);
 
-            var equalityCheckResult = v.Equals(u);
-
-            equalityCheckResult.Should().BeTrue();
+            v.Equals(u).Should().BeTrue();
         }
         
         [Test]
@@ -213,9 +206,7 @@ namespace TriangulatedPolygonAStar.Tests
             object u = new Vector(2.5, 3.2);
             object v = new Vector(2.5, 3.2);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeTrue();
+            u.Equals(v).Should().BeTrue();
         }
         
         [Test]
@@ -223,9 +214,7 @@ namespace TriangulatedPolygonAStar.Tests
         {
             IVector u = new Vector(2.5, 3.5);
 
-            var equalityCheckResult = u.Equals(u);
-
-            equalityCheckResult.Should().BeTrue();
+            u.Equals(u).Should().BeTrue();
         }
 
         [Test]
@@ -235,9 +224,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(1.0, 1.0);
             var v = new Vector(1.01, 1.0);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeFalse();
+            u.Equals(v).Should().BeFalse();
         }
         
         [Test]
@@ -247,9 +234,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(1.0, 1.0);
             var v = new Vector(1.005, 1.0);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeTrue();
+            u.Equals(v).Should().BeTrue();
         }
 
         
@@ -260,9 +245,7 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(1.01, 1.01);
             var v = new Vector(1.0, 1.0);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeFalse();
+            u.Equals(v).Should().BeFalse();
         }
         
         [Test]
@@ -272,39 +255,18 @@ namespace TriangulatedPolygonAStar.Tests
             var u = new Vector(1.001, 1.0);
             var v = new Vector(1.001, 1.0);
 
-            var equalityCheckResult = u.Equals(v);
-
-            equalityCheckResult.Should().BeTrue();
-        }
-
-        [Test]
-        [Ignore("No matter how one partitions the space, there will always be two points closer than tolerance " +
-                "which fall into different sides, meaning this problem seems to be perminent. " +
-                "It can be mitigated on application level.")]
-        public void VectorsHavingOneCoordinateWithDifferentFloorValueButActuallyCloserThanToleranceShouldHaveTheSameHashCode()
-        {
-            VectorEqualityCheck.Tolerance = 0.1;
-            var u = new Vector(1.0, 1.995);
-            var v = new Vector(1.0, 2.005);
-
-            var equalityCheckResult = u.Equals(v);
-            var hashCodeOfU = u.GetHashCode();
-            var hashCodeOfV = v.GetHashCode();
-
-            equalityCheckResult.Should().BeTrue();
-            hashCodeOfU.ShouldBeEquivalentTo(hashCodeOfV);
+            u.Equals(v).Should().BeTrue();
         }
         
         [Test]
-        public void VectorHavingACoordinateThatExceedsIntegerRepresentationBoundaryShouldHaveValidHashCode()
+        public void EqualsShouldWorkWithNullParameter()
         {
-            VectorEqualityCheck.Tolerance = 0.1;
-            var u = new Vector(Int32.MaxValue + 1.0, 10.0);
+            var vector = new Vector(1.0, 0.0);
 
-            Action acquiringHashCode = () => u.GetHashCode();
-
-            acquiringHashCode.ShouldNotThrow();
-        } 
+            Action gettingEqualsWithNull = () => vector.Equals(null);
+            
+            gettingEqualsWithNull.ShouldNotThrow();
+        }
         
     }
 }

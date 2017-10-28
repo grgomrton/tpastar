@@ -9,7 +9,7 @@ namespace TriangulatedPolygonAStar.Tests
     public class FunnelStructureTests
     {
         [OneTimeSetUp]
-        public void SetupVectorLibrary()
+        public void BeforeTheseTestCases()
         {
             VectorEqualityCheck.Tolerance = 0.001;
         }

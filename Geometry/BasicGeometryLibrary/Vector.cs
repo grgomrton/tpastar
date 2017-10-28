@@ -11,8 +11,8 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <summary>
         /// Initializes a new instance of <see cref="Vector"/> class by its two coordinates.
         /// </summary>
-        /// <param name="x">The vector endpoint on the horizontal axis</param>
-        /// <param name="y">The vector endpoint on the vertical axis</param>
+        /// <param name="x">The value of the horizontal component of the vector</param>
+        /// <param name="y">The value of the vertical component of the vector</param>
         public Vector(double x, double y)
         {
             this.x = x;
@@ -86,24 +86,12 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <returns>true if the two object represent the same point, otherwise false</returns>
         public override bool Equals(object other)
         {
-            CheckForNullArgument(other, nameof(other));
-
             Vector otherVector = other as Vector;
             if (otherVector != null)
             {
                 return otherVector.DistanceFrom(this) < VectorEqualityCheck.Tolerance;
             }
-            else
-            {
-                return false;
-            }
-        }
-
-        // source: the 2012 version of https://www.codeproject.com/Articles/17425/A-Vector-Type-for-C
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return (int) ((X + Y) % Int32.MaxValue);
+            return false;
         }
 
         /// <summary>

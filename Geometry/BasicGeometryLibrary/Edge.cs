@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace TriangulatedPolygonAStar.BasicGeometry
 {
@@ -7,10 +8,13 @@ namespace TriangulatedPolygonAStar.BasicGeometry
     {
         private readonly Vector a;
         private readonly Vector b;
+        private readonly int firstNeighbourId;
+        private readonly int secondNeighbourId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Edge"/> class by two endpoints. 
-        /// Distorted segments which consist of overlapping points cannot be created.
+        /// Distorted segments which consist of overlapping points are not supported.
+        /// Edges instantiated without neighbour triangles have identical hashes.
         /// </summary>
         /// <param name="a">The first endpoint of the edge.</param>
         /// <param name="b">The second endpoint of the edge.</param>
@@ -23,10 +27,44 @@ namespace TriangulatedPolygonAStar.BasicGeometry
                 throw new ArgumentException("The specified endpoints are equal");
             }
 
-            this.a = a;
-            this.b = b;
+            Set(
+                ref this.a, a, 
+                ref this.b, b, 
+                ref this.firstNeighbourId, 0, 
+                ref this.secondNeighbourId, 0);
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Edge"/> class by two adjacent triangles. 
+        /// The edge will represent the common edge shared by these triangles. 
+        /// </summary>
+        /// <param name="firstNeighbourTriangle">The first adjacent triangle</param>
+        /// <param name="secondNeighbourTriangle">The second adjacent triangle</param>
+        public Edge(Triangle firstNeighbourTriangle, Triangle secondNeighbourTriangle)
+        {
+            CheckForNullArgument(firstNeighbourTriangle, nameof(firstNeighbourTriangle));
+            CheckForNullArgument(secondNeighbourTriangle, nameof(secondNeighbourTriangle));
+            var commonVertices = firstNeighbourTriangle.GetCommonVerticesWith(secondNeighbourTriangle).ToArray();
+            if (commonVertices.Length != 2)
+            {
+                throw new ArgumentException("The specified triangles are not adjacent");
+            }
+
+            Set(
+                ref this.a, commonVertices[0], 
+                ref this.b, commonVertices[1], 
+                ref this.firstNeighbourId, firstNeighbourTriangle.Id, 
+                ref this.secondNeighbourId, secondNeighbourTriangle.Id);
+        }
+
+        private static void Set(ref Vector firstEndpoint, Vector a, ref Vector secondEndPoint, Vector b, ref int firstNeighbourId, int firstNeighbourIdValue, ref int secondNeighbourId, int secondNeighbourIdValue)
+        {
+            firstEndpoint = a;
+            secondEndPoint = b;
+            firstNeighbourId = firstNeighbourIdValue;
+            secondNeighbourId = secondNeighbourIdValue;
+        }
+        
         /// <inheritdoc />
         public IVector A
         {
@@ -41,7 +79,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         /// <summary>
         /// Indicates, whether the specified point lies on this edge. 
-        /// A point is considered to be lying on the edge if the closest point on the edge equals with the point itself.
+        /// A point is considered to be lying on the edge if the 
+        /// closest point on the edge is equal with the point itself.
+        /// It also means that the point is closer to the edge than the value defined in
+        /// <see cref="VectorEqualityCheck.Tolerance"/>.
         /// </summary>
         /// <param name="point">The point to check</param>
         /// <returns>true if the point falls on this edge, otherwise false</returns>
@@ -49,7 +90,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             CheckForNullArgument(point, nameof(point));
 
-            return DistanceFrom(point) < VectorEqualityCheck.Tolerance;
+            return ClosestPointTo(point).Equals(point);
         }
 
         /// <inheritdoc />
@@ -80,27 +121,34 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             return closest;
         }
 
-        /// <inheritdoc cref="IEdge.Equals(object)" />
+        /// <summary>
+        /// Determines whether the specified object represents the same edge as this one.
+        /// Two edges are considered to be equal if their endpoints are closer than the value 
+        /// specified in <see cref="VectorEqualityCheck.Tolerance"/>.
+        /// In such case the highest distance between the two edges is also lower than the tolerance value.
+        /// </summary>
+        /// <param name="other">The other object to compare with</param>
+        /// <returns>true if the specified object is equal to the current object, otherwise false</returns>
         public override bool Equals(object other)
         {
-            CheckForNullArgument(other, nameof(other));
-
             Edge otherEdge = other as Edge;
             if (otherEdge != null)
             {
-                return ((otherEdge.A.Equals(this.A) && otherEdge.B.Equals(this.B)) ||
-                        (otherEdge.A.Equals(this.B) && otherEdge.B.Equals(this.A)));
+                return ((otherEdge.a.Equals(this.a) && otherEdge.b.Equals(this.b)) ||
+                        (otherEdge.b.Equals(this.a) && otherEdge.a.Equals(this.b)));
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        /// <inheritdoc cref="IEdge.GetHashCode" />
+        /// <summary>
+        /// Returns a hash code for this instance. 
+        /// <see cref="GetHashCode"/> provides a useful distribution only for edges that have been created with 
+        /// <see cref="Edge(TriangulatedPolygonAStar.BasicGeometry.Triangle,TriangulatedPolygonAStar.BasicGeometry.Triangle)"/>.
+        /// </summary>
+        /// <returns>An integer value that specifies a hash value for this instance</returns>
         public override int GetHashCode()
         {
-            return a.GetHashCode() ^ b.GetHashCode();
+            return unchecked(firstNeighbourId + secondNeighbourId);
         }
 
         private static void CheckForNullArgument(object value, string parameterName)

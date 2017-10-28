@@ -10,8 +10,8 @@ namespace TriangulatedPolygonAStar.Tests
     {
         private static double AssertionPrecision = 0.00001;
         
-        [OneTimeSetUp]
-        public void SetupVectorLibrary()
+        [SetUp]
+        public void BeforeEachTest()
         {
             VectorEqualityCheck.Tolerance = 0.001;
         }
@@ -24,9 +24,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(2.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(0.0, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -37,9 +35,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(4.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(0.0, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -50,9 +46,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(3.0, 1.0);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(0.0, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(0.0, AssertionPrecision);
         }
         
         [Test]
@@ -63,9 +57,7 @@ namespace TriangulatedPolygonAStar.Tests
             var pointToCheck = new Vector(3.0, 2.5);
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(1.5, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(1.5, AssertionPrecision);
         }
         
         [Test]
@@ -77,9 +69,7 @@ namespace TriangulatedPolygonAStar.Tests
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootTwo = 1.41421;
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
         
         [Test]
@@ -91,9 +81,7 @@ namespace TriangulatedPolygonAStar.Tests
             var edge = new Edge(leftEndpoint, rightEndpoint);
             var squareRootFive = 2.23607;
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(squareRootFive, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(squareRootFive, AssertionPrecision);
         }
         
         [Test]
@@ -105,9 +93,7 @@ namespace TriangulatedPolygonAStar.Tests
             var squareRootTwo = 1.41421;
             var edge = new Edge(leftEndpoint, rightEndpoint);
 
-            var distance = edge.DistanceFrom(pointToCheck);
-
-            distance.Should().BeApproximately(squareRootTwo, AssertionPrecision);
+            edge.DistanceFrom(pointToCheck).Should().BeApproximately(squareRootTwo, AssertionPrecision);
         }
 
         [Test]
@@ -120,9 +106,7 @@ namespace TriangulatedPolygonAStar.Tests
             IEdge firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             IEdge secondEdge = new Edge(leftEndpointOfSecondEdge, rightEndpointOfSecondEdge);
 
-            var equalityCheckResult = firstEdge.Equals(secondEdge);
-
-            equalityCheckResult.Should().BeTrue();
+            firstEdge.Equals(secondEdge).Should().BeTrue();
         }
         
         [Test]
@@ -135,9 +119,7 @@ namespace TriangulatedPolygonAStar.Tests
             IEdge firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             IEdge secondEdge = new Edge(rightEndpointOfSecondEdge, leftEndpointOfSecondEdge);
 
-            var equalityCheckResult = firstEdge.Equals(secondEdge);
-
-            equalityCheckResult.Should().BeTrue();
+            firstEdge.Equals(secondEdge).Should().BeTrue();
         }
         
         [Test]
@@ -150,9 +132,60 @@ namespace TriangulatedPolygonAStar.Tests
             object firstEdge = new Edge(leftEndpointOfFirstEdge, rightEndpointOfFirstEdge);
             object secondEdge = new Edge(rightEndpointOfSecondEdge, leftEndpointOfSecondEdge);
 
-            var equalityCheckResult = firstEdge.Equals(secondEdge);
+            firstEdge.Equals(secondEdge).Should().BeTrue();
+        }
 
-            equalityCheckResult.Should().BeTrue();
+        [Test]
+        public void PointsThatAreCloserToTheEdgeThanVectorToleranceShouldFallOnEdge()
+        {
+            VectorEqualityCheck.Tolerance = 0.1;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(1.0, 0.0);
+            var edge = new Edge(a, b);
+            var pointToCheck = new Vector(0.5, 0.05);
+
+            edge.PointLiesOnEdge(pointToCheck).Should().BeTrue();
+        }
+        
+        [Test]
+        public void PointsThatAreExactlyInVectorToleranceDistanceShouldNotFallOnEdge()
+        {
+            VectorEqualityCheck.Tolerance = 0.1;
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(1.0, 0.0);
+            var edge = new Edge(a, b);
+            var pointToCheck = new Vector(0.5, 0.1);
+
+            edge.PointLiesOnEdge(pointToCheck).Should().BeFalse();
+        }
+
+        [Test]
+        public void EdgesBetweenTrianglesWithIdHigherThanIntegerRepresentationBoundaryShouldHaveValidHashes()
+        {
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(0.0, 1.0);
+            var c = new Vector(1.0, 0.0);
+            var t1 = new Triangle(a, b, c, Int32.MaxValue);
+            var d = new Vector(1.0, 1.0);
+            var t2 = new Triangle(b, c, d, 10);
+            t1.SetNeighbours(new[]{ t2 });
+
+            var sharedEdge = t1.GetCommonEdgeWith(t2);
+            var hashCode = sharedEdge.GetHashCode();
+
+            hashCode.Should().BeLessThan(0);
+        }
+
+        [Test]
+        public void EqualsShouldWorkWithNullParameter()
+        {
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(1.0, 0.0);
+            var edge = new Edge(a, b);
+
+            Action gettingEqualsWithNull = () => edge.Equals(null);
+            
+            gettingEqualsWithNull.ShouldNotThrow();
         }
         
         [Test]

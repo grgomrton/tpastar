@@ -178,7 +178,7 @@ namespace TriangulatedPolygonAStar.UI
             var id = 0;
             foreach (var triangle in triangles)
             {
-                var triangleIcon = new DrawableTriangle(triangle, "t" + id);
+                var triangleIcon = new DrawableTriangle(triangle);
                 trianglesToDraw.Add(triangle, triangleIcon);
                 id++;
             }

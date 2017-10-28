@@ -13,7 +13,7 @@ namespace TriangulatedPolygonAStar.UI
         private static Color TextColor = Color.Black;
         private static float FontSize = 0.12f;
         
-        private string id;
+        private string displayName;
         private int traversionCount;
         private TriangleEvaluationResult lastEvaluationResult;
         private PointF[] points;
@@ -22,9 +22,9 @@ namespace TriangulatedPolygonAStar.UI
         private Brush captionBrush;
         private Font captionFont;
         
-        public DrawableTriangle(Triangle triangle, string id)
+        public DrawableTriangle(Triangle triangle)
         {
-            this.id = id;
+            this.displayName = "t" + triangle.Id;
             points = new PointF[3];
             points[0] = triangle.A.ToPointF();
             points[1] = triangle.B.ToPointF();
@@ -63,7 +63,7 @@ namespace TriangulatedPolygonAStar.UI
         private void DrawMetaData(Graphics canvas)
         {
             var caption = String.Format("{0} ({1}) gMin: {2:0.00}, f: {3:0.00}", 
-                id, 
+                displayName, 
                 traversionCount, 
                 lastEvaluationResult?.ShortestPathToEdgeLength,
                 lastEvaluationResult?.EstimatedMinimalCost);

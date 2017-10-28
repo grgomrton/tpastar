@@ -20,18 +20,18 @@ namespace TriangulatedPolygonAStar.UI.Resources
             var p10 = new Vector(1.0, 7.0);
             var p11 = new Vector(6.5, 0.0);
 
-            Triangle t0 = new Triangle(p10, p5, p0);
-            Triangle t1 = new Triangle(p5, p0, p6);
-            Triangle t2 = new Triangle(p6, p0, p1);
-            Triangle t3 = new Triangle(p6, p1, p7);
-            Triangle t4 = new Triangle(p1, p7, p2);
-            Triangle t5 = new Triangle(p2, p7, p3);
-            Triangle t6 = new Triangle(p8, p7, p3);
-            Triangle t7 = new Triangle(p8, p9, p3);
-            Triangle t8 = new Triangle(p4, p9, p3);
-            Triangle t9 = new Triangle(p4, p9, p11);
-            Triangle t10 = new Triangle(p0, p10, p3);
-            Triangle t11 = new Triangle(p4, p10, p3);
+            Triangle t0 = new Triangle(p10, p5, p0, 0);
+            Triangle t1 = new Triangle(p5, p0, p6, 1);
+            Triangle t2 = new Triangle(p6, p0, p1, 2);
+            Triangle t3 = new Triangle(p6, p1, p7, 3);
+            Triangle t4 = new Triangle(p1, p7, p2, 4);
+            Triangle t5 = new Triangle(p2, p7, p3, 5);
+            Triangle t6 = new Triangle(p8, p7, p3, 6);
+            Triangle t7 = new Triangle(p8, p9, p3, 7);
+            Triangle t8 = new Triangle(p4, p9, p3, 8);
+            Triangle t9 = new Triangle(p4, p9, p11, 9);
+            Triangle t10 = new Triangle(p0, p10, p3, 10);
+            Triangle t11 = new Triangle(p4, p10, p3, 11);
 
             return new [] {t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11};
         }
