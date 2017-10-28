@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
@@ -44,6 +45,14 @@ namespace TriangulatedPolygonAStar
         /// <returns>The list of points that define the euclidean shortest path between the start and the closest goal point</returns>
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
+            CheckForNullArgument(startPoint, nameof(startPoint));
+            CheckForNullArgument(startTriangle, nameof(startTriangle));
+            CheckForNullArgument(goals, nameof(goals));
+            if (!startTriangle.ContainsPoint(startPoint))
+            {
+                throw new ArgumentException("The specified start point does not fall into the start triangle");
+            }
+            
             candidates.Clear();
             higherBounds.Clear();
             
@@ -147,6 +156,14 @@ namespace TriangulatedPolygonAStar
             {
                 TriangleEvaluationResult evaluationEventArgs = new TriangleEvaluationResult(resultingPath);
                 TriangleExplored(resultingPath.CurrentTriangle, evaluationEventArgs);
+            }
+        }
+        
+        private static void CheckForNullArgument(object value, string parameterName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(parameterName);
             }
         }
         

@@ -81,7 +81,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// The maximum amount of neighbours is three.
         /// </summary>
         /// <param name="neighbours">The neighbours to be set</param>
-        public void SetNeighbours(IEnumerable<Triangle> neighbours)
+        public void SetNeighbours(params Triangle[] neighbours)
         {
             CheckForNullArgument(neighbours, nameof(neighbours));
             if (neighbours.Any(item => item == null))

@@ -13,6 +13,8 @@ namespace TriangulatedPolygonAStar
 
         public FunnelStructure(IVector startPoint)
         {
+            CheckForNullArgument(startPoint, nameof(startPoint));
+            
             funnel = new LinkedList<IVector>();
             apex = funnel.AddFirst(startPoint);
             path = new LinkedList<IVector>();
@@ -21,6 +23,8 @@ namespace TriangulatedPolygonAStar
 
         public FunnelStructure(FunnelStructure other)
         {
+            CheckForNullArgument(other, nameof(other));
+            
             funnel = new LinkedList<IVector>(other.funnel);
             apex = funnel.Find(other.apex.Value);
             path = new LinkedList<IVector>(other.path);
@@ -38,6 +42,8 @@ namespace TriangulatedPolygonAStar
         
         public void StepOver(IEdge edge)
         {
+            CheckForNullArgument(edge, nameof(edge));
+
             Side commonSide = DetermineSideSharedBy(edge, funnel);
             IVector leftEnd = funnel.First.Value;
             IVector rightEnd = funnel.Last.Value;
@@ -72,6 +78,8 @@ namespace TriangulatedPolygonAStar
 
         public void FinalizePath(IVector goal)
         {
+            CheckForNullArgument(goal, nameof(goal));
+            
             AddToRightSideOfFunnel(goal);
             LinkedListNode<IVector> node = apex;
             while (!node.Value.Equals(goal))
@@ -196,6 +204,14 @@ namespace TriangulatedPolygonAStar
                     apex = funnel.First.Next;
                     popped = true;
                 }                
+            }
+        }
+        
+        private static void CheckForNullArgument(object value, string parameterName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(parameterName);
             }
         }
         

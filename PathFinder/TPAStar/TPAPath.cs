@@ -31,6 +31,9 @@ namespace TriangulatedPolygonAStar
         /// <param name="startTriangle">The triangle which contains the start point</param>
         public TPAPath(IVector startPoint, ITriangle startTriangle)
         {
+            CheckForNullArgument(startPoint, nameof(startPoint));
+            CheckForNullArgument(startTriangle, nameof(startTriangle));
+            
             funnel = new FunnelStructure(startPoint);
             currentTriangle = startTriangle;
             explorableTriangles = new LinkedList<ITriangle>(startTriangle.Neighbours);
@@ -44,6 +47,8 @@ namespace TriangulatedPolygonAStar
 
         private TPAPath(TPAPath other)
         {
+            CheckForNullArgument(other, nameof(other));
+            
             funnel = new FunnelStructure(other.funnel);
             currentTriangle = other.currentTriangle;
             explorableTriangles = other.explorableTriangles;
@@ -142,6 +147,8 @@ namespace TriangulatedPolygonAStar
         /// <returns>true if any of the points fall inside the current triangle, otherwise false</returns>
         public bool ReachedAnyOf(IEnumerable<IVector> points)
         {
+            CheckForNullArgument(points, nameof(points));
+            
             foreach (IVector point in points)
             {
                 if (currentTriangle.ContainsPoint(point))
@@ -169,6 +176,8 @@ namespace TriangulatedPolygonAStar
         /// <returns>The set of the resulting paths, among each one of them is standing on one of the approachable neighbour triangles</returns>
         public IEnumerable<TPAPath> ExploreNeighbourTriangles(IEnumerable<IVector> goals)
         {
+            CheckForNullArgument(goals, nameof(goals));
+            
             List<TPAPath> pathsToNeighbours = new List<TPAPath>();
             foreach (ITriangle neighbour in explorableTriangles)
             {
@@ -186,6 +195,8 @@ namespace TriangulatedPolygonAStar
         /// <returns>The set of finalized paths to the reached goal points</returns>
         public IEnumerable<TPAPath> BuildFinalizedPaths(IEnumerable<IVector> goals)
         {
+            CheckForNullArgument(goals, nameof(goals));
+            
             List<TPAPath> finalPaths = new List<TPAPath>();
             foreach (var goal in goals)
             {
@@ -412,5 +423,13 @@ namespace TriangulatedPolygonAStar
             return minDistance;
         }
 
+        private static void CheckForNullArgument(object value, string parameterName)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(parameterName);
+            }
+        }
+        
     }
 }

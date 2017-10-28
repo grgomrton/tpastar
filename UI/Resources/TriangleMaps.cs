@@ -22,7 +22,7 @@ namespace TriangulatedPolygonAStar.UI.Resources
         {
             foreach (var triangle in triangles)
             {
-                var neighbours = triangles.Where(other => triangle.GetCommonVerticesWith(other).Count() == 2);
+                var neighbours = triangles.Where(other => triangle.GetCommonVerticesWith(other).Count() == 2).ToArray();
                 triangle.SetNeighbours(neighbours);
             }
         }

@@ -25,8 +25,8 @@ namespace TriangulatedPolygonAStar.Tests
             var t3b = new Vector(10.0, 12.5);
             var t3c = new Vector(5.0, 15.0);
             var t3 = new Triangle(t3a, t3b, t3c, 1);
-            t2.SetNeighbours(new [] {t3});
-            t3.SetNeighbours(new [] {t2});
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2);
             var startPoint = new Vector(7.5, 10.0);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var path = new TPAPath(startPoint, t2);
@@ -55,8 +55,8 @@ namespace TriangulatedPolygonAStar.Tests
             var t4b = new Vector(12.5, 15.0);
             var t4c = new Vector(5.0, 15.0);
             var t4 = new Triangle(t4a, t4b, t4c, 2);
-            t2.SetNeighbours(new [] {t3});
-            t3.SetNeighbours(new [] {t2, t4});
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2, t4);
             var s = new Vector(9.0, 11.5);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var initialPath = new TPAPath(s, t3);
@@ -87,10 +87,10 @@ namespace TriangulatedPolygonAStar.Tests
             var t5b = new Vector(12.5, 15.0);
             var t5c = new Vector(10.0, 12.5);
             var t5 = new Triangle(t5a, t5b, t5c, 3);
-            t2.SetNeighbours(new [] {t3});
-            t3.SetNeighbours(new [] {t2, t4});
-            t4.SetNeighbours(new [] {t3, t5});
-            t5.SetNeighbours(new[] {t4});
+            t2.SetNeighbours(t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4);
             var s = new Vector(9.0, 11.5);
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var initialPath = new TPAPath(s, t2);
