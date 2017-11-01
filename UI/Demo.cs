@@ -174,7 +174,7 @@ namespace TriangulatedPolygonAStar.UI
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)
         {
             var trianglesToDraw = new Dictionary<ITriangle, DrawableTriangle>();
-            var id = 0; // Remove id, if it is not used anymore.
+            var id = 0;
             foreach (var triangle in triangles)
             {
                 var triangleIcon = new DrawableTriangle(triangle);

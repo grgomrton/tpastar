@@ -4,7 +4,7 @@ namespace TriangulatedPolygonAStar.UI
 {
     public abstract class Point : IDrawable
     {
-        private float radius; // This could be readonly
+        private float radius;
         private Brush brush;
         private IVector position;
 

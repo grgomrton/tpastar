@@ -19,7 +19,7 @@ namespace TriangulatedPolygonAStar.UI
         private Brush captionBrush;
         private Font captionFont;
 
-        public PolyLine(IEnumerable<IVector> points) // It is a bit confusing, that IVector instances are called point, though you have a Point class, where you name the positions.
+        public PolyLine(IEnumerable<IVector> points)
         {
             this.points = points;
             linePen = new Pen(LineColor, LineWidth);
@@ -34,7 +34,6 @@ namespace TriangulatedPolygonAStar.UI
                 var vertices = points.Select(point => point.ToPointF()).ToArray();
                 canvas.DrawLines(linePen, vertices);
 
-                // Extract method DrawCaption(vertices.Last())
                 var lastPoint = vertices.Last();
                 var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
 

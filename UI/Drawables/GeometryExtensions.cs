@@ -13,7 +13,7 @@ namespace TriangulatedPolygonAStar.UI
             return new PointF(x, y);
         }
 
-        public static Vector CalculateCentroid(this Triangle triangle) // This is named like a command, but it is a function. GetCentroid() might be better.
+        public static Vector CalculateCentroid(this Triangle triangle)
         {
             var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);
             return new Vector(sum.X / 3.0, sum.Y / 3.0);

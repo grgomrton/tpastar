@@ -13,7 +13,7 @@ namespace TriangulatedPolygonAStar.UI
         private static Color TextColor = Color.Black;
         private static float FontSize = 0.12f;
 
-        private string displayName; // This could be readonly.
+        private string displayName;
         private int traversionCount;
         private TriangleEvaluationResult lastEvaluationResult;
         private PointF[] points;
@@ -25,11 +25,11 @@ namespace TriangulatedPolygonAStar.UI
         public DrawableTriangle(Triangle triangle)
         {
             this.displayName = "t" + triangle.Id;
-            points = new PointF[3]; // Extract method ToPointFs(Triangle) to get Uniform Level of Abstraction
+            points = new PointF[3];
             points[0] = triangle.A.ToPointF();
             points[1] = triangle.B.ToPointF();
             points[2] = triangle.C.ToPointF();
-            centroid = triangle.CalculateCentroid().Minus(new Vector(0.8, 0.8)).ToPointF(); // Extract method with a descriptive name to communicate intention
+            centroid = triangle.CalculateCentroid().Minus(new Vector(0.8, 0.8)).ToPointF();
             edgePen = new Pen(EdgeColor, EdgeWidth);
             captionBrush = new SolidBrush(TextColor);
             captionFont = new Font(FontFamily.GenericSansSerif, FontSize);
@@ -41,7 +41,7 @@ namespace TriangulatedPolygonAStar.UI
             lastEvaluationResult = metadata;
         }
 
-        public void ResetMetaData() // Is meta data like View data?
+        public void ResetMetaData()
         {
             traversionCount = 0;
             lastEvaluationResult = null;
@@ -52,7 +52,7 @@ namespace TriangulatedPolygonAStar.UI
             var r = Convert.ToInt32(Math.Max(FillColor.R - traversionCount * TraversionShade.R, 0));
             var g = Convert.ToInt32(Math.Max(FillColor.G - traversionCount * TraversionShade.G, 0));
             var b = Convert.ToInt32(Math.Max(FillColor.B - traversionCount * TraversionShade.B, 0));
-            var fillColor = Color.FromArgb(r, g, b); // Extract method (till this line, inclusive) CreateFillColor() to get Uniform Level of Abstraction
+            var fillColor = Color.FromArgb(r, g, b);
 
             var brush = new SolidBrush(fillColor);
 
@@ -70,7 +70,7 @@ namespace TriangulatedPolygonAStar.UI
             canvas.DrawString(caption, captionFont, captionBrush, centroid);
         }
 
-        public void Draw(Graphics canvas) // It is a bit confusing to have this down here.
+        public void Draw(Graphics canvas)
         {
             DrawTriangle(canvas);
             DrawMetaData(canvas);

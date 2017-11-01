@@ -94,8 +94,6 @@ namespace TriangulatedPolygonAStar.UI
                 catch (Exception e)
                 {
                     System.Diagnostics.Debug.Write(e.StackTrace);
-                    // Why not the whole e?
-                    // Why not WriteLine?
                 }
                 canvas.Transform = mscale;
             }

@@ -18,7 +18,7 @@ namespace TriangulatedPolygonAStar.UI.Resources
             SetAdjacencySettingsBetween(TrianglesOfPolygonWithTwoHoles);
         }
 
-        private static void SetAdjacencySettingsBetween(IEnumerable<Triangle> triangles) // I might name this SetNeighboursOf() or SetNeighboursForAll()
+        private static void SetAdjacencySettingsBetween(IEnumerable<Triangle> triangles)
         {
             foreach (var triangle in triangles)
             {
