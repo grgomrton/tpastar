@@ -7,9 +7,9 @@ namespace TriangulatedPolygonAStar.UI.Resources
     public static partial class TriangleMaps
     {
         public static IEnumerable<Triangle> TrianglesOfPolygonWithOneHole { get; private set; }
-        
+
         public static IEnumerable<Triangle> TrianglesOfPolygonWithTwoHoles { get; private set; }
-        
+
         static TriangleMaps()
         {
             TrianglesOfPolygonWithOneHole = GetTrianglesOfPolygonWithOneHole();
@@ -18,7 +18,7 @@ namespace TriangulatedPolygonAStar.UI.Resources
             SetAdjacencySettingsBetween(TrianglesOfPolygonWithTwoHoles);
         }
 
-        private static void SetAdjacencySettingsBetween(IEnumerable<Triangle> triangles)
+        private static void SetAdjacencySettingsBetween(IEnumerable<Triangle> triangles) // I might name this SetNeighboursOf() or SetNeighboursForAll()
         {
             foreach (var triangle in triangles)
             {

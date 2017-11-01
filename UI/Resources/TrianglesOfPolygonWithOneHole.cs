@@ -33,7 +33,7 @@ namespace TriangulatedPolygonAStar.UI.Resources
             Triangle t10 = new Triangle(p0, p10, p3, 10);
             Triangle t11 = new Triangle(p4, p10, p3, 11);
 
-            return new [] {t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11};
+            return new[] { t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11 };
         }
     }
 }

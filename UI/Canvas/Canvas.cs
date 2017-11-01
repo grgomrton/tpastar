@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.UI
@@ -13,8 +13,8 @@ namespace TriangulatedPolygonAStar.UI
     public partial class Canvas : UserControl
     {
         private List<IDrawable> drawables;
-        
-        private double displayedObjectWidth; 
+
+        private double displayedObjectWidth;
         private double displayedObjectHeight;
         private float magnify;
 
@@ -29,21 +29,22 @@ namespace TriangulatedPolygonAStar.UI
             displayedObjectWidth = 1.0;
             displayedObjectHeight = 1.0;
             UpdateMagnify();
-            
+
             InitializeComponent();
         }
 
         /// <summary>
         /// Updates the magnify setting that the displayed object fills the canvas.
         /// </summary>
-        private void UpdateMagnify() {
+        private void UpdateMagnify()
+        {
             double mx = this.Width / displayedObjectWidth;
             double my = this.Height / displayedObjectHeight;
             magnify = Convert.ToSingle(Math.Min(mx, my));
         }
 
         /// <summary>
-        /// Adds a drawable object to the list of objects to draw. 
+        /// Adds a drawable object to the list of objects to draw.
         /// Every drawable should use identical coordinate system for drawing.
         /// </summary>
         /// <param name="drawable"></param>
@@ -77,8 +78,8 @@ namespace TriangulatedPolygonAStar.UI
         /// </summary>
         /// <param name="pe">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
         protected override void OnPaint(PaintEventArgs pe)
-        {            
-            pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;            
+        {
+            pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             Graphics canvas = pe.Graphics;
             Matrix mscale = new Matrix();
             mscale.Scale(magnify, magnify, MatrixOrder.Append);
@@ -93,6 +94,8 @@ namespace TriangulatedPolygonAStar.UI
                 catch (Exception e)
                 {
                     System.Diagnostics.Debug.Write(e.StackTrace);
+                    // Why not the whole e?
+                    // Why not WriteLine?
                 }
                 canvas.Transform = mscale;
             }
@@ -102,15 +105,14 @@ namespace TriangulatedPolygonAStar.UI
         /// Gets or sets the width of the displayed object. [m]
         /// Also sets the zoom property of this canvas accordingly.
         /// </summary>
-        /// <value>
-        /// The width of the displayed object.
-        /// </value>
+        /// <value>The width of the displayed object.</value>
         public double DisplayedObjectWidth
         {
             get { return displayedObjectWidth; }
-            set { 
-                displayedObjectWidth = value; 
-                UpdateMagnify(); 
+            set
+            {
+                displayedObjectWidth = value;
+                UpdateMagnify();
             }
         }
 
@@ -118,9 +120,7 @@ namespace TriangulatedPolygonAStar.UI
         /// Gets or sets the height of the displayed object. [m]
         /// Also sets the zoom property of this canvas accordingly.
         /// </summary>
-        /// <value>
-        /// The height of the displayed object.
-        /// </value>
+        /// <value>The height of the displayed object.</value>
         public double DisplayedObjectHeight
         {
             get { return displayedObjectHeight; }
@@ -151,6 +151,5 @@ namespace TriangulatedPolygonAStar.UI
         {
             return new Vector(x / this.magnify, y / this.magnify);
         }
-
     }
 }

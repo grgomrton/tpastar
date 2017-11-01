@@ -4,7 +4,7 @@ namespace TriangulatedPolygonAStar.UI
 {
     public abstract class Point : IDrawable
     {
-        private float radius;
+        private float radius; // This could be readonly
         private Brush brush;
         private IVector position;
 
@@ -14,7 +14,7 @@ namespace TriangulatedPolygonAStar.UI
             this.position = position;
             brush = new SolidBrush(color);
         }
-        
+
         public void Draw(Graphics canvas)
         {
             var positionF = position.ToPointF();
@@ -36,6 +36,5 @@ namespace TriangulatedPolygonAStar.UI
         {
             position = positionInAbsoluteCoordinateSystem;
         }
-
     }
 }
