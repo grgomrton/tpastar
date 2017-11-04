@@ -34,15 +34,15 @@ namespace TriangulatedPolygonAStar.UI
         public Demo()
         {
             InitializeComponent();
-            
-            start = new StartPoint(new Vector(1, 5));
+
+            var startPosition = new Vector(1, 5);
+            start = new StartPoint(startPosition);
             goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
             currentlyEditedPoint = null;
+            path = null;
 
             triangles = TriangleMaps.TrianglesOfPolygonWithTwoHoles;
             trianglesToDraw = CreateTrianglesToDraw(triangles);
-            
-            path = new PolyLine(Enumerable.Empty<IVector>());
             
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
@@ -56,7 +56,6 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.AddDrawable(goalPoint);
             }
-            display.AddDrawable(path);
             
             FindPathToGoal();
         }
@@ -92,7 +91,16 @@ namespace TriangulatedPolygonAStar.UI
                     }
                     else
                     {
-                        path.SetVertices(pathFindingOutcome.Result);
+                        if (path != null)
+                        {
+                            path.SetVertices(pathFindingOutcome.Result);
+                        }
+                        else
+                        {
+                            path = new PolyLine(pathFindingOutcome.Result);
+                            display.AddDrawable(path);
+                        }
+                        
                     }
                 };
 
@@ -114,7 +122,8 @@ namespace TriangulatedPolygonAStar.UI
             }
             else
             {
-                path.SetVertices(Enumerable.Empty<IVector>());
+                display.RemoveDrawable(path);
+                path = null;
             }
             
             display.Invalidate();

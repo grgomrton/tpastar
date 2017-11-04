@@ -19,12 +19,10 @@ namespace TriangulatedPolygonAStar.UI
         }
 
         /// <inheritdoc />
-        public void Draw(Graphics canvas)
-        {
-            var positionF = position.ToPointF();
-            var diameter = 2 * radius;
-            canvas.FillEllipse(brush, positionF.X - radius, positionF.Y - radius, diameter, diameter);
-        }
+        public PointF BoundingBoxHigh { get { return position.ToPointF(); } }
+
+        /// <inheritdoc />
+        public PointF BoundingBoxLow { get { return position.ToPointF(); } }
 
         /// <summary>
         /// The position of this point in an absolute coordinate system.
@@ -52,5 +50,13 @@ namespace TriangulatedPolygonAStar.UI
             position = positionInAbsoluteCoordinateSystem;
         }
 
+        /// <inheritdoc />
+        public void Draw(Graphics canvas)
+        {
+            var positionF = position.ToPointF();
+            var diameter = 2 * radius;
+            canvas.FillEllipse(brush, positionF.X - radius, positionF.Y - radius, diameter, diameter);
+        }
+        
     }
 }

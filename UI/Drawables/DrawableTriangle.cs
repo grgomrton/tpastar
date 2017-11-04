@@ -36,6 +36,8 @@ namespace TriangulatedPolygonAStar.UI
         {
             this.displayName = "t" + triangle.Id;
             corners = triangle.ToPointFs().ToArray();
+            BoundingBoxLow = new PointF(corners.Select(vertex => vertex.X).Min(), corners.Select(vertex => vertex.Y).Min());
+            BoundingBoxHigh = new PointF(corners.Select(vertex => vertex.X).Max(), corners.Select(vertex => vertex.Y).Max());
             captionPosition = triangle.GetCentroid().Plus(CaptionTranslation).ToPointF();
         }
 
@@ -65,6 +67,12 @@ namespace TriangulatedPolygonAStar.UI
             DrawTriangle(canvas);
             DrawMetaData(canvas);
         }
+
+        /// <inheritdoc />
+        public PointF BoundingBoxHigh { get; }
+
+        /// <inheritdoc />
+        public PointF BoundingBoxLow { get; }
 
         private void DrawTriangle(Graphics canvas)
         {

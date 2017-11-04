@@ -12,5 +12,15 @@ namespace TriangulatedPolygonAStar.UI
         /// </summary>
         /// <param name="canvas">The canvas to draw onto</param>
         void Draw(Graphics canvas);
+        
+        /// <summary>
+        /// The highest coordinates of the rectangle in which the entire object fits.
+        /// </summary>
+        PointF BoundingBoxHigh { get; }
+        
+        /// <summary>
+        /// The lowest coordinates of the rectangle in which the entire object fits.
+        /// </summary>
+        PointF BoundingBoxLow { get; }
     }
 }

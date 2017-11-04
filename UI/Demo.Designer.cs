@@ -1,4 +1,6 @@
-﻿namespace TriangulatedPolygonAStar.UI
+﻿using System.Windows.Forms;
+
+namespace TriangulatedPolygonAStar.UI
 {
     partial class Demo
     {
@@ -81,12 +83,11 @@
             // display
             // 
 //            this.display.BackColor = System.Drawing.Color.White;
-            this.display.DisplayedObjectHeight = 8D;
-            this.display.DisplayedObjectWidth = 8D;
             this.display.Location = new System.Drawing.Point(12, 12);
             this.display.Name = "display";
             this.display.Size = new System.Drawing.Size(636, 496);
             this.display.TabIndex = 50;
+            this.display.Dock = DockStyle.Fill;
             this.display.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseDown);
             this.display.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseMove);
             this.display.MouseUp += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseUp);
