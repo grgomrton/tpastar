@@ -57,7 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\TriangleMaps.cs" />
     <Compile Include="Resources\TrianglesOfPolygonWithOneHole.cs" />
-    <Compile Include="Resources\TrianglesOfPolygonWithTwoHole.cs" />
+    <Compile Include="Resources\TrianglesOfPolygonWithTwoHoles.cs" />
     <Compile Include="Demo.cs">
       <SubType>Form</SubType>
     </Compile>

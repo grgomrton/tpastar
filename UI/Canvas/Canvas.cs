@@ -8,7 +8,7 @@ using TriangulatedPolygonAStar.BasicGeometry;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// A canvas user control that can be used for displaying multiple <see cref="IDrawable"/> objects.
+    /// A canvas user control that can be used for displaying multiple <see cref="IDrawable"/> instances.
     /// </summary>
     public partial class Canvas : UserControl
     {
@@ -19,7 +19,8 @@ namespace TriangulatedPolygonAStar.UI
         private float magnify;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Canvas"/> class.
+        /// Initializes a new instance of the <see cref="Canvas"/> class which can be used to display
+        /// drawables.
         /// </summary>
         public Canvas()
         {
@@ -46,7 +47,7 @@ namespace TriangulatedPolygonAStar.UI
         /// Adds a drawable object to the list of objects to draw. 
         /// Every drawable should use identical coordinate system for drawing.
         /// </summary>
-        /// <param name="drawable"></param>
+        /// <param name="drawable">The drawable to add</param>
         public void AddDrawable(IDrawable drawable)
         {
             drawables.Add(drawable);
@@ -55,7 +56,7 @@ namespace TriangulatedPolygonAStar.UI
         /// <summary>
         /// Removes the specified drawable from the list.
         /// </summary>
-        /// <param name="drawable"></param>
+        /// <param name="drawable">The drawable to remove</param>
         public void RemoveDrawable(IDrawable drawable)
         {
             if (drawables.Contains(drawable))
@@ -63,7 +64,7 @@ namespace TriangulatedPolygonAStar.UI
                 drawables.Remove(drawable);
             }
         }
-
+        
         /// <summary>
         /// Removes every drawable objects.
         /// </summary>
@@ -71,15 +72,49 @@ namespace TriangulatedPolygonAStar.UI
         {
             drawables.Clear();
         }
+        
+        /// <summary>
+        /// Gets or sets the width of the displayed object.
+        /// Also sets the zoom property of this canvas accordingly.
+        /// </summary>
+        public double DisplayedObjectWidth
+        {
+            get { return displayedObjectWidth; }
+            set { 
+                displayedObjectWidth = value; 
+                UpdateMagnify(); 
+            }
+        }
 
         /// <summary>
-        /// Raises the <see cref="E:Paint"/> event.
+        /// Gets or sets the height of the displayed object.
+        /// Also sets the zoom property of this canvas accordingly.
         /// </summary>
-        /// <param name="pe">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
-        protected override void OnPaint(PaintEventArgs pe)
+        public double DisplayedObjectHeight
+        {
+            get { return displayedObjectHeight; }
+            set
+            {
+                displayedObjectHeight = value;
+                UpdateMagnify();
+            }
+        }
+        
+        /// <summary>
+        /// Gets the absolute position of the specified coordinates on this canvas.
+        /// </summary>
+        /// <param name="x">The x coordinate on the canvas</param>
+        /// <param name="y">The y coordinate on the canvas</param>
+        /// <returns>The point that represent the specified canvas point in absolute coordinate system</returns>
+        public IVector GetAbsolutePosition(int x, int y)
+        {
+            return new Vector(x / this.magnify, y / this.magnify);
+        }
+
+        protected override void OnPaint(PaintEventArgs eventDetails)
         {            
-            pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;            
-            Graphics canvas = pe.Graphics;
+            eventDetails.Graphics.SmoothingMode = SmoothingMode.AntiAlias;            
+            Graphics canvas = eventDetails.Graphics;
             Matrix mscale = new Matrix();
             mscale.Scale(magnify, magnify, MatrixOrder.Append);
             canvas.Transform = mscale;
@@ -92,64 +127,15 @@ namespace TriangulatedPolygonAStar.UI
                 }
                 catch (Exception e)
                 {
-                    System.Diagnostics.Debug.Write(e.StackTrace);
+                    MessageBox.Show("An item failed to draw.\n" + e);
                 }
                 canvas.Transform = mscale;
             }
         }
 
-        /// <summary>
-        /// Gets or sets the width of the displayed object. [m]
-        /// Also sets the zoom property of this canvas accordingly.
-        /// </summary>
-        /// <value>
-        /// The width of the displayed object.
-        /// </value>
-        public double DisplayedObjectWidth
-        {
-            get { return displayedObjectWidth; }
-            set { 
-                displayedObjectWidth = value; 
-                UpdateMagnify(); 
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the height of the displayed object. [m]
-        /// Also sets the zoom property of this canvas accordingly.
-        /// </summary>
-        /// <value>
-        /// The height of the displayed object.
-        /// </value>
-        public double DisplayedObjectHeight
-        {
-            get { return displayedObjectHeight; }
-            set
-            {
-                displayedObjectHeight = value;
-                UpdateMagnify();
-            }
-        }
-
-        /// <summary>
-        /// Handles the ClientSizeChanged event of the Canvas control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void Canvas_ClientSizeChanged(object sender, EventArgs e)
+        private void CanvasOnClientSizeChanged(object sender, EventArgs e)
         {
             UpdateMagnify();
-        }
-
-        /// <summary>
-        /// Gets the absolute position of the specified coordinates on this canvas.
-        /// </summary>
-        /// <param name="x">The x coordinate on the canvas</param>
-        /// <param name="y">The y coordinate on the canvas</param>
-        /// <returns></returns>
-        public IVector GetAbsolutePosition(int x, int y)
-        {
-            return new Vector(x / this.magnify, y / this.magnify);
         }
 
     }

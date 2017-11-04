@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "Canvas";
             this.Size = new System.Drawing.Size(219, 150);
-            this.ClientSizeChanged += new System.EventHandler(this.Canvas_ClientSizeChanged);
+            this.ClientSizeChanged += new System.EventHandler(this.CanvasOnClientSizeChanged);
             this.ResumeLayout(false);
 
         }

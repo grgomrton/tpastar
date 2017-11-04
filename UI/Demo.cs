@@ -9,6 +9,10 @@ using TriangulatedPolygonAStar.UI.Resources;
 
 namespace TriangulatedPolygonAStar.UI
 {
+    /// <summary>
+    /// The graphical user interface which can be used to set-up and perform 
+    /// pathfinding operations.
+    /// </summary>
     public partial class Demo : Form
     {
         private Point start;
@@ -23,6 +27,10 @@ namespace TriangulatedPolygonAStar.UI
 
         private static int TimeOutInMillseconds = 1000;
         
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Demo"/> class which can be 
+        /// used to set-up and perform pathfinding operations.
+        /// </summary>
         public Demo()
         {
             InitializeComponent();
@@ -84,7 +92,7 @@ namespace TriangulatedPolygonAStar.UI
                     }
                     else
                     {
-                        path.SetPoints(pathFindingOutcome.Result);
+                        path.SetVertices(pathFindingOutcome.Result);
                     }
                 };
 
@@ -106,7 +114,7 @@ namespace TriangulatedPolygonAStar.UI
             }
             else
             {
-                path.SetPoints(Enumerable.Empty<IVector>());
+                path.SetVertices(Enumerable.Empty<IVector>());
             }
             
             display.Invalidate();
@@ -175,12 +183,10 @@ namespace TriangulatedPolygonAStar.UI
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)
         {
             var trianglesToDraw = new Dictionary<ITriangle, DrawableTriangle>();
-            var id = 0;
             foreach (var triangle in triangles)
             {
                 var triangleIcon = new DrawableTriangle(triangle);
                 trianglesToDraw.Add(triangle, triangleIcon);
-                id++;
             }
             return trianglesToDraw;
         }
