@@ -12,7 +12,7 @@ namespace TriangulatedPolygonAStar.UI
         private static float EdgeWidth = 0.01f;
         private static Color TextColor = Color.Black;
         private static float FontSize = 0.12f;
-        
+
         private string displayName;
         private int traversionCount;
         private TriangleEvaluationResult lastEvaluationResult;
@@ -21,7 +21,7 @@ namespace TriangulatedPolygonAStar.UI
         private Pen edgePen;
         private Brush captionBrush;
         private Font captionFont;
-        
+
         public DrawableTriangle(Triangle triangle)
         {
             this.displayName = "t" + triangle.Id;
@@ -34,7 +34,7 @@ namespace TriangulatedPolygonAStar.UI
             captionBrush = new SolidBrush(TextColor);
             captionFont = new Font(FontFamily.GenericSansSerif, FontSize);
         }
-        
+
         public void IncreaseTraversionCount(TriangleEvaluationResult metadata)
         {
             traversionCount++;
@@ -46,25 +46,25 @@ namespace TriangulatedPolygonAStar.UI
             traversionCount = 0;
             lastEvaluationResult = null;
         }
-        
+
         private void DrawTriangle(Graphics canvas)
         {
             var r = Convert.ToInt32(Math.Max(FillColor.R - traversionCount * TraversionShade.R, 0));
             var g = Convert.ToInt32(Math.Max(FillColor.G - traversionCount * TraversionShade.G, 0));
             var b = Convert.ToInt32(Math.Max(FillColor.B - traversionCount * TraversionShade.B, 0));
             var fillColor = Color.FromArgb(r, g, b);
-            
+
             var brush = new SolidBrush(fillColor);
-            
+
             canvas.FillPolygon(brush, points);
             canvas.DrawPolygon(edgePen, points);
         }
 
         private void DrawMetaData(Graphics canvas)
         {
-            var caption = String.Format("{0} ({1}) gMin: {2:0.00}, f: {3:0.00}", 
-                displayName, 
-                traversionCount, 
+            var caption = String.Format("{0} ({1}) gMin: {2:0.00}, f: {3:0.00}",
+                displayName,
+                traversionCount,
                 lastEvaluationResult?.ShortestPathToEdgeLength,
                 lastEvaluationResult?.EstimatedMinimalCost);
             canvas.DrawString(caption, captionFont, captionBrush, centroid);

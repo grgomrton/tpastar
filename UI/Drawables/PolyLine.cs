@@ -26,19 +26,19 @@ namespace TriangulatedPolygonAStar.UI
             captionBrush = new SolidBrush(TextColor);
             captionFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Bold);
         }
-        
+
         public void Draw(Graphics canvas)
         {
             if (points.Count() > 1)
             {
                 var vertices = points.Select(point => point.ToPointF()).ToArray();
-                canvas.DrawLines(linePen, vertices);                
-                
-                var lastPoint = vertices.Last(); 
+                canvas.DrawLines(linePen, vertices);
+
+                var lastPoint = vertices.Last();
                 var captionPosition = new PointF(lastPoint.X + CaptionTranslation.X, lastPoint.Y + CaptionTranslation.Y);
-            
+
                 var lineLength = points.Zip(points.Skip(1), (v1, v2) => Math.Sqrt(Math.Pow(v2.X - v1.X, 2) + Math.Pow(v2.Y - v1.Y, 2))).Sum();
-            
+
                 canvas.DrawString(String.Format(CaptionFormat, lineLength), captionFont, captionBrush, captionPosition);
             }
         }

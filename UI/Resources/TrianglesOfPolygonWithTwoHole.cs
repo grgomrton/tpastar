@@ -8,7 +8,7 @@ namespace TriangulatedPolygonAStar.UI.Resources
         private static IEnumerable<Triangle> GetTrianglesOfPolygonWithTwoHoles()
         {
             var triangleSet = new List<Triangle>();
-            
+
             var cr0 = new Vector(2, 4);
             var cr1 = new Vector(2, 3);
             var cr2 = new Vector(3, 2);
@@ -19,10 +19,10 @@ namespace TriangulatedPolygonAStar.UI.Resources
             var cl2 = new Vector(4, 1.5);
             var cl3 = new Vector(5, 2.5);
             var cl4 = new Vector(6, 1);
-            var cl5 = new Vector(3, 1);    
+            var cl5 = new Vector(3, 1);
             var cp0 = new Vector(1, 7);
             var cp1 = new Vector(6.5, 0);
-            
+
             Triangle t0 = new Triangle(cp0, cl0, cr0, 0);
             triangleSet.Add(t0);
             Triangle t1 = new Triangle(cl0, cr0, cl1, 1);

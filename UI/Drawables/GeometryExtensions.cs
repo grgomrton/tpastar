@@ -12,11 +12,11 @@ namespace TriangulatedPolygonAStar.UI
             float y = Convert.ToSingle(source.Y);
             return new PointF(x, y);
         }
-        
+
         public static Vector CalculateCentroid(this Triangle triangle)
         {
             var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);
             return new Vector(sum.X / 3.0, sum.Y / 3.0);
-        }    
+        }
     }
 }

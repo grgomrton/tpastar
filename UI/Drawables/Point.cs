@@ -14,7 +14,7 @@ namespace TriangulatedPolygonAStar.UI
             this.position = position;
             brush = new SolidBrush(color);
         }
-        
+
         public void Draw(Graphics canvas)
         {
             var positionF = position.ToPointF();
@@ -36,6 +36,5 @@ namespace TriangulatedPolygonAStar.UI
         {
             position = positionInAbsoluteCoordinateSystem;
         }
-
     }
 }

@@ -14,31 +14,31 @@ namespace TriangulatedPolygonAStar.UI
         private Point start;
         private List<Point> goals;
         private Point currentlyEditedPoint;
-        
+
         private IEnumerable<Triangle> triangles;
         private Dictionary<ITriangle, DrawableTriangle> trianglesToDraw;
-        
+
         private TPAStarPathFinder pathFinder;
         private PolyLine path;
 
         private static int TimeOutInMillseconds = 1000;
-        
+
         public Demo()
         {
             InitializeComponent();
-            
+
             start = new StartPoint(new Vector(1, 5));
             goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
             currentlyEditedPoint = null;
 
             triangles = TriangleMaps.TrianglesOfPolygonWithTwoHoles;
             trianglesToDraw = CreateTrianglesToDraw(triangles);
-            
+
             path = new PolyLine(Enumerable.Empty<IVector>());
-            
+
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
-            
+
             foreach (var triangle in trianglesToDraw.Values)
             {
                 display.AddDrawable(triangle);
@@ -49,7 +49,7 @@ namespace TriangulatedPolygonAStar.UI
                 display.AddDrawable(goalPoint);
             }
             display.AddDrawable(path);
-            
+
             FindPathToGoal();
         }
 
@@ -61,21 +61,21 @@ namespace TriangulatedPolygonAStar.UI
         private bool IsPointUnderCursor(Point point, MouseEventArgs cursorState)
         {
             var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
-            return cursorAbsolutePosition.DistanceFrom(point.Position) < 2*point.Radius;
+            return cursorAbsolutePosition.DistanceFrom(point.Position) < 2 * point.Radius;
         }
-        
+
         private void FindPathToGoal()
         {
             foreach (var triangle in trianglesToDraw.Values)
             {
                 triangle.ResetMetaData();
             }
-            
+
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start.Position));
             if (startTriangle != null)
             {
-                var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;  
-                
+                var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;
+
                 Action<Task<IEnumerable<IVector>>> visualizePath = pathFindingOutcome =>
                 {
                     if (pathFindingOutcome.IsFaulted)
@@ -102,13 +102,12 @@ namespace TriangulatedPolygonAStar.UI
                 {
                     MessageBox.Show("Finding path failed due to timeout or unexpected configuration. Details: \n\n" + e.ToString());
                 }
-
             }
             else
             {
                 path.SetPoints(Enumerable.Empty<IVector>());
             }
-            
+
             display.Invalidate();
         }
 
@@ -121,7 +120,7 @@ namespace TriangulatedPolygonAStar.UI
         {
             if (cursorState.Button == MouseButtons.Left)
             {
-                var points = goals.Concat(new[] {start});
+                var points = goals.Concat(new[] { start });
                 currentlyEditedPoint = points.FirstOrDefault(point => IsPointUnderCursor(point, cursorState));
                 if (currentlyEditedPoint == null)
                 {
@@ -139,12 +138,12 @@ namespace TriangulatedPolygonAStar.UI
             currentlyEditedPoint = newGoal;
             FindPathToGoal();
         }
-        
+
         private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
         {
             var absolutePosition = GetAbsoluteCoordinateSystemFromMouseState(cursorState);
             Text = absolutePosition.ToString();
-            
+
             if (currentlyEditedPoint != null)
             {
                 currentlyEditedPoint.SetPosition(absolutePosition);
@@ -184,6 +183,5 @@ namespace TriangulatedPolygonAStar.UI
             }
             return trianglesToDraw;
         }
-
     }
 }
