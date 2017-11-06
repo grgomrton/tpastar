@@ -51,13 +51,13 @@ namespace TriangulatedPolygonAStar.UI
         {
             InitializeComponent();
 
-            var startPosition = new Vector(1, 5);
+            var startPosition = new Vector(10.0, 50.0);
             start = new StartPoint(startPosition);
-            goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
+            goals = new List<Point> { new GoalPoint(new Vector(51.0, 26.0)) };
             currentlyEditedPoint = null;
             path = null;
 
-            triangles = TriangleMaps.TrianglesOfPolygonWithTwoHoles;
+            triangles = TriangleMaps.TrianglesOfPolygonWithTwoPolygonHoles;
             trianglesToDraw = CreateTrianglesToDraw(triangles);
             
             pathFinder = new TPAStarPathFinder();
@@ -72,6 +72,8 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.AddDrawable(goalPoint);
             }
+            var legend = new Legend(new Vector(-30.0, -10.0));
+            display.AddDrawable(legend);
             
             FindPathToGoal();
         }
@@ -175,8 +177,8 @@ namespace TriangulatedPolygonAStar.UI
         
         private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
         {
-            var absolutePosition = GetAbsoluteCoordinateSystemFromMouseState(cursorState);
-            Text = absolutePosition.ToString();
+            var absolutePosition = GetAbsoluteCoordinateFromMousePosition(cursorState);
+            Text = "Triangulated Polygon A-star demo " + absolutePosition;
             
             if (currentlyEditedPoint != null)
             {
@@ -200,7 +202,7 @@ namespace TriangulatedPolygonAStar.UI
             currentlyEditedPoint = null;
         }
 
-        private IVector GetAbsoluteCoordinateSystemFromMouseState(MouseEventArgs cursorState)
+        private IVector GetAbsoluteCoordinateFromMousePosition(MouseEventArgs cursorState)
         {
             return display.GetAbsolutePosition(cursorState.X, cursorState.Y); // it works only because canvas starts at (0,0)
         }

@@ -29,13 +29,12 @@ namespace TriangulatedPolygonAStar.UI
         private static Color FillColor = Color.White;
         private static Color TraversionShade = Color.FromArgb(30, 30, 30);
         private static Color EdgeColor = Color.Gray;
-        private static float EdgeWidth = 0.01f;
+        private static float EdgeWidth = 0.1f;
         private static Pen EdgePen = new Pen(EdgeColor, EdgeWidth); 
         private static Color TextColor = Color.Black;
-        private static float FontSize = 0.12f;
+        private static float FontSize = 1.2f;
         private static Brush CaptionBrush = new SolidBrush(TextColor);
         private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, FontSize);
-        private static IVector CaptionTranslation = new Vector(-0.8, -0.8);
         
         private readonly string displayName;
         private readonly PointF[] corners;
@@ -54,7 +53,7 @@ namespace TriangulatedPolygonAStar.UI
             corners = triangle.ToPointFs().ToArray();
             BoundingBoxLow = new PointF(corners.Select(vertex => vertex.X).Min(), corners.Select(vertex => vertex.Y).Min());
             BoundingBoxHigh = new PointF(corners.Select(vertex => vertex.X).Max(), corners.Select(vertex => vertex.Y).Max());
-            captionPosition = triangle.GetCentroid().Plus(CaptionTranslation).ToPointF();
+            captionPosition = triangle.GetCentroid().ToPointF();
         }
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace TriangulatedPolygonAStar.UI
         public void Draw(Graphics canvas)
         {
             DrawTriangle(canvas);
-            DrawMetaData(canvas);
+            //DrawMetaData(canvas);
         }
 
         /// <inheritdoc />
@@ -99,7 +98,7 @@ namespace TriangulatedPolygonAStar.UI
 
         private void DrawMetaData(Graphics canvas)
         {
-            var caption = String.Format("{0} ({1}) gMin: {2:0.00}, f: {3:0.00}", 
+            var caption = String.Format("{0}", 
                 displayName, 
                 traversionCount, 
                 lastEvaluationResult?.ShortestPathToEdgeLength,

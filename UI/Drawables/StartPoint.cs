@@ -23,7 +23,7 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class StartPoint : Point
     {
-        private static float StartRadius = 0.08f;
+        private static float StartRadius = 0.8f;
         private static Color Color = Color.Blue; 
         
         /// <summary>

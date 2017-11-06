@@ -28,19 +28,19 @@ namespace TriangulatedPolygonAStar.UI.Resources
         /// <summary>
         /// A map of a triangulated polygon with one polygon hole.
         /// </summary>
-        public static IEnumerable<Triangle> TrianglesOfPolygonWithOneHole { get; private set; }
+        public static IEnumerable<Triangle> TrianglesOfPolygonWithOnePolygonHole { get; private set; }
         
         /// <summary>
         /// A map of a triangulated polygon with two polygon holes.
         /// </summary>
-        public static IEnumerable<Triangle> TrianglesOfPolygonWithTwoHoles { get; private set; }
+        public static IEnumerable<Triangle> TrianglesOfPolygonWithTwoPolygonHoles { get; private set; }
         
         static TriangleMaps()
         {
-            TrianglesOfPolygonWithOneHole = GetTrianglesOfPolygonWithOneHole();
-            SetNeighboursForAll(TrianglesOfPolygonWithOneHole);
-            TrianglesOfPolygonWithTwoHoles = GetTrianglesOfPolygonWithTwoHoles();
-            SetNeighboursForAll(TrianglesOfPolygonWithTwoHoles);
+            TrianglesOfPolygonWithOnePolygonHole = GetTrianglesOfPolygonWithOneHole();
+            SetNeighboursForAll(TrianglesOfPolygonWithOnePolygonHole);
+            TrianglesOfPolygonWithTwoPolygonHoles = GetTrianglesOfPolygonWithTwoHoles();
+            SetNeighboursForAll(TrianglesOfPolygonWithTwoPolygonHoles);
         }
 
         private static void SetNeighboursForAll(IEnumerable<Triangle> triangles)
