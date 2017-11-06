@@ -9,7 +9,7 @@ namespace TriangulatedPolygonAStar
     /// </summary>
     public class TPAStarPathFinder
     {
-        private LinkedList<TPAPath> candidates;             // open set
+        private LinkedList<TPAPath> openSet;
         private Dictionary<IEdge, double> higherBounds;
         
         /// <summary>
@@ -18,7 +18,7 @@ namespace TriangulatedPolygonAStar
         /// </summary>
         public TPAStarPathFinder()
         {
-            candidates = new LinkedList<TPAPath>();
+            openSet = new LinkedList<TPAPath>();
             higherBounds = new Dictionary<IEdge, double>();    
         }   
         
@@ -36,13 +36,13 @@ namespace TriangulatedPolygonAStar
         public event TriangleExploredEventHandler TriangleExplored;
         
         /// <summary>
-        /// Executes a path finding on the triangle graph from the specified start point to the goal points. 
-        /// If no goal can be reached then the result is a one element list containing the start point.
+        /// Executes a path finding on the triangle graph between the specified start and goal points. 
+        /// If no goal can be reached then the result contains the start point only.
         /// </summary>
         /// <param name="startPoint">The point to originate the pathfinding from</param>
         /// <param name="startTriangle">The triangle which contains the start point</param>
         /// <param name="goals">The possible goal points</param>
-        /// <returns>The list of points that define the euclidean shortest path between the start and the closest goal point</returns>
+        /// <returns>The list of points that define the euclidean shortest path between the start and goal point which can be reached on the minimal path</returns>
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
             CheckForNullArgument(startPoint, nameof(startPoint));
@@ -53,56 +53,83 @@ namespace TriangulatedPolygonAStar
                 throw new ArgumentException("The specified start point does not fall into the start triangle");
             }
             
-            candidates.Clear();
+            openSet.Clear();
             higherBounds.Clear();
             
-            TPAPath initialPath = new TPAPath(startPoint, startTriangle);
-            AddToCandidates(initialPath);
-            FireTriangleExploredEvent(initialPath);
+            LinkedList<IVector> bestCandidate = new LinkedList<IVector>();
+            bestCandidate.AddFirst(startPoint);
+            double bestCandidateLength = GetLength(bestCandidate);
             
-            TPAPath optimalPath = initialPath;
+            TPAPath initialPath = new TPAPath(startPoint, startTriangle);
+            AddToOpenSet(initialPath);
+            FireTriangleExploredEvent(initialPath);
             bool done = false;
-            while ((candidates.Count > 0) && !done)
+            
+            while ((openSet.Count > 0) && !done)
             {
-                TPAPath candidate = candidates.First.Value;
-                candidates.RemoveFirst();
+                TPAPath partialPath = openSet.First.Value;
+                openSet.RemoveFirst();
                 
-                if (candidate.Finalized)    
+                if ((bestCandidate.Count > 1) && (partialPath.MinimalTotalCost > bestCandidateLength))    
                 {                            
-                    optimalPath = candidate;
                     done = true;
                 }
                 else
                 {
-                    if (candidate.ReachedAnyOf(goals) && !candidate.FinalPathsHaveBeenBuilt)
+                    if (!partialPath.FinalPathsAcquired)
                     {
-                        foreach (TPAPath path in candidate.BuildFinalizedPaths(goals))
+                        foreach (IVector goal in goals)
                         {
-                            AddToCandidates(path);
+                            if (partialPath.CurrentTriangle.ContainsPoint(goal))
+                            {
+                                LinkedList<IVector> newCandidate = partialPath.CompletePathTo(goal);
+                                double newCandidateLength = GetLength(newCandidate);
+                                if ((bestCandidate.Count == 1) || (newCandidateLength < bestCandidateLength))
+                                {
+                                    bestCandidate = newCandidate;
+                                    bestCandidateLength = newCandidateLength;
+                                }
+                            }
                         }
-                        if (candidate.IsAnyOtherGoalThatMightBeReached)
-                        {
-                            AddToCandidates(candidate);    
-                        }
+                        partialPath.FinalPathsAcquired = true;
+                        partialPath.UpdateEstimationToClosestGoalPoint(goals);
+                        
+                        AddToOpenSet(partialPath);
                     }
                     else
                     {
-                        foreach (TPAPath path in candidate.ExploreNeighbourTriangles(goals))
+                        foreach (ITriangle neighbour in partialPath.CurrentTriangle.Neighbours)
                         {
-                            if (IsGoodCandidate(path))
+                            if (!neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle).Equals(partialPath.CurrentEdge))
                             {
-                                AddToCandidates(path);
-                                UpdateHigherBoundToReachedEdge(path);
-                            }
+                                TPAPath pathToNeighbour = partialPath.StepToNeighbour(neighbour, goals);
+                                if (IsGoodCandidate(pathToNeighbour))
+                                {
+                                    AddToOpenSet(pathToNeighbour);
+                                    UpdateHigherBoundToReachedEdge(pathToNeighbour);
+                                }
                             
-                            FireTriangleExploredEvent(path);
+                                FireTriangleExploredEvent(pathToNeighbour);
+                            }
                         }
                     }
                 }
             }
-            return optimalPath.Path;
+            return bestCandidate;
         }
 
+        private static double GetLength(LinkedList<IVector> path)
+        {
+            double length = 0.0;
+            LinkedListNode<IVector> currentNode = path.First;
+            while (currentNode.Next != null)
+            {
+                length += currentNode.Value.DistanceFrom(currentNode.Next.Value);
+                currentNode = currentNode.Next;
+            }
+            return length;
+        }
+        
         private bool IsGoodCandidate(TPAPath path)
         {
             bool isGoodCandidate = true;
@@ -131,22 +158,22 @@ namespace TriangulatedPolygonAStar
             }
         }
 
-        private void AddToCandidates(TPAPath path)
+        private void AddToOpenSet(TPAPath path)
         {
-            if ((candidates.First == null) || 
-                (candidates.First.Value.MinimalTotalCost > path.MinimalTotalCost))
+            if ((openSet.First == null) || 
+                (openSet.First.Value.MinimalTotalCost > path.MinimalTotalCost))
             {
-                candidates.AddFirst(path);
+                openSet.AddFirst(path);
             }
             else
             {
-                LinkedListNode<TPAPath> targetNode = candidates.First;
+                LinkedListNode<TPAPath> targetNode = openSet.First;
                 while ((targetNode.Next != null) && 
                        (targetNode.Next.Value.MinimalTotalCost < path.MinimalTotalCost))
                 {
                     targetNode = targetNode.Next;
                 }
-                candidates.AddAfter(targetNode, path);
+                openSet.AddAfter(targetNode, path);
             }
         }
 

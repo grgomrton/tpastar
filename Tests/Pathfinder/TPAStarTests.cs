@@ -244,7 +244,6 @@ namespace TriangulatedPolygonAStar.Tests
             {
                 var path = pathFindingOutcome.Result.ToList();
                 path.Count.Should().Be(1);
-                path[0].Should().Be(start);
             };
 
             Task<IEnumerable<IVector>>.Factory
@@ -254,7 +253,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void PathFinderShouldFindShortestPathInDiamondPolygonWithMultipleGoals()
+        public void PathFinderShouldFindShortestPathInDiamondShapedPolygonWithMultipleGoals()
         {
             var a = new Vector(0.0, 0.0);
             var b = new Vector(1.0, 0.0);
@@ -379,6 +378,38 @@ namespace TriangulatedPolygonAStar.Tests
                 .StartNew(() => pathFinder.FindPath(start, t1, new IVector[]{ goalInT2CornerPoint, goalInT3 }), cancelAfterTimeout)
                 .ContinueWith(pathAssertion, cancelAfterTimeout)
                 .Wait(2 * TimeOutInMillseconds);   
+        }
+
+        [Test]
+        public void IfStartTriangleContainsGoalPointButThereIsAnotherGoalInAnAdjacentTriangleCloserToStartPathFinderShouldFindPathToThatOne()
+        {
+            var a = new Vector(0.0, 0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
+            var start = new Vector(0.1, 0.1);
+            var goalInT1 = new Vector(0.5, 0.1);
+            var goalInT2 = new Vector(-0.1, 0.1);
+            var goals = new[] {goalInT1, goalInT2};
+            var pathFinder = new TPAStarPathFinder();
+            var cancelAfterTimeout = new CancellationTokenSource(TimeOutInMillseconds).Token;
+            
+            Action<Task<IEnumerable<IVector>>> pathAssertion = pathFindingOutcome =>
+            {
+                var path = pathFindingOutcome.Result.ToList();
+                path.Count.Should().Be(2);
+                path[0].Should().Be(start);
+                path[1].Should().Be(goalInT2);
+            };
+
+            Task<IEnumerable<IVector>>.Factory
+                .StartNew(() => pathFinder.FindPath(start, t1, goals), cancelAfterTimeout)
+                .ContinueWith(pathAssertion, cancelAfterTimeout)
+                .Wait(2 * TimeOutInMillseconds); 
         }
         
         [Test]

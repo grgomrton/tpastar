@@ -31,7 +31,7 @@ namespace TriangulatedPolygonAStar.Tests
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var path = new TPAPath(startPoint, t2);
 
-            var pathsAfterSteppingIntoT2 = path.ExploreNeighbourTriangles(goalPoints);
+            var pathsAfterSteppingIntoT2 = path.ExploreNeighbourTriangle(goalPoints);
             var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
             var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
 
@@ -61,7 +61,7 @@ namespace TriangulatedPolygonAStar.Tests
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var initialPath = new TPAPath(s, t3);
 
-            var pathsAfterSteppingIntoT3 = initialPath.ExploreNeighbourTriangles(goalPoints);
+            var pathsAfterSteppingIntoT3 = initialPath.ExploreNeighbourTriangle(goalPoints);
 
             pathsAfterSteppingIntoT3.Count().Should().Be(2);
             pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t2));
@@ -95,7 +95,7 @@ namespace TriangulatedPolygonAStar.Tests
             var goalPoints = new [] { new Vector(100.0, 100.0) };
             var initialPath = new TPAPath(s, t2);
             
-            var pathsAfterSteppingIntoT2 = initialPath.ExploreNeighbourTriangles(goalPoints);
+            var pathsAfterSteppingIntoT2 = initialPath.ExploreNeighbourTriangle(goalPoints);
             var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
             var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
 
