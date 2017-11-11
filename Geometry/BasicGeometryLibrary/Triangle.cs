@@ -37,7 +37,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <param name="a">The first corner point</param>
         /// <param name="b">The second corner point</param>
         /// <param name="c">The third corner point</param>
-        /// <param name="id">The unique identifier of the triangle</param>
+        /// <param name="id">The identifier of the triangle</param>
         public Triangle(Vector a, Vector b, Vector c, int id)
         {
             CheckForNullArgument(a, nameof(a));
@@ -49,7 +49,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             }
 
             this.id = id;
-            vertices = new[] {a, b, c};
+            vertices = new[]{ a, b, c };
             neighbours = Enumerable.Empty<Triangle>();
         }
 
@@ -94,7 +94,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <summary>
         /// Sets the neighbours of this triangle. 
         /// Every neighbour triangle is expected to share exactly two vertices with this one. 
-        /// The maximum amount of neighbours is three.
+        /// The maximum allowed number of neighbours is three.
         /// </summary>
         /// <param name="neighbours">The neighbours to be set</param>
         public void SetNeighbours(params Triangle[] neighbours)
@@ -104,7 +104,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             {
                 throw new ArgumentException("One or more of the specified neighbours is null", nameof(neighbours));
             }
-            if (neighbours.Count() > 3)
+            if (neighbours.Length > 3)
             {
                 throw new ArgumentOutOfRangeException(
                     "The amount of specified neighbours exceed the maximual amount of three", nameof(neighbours));
@@ -158,10 +158,8 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
             // Lower bounds taking into consideration vector equality check parameters
             double boundaryWidth = VectorEqualityCheck.Tolerance;
-            double mgn0 = v0.Length();
-            double mgn1 = v1.Length();
-            double lowU = boundaryWidth / mgn0;
-            double lowV = boundaryWidth / mgn1;
+            double lowU = boundaryWidth / v0.Length();
+            double lowV = boundaryWidth / v1.Length();
 
             // Compute dot products
             double dot00 = v0.DotProduct(v0); // dot00 = dot(v0, v0)
@@ -187,7 +185,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// specified in <see cref="VectorEqualityCheck.Tolerance"/>.
         /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
         /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
-        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
+        /// a.equals(b) &amp;&amp; b.equals(c) => a.equals(c) will not necessarily hold.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object, otherwise false</returns>

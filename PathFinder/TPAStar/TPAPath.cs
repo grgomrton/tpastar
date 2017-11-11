@@ -26,14 +26,13 @@ namespace TriangulatedPolygonAStar
     {
         private ITriangle currentTriangle;
         private IEdge currentEdge;
+        private bool reachedPathsBuilt;
         
         private FunnelStructure funnel;
         private double alreadyBuiltPathLength;                 // gPart
         private double lengthOfShortestPathFromApexToEdge;     // dgMin
         private double lengthOfLongestPathFromApexToEdge;      // dgMax
         private double distanceFromClosestGoalPoint;           // h
-
-        private bool finalPathsAcquired;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TPAPath"/> class which can be used 
@@ -56,7 +55,7 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = 0;
             lengthOfLongestPathFromApexToEdge = 0;
             distanceFromClosestGoalPoint = 0; 
-            finalPathsAcquired = false;
+            reachedPathsBuilt = false;
         }
 
         private TPAPath(TPAPath other)
@@ -69,7 +68,7 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = other.lengthOfShortestPathFromApexToEdge;
             lengthOfLongestPathFromApexToEdge = other.lengthOfLongestPathFromApexToEdge;
             distanceFromClosestGoalPoint = other.distanceFromClosestGoalPoint;
-            finalPathsAcquired = other.finalPathsAcquired;
+            reachedPathsBuilt = other.reachedPathsBuilt;
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// The length of the possibly shortest path from the start point to the current edge along the set of triangles
-        /// that has been stepped over.
+        /// which have been stepped over.
         /// </summary>
         public double ShortestPathToEdgeLength
         {
@@ -100,7 +99,7 @@ namespace TriangulatedPolygonAStar
 
         /// <summary>
         /// The length of the longest possible path from the start point to the current edge along the set of triangles
-        /// that has been stepped over.
+        /// which have been stepped over.
         /// </summary>
         public double LongestPathToEdgeLength
         {
@@ -109,7 +108,7 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// The length of the possibly shortest path from the start point to the closest goal point along the set of 
-        /// triangles that has been stepped over.
+        /// triangles which have been stepped over.
         /// Before the final paths have been at a specific state of an exploration, the goals that fall in the current 
         /// triangle are taken into account by calculating the minimal total cost. 
         /// Once the final paths have been built only goals that fall outside the current triangle are included in 
@@ -121,17 +120,17 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Indicates whether the final paths to the goals contained by the current triangle have been acquired.
+        /// Indicates whether complete paths to the goals contained by the current triangle have been acquired.
         /// </summary>
-        public bool FinalPathsAcquired
+        public bool ReachedPathsBuilt
         {
-            get { return finalPathsAcquired; }
-            set { finalPathsAcquired = value; }
+            get { return reachedPathsBuilt; }
+            set { reachedPathsBuilt = value; }
         }
 
         /// <summary>
         /// Returns a new path which is built by proceeding into the specified neighbour triangle from the triangle this 
-        /// path currently stands on. The resulting path has a <see cref="FinalPathsAcquired"/>
+        /// path currently stands on. The resulting path has a <see cref="ReachedPathsBuilt"/>
         /// value of false, and every cost function is updated accordingly.
         /// </summary>
         /// <param name="neighbour">The neighbour triangle to step into</param>
@@ -182,13 +181,13 @@ namespace TriangulatedPolygonAStar
         /// <summary>
         /// Calculates the minimal length between the current edge and the closest goal point baed on whether
         /// the paths reached by stepping into this triangle have been built, indicated by the 
-        /// <see cref="FinalPathsAcquired"/> property. If they have not yet built, those goals are included, 
+        /// <see cref="ReachedPathsBuilt"/> property. If they have not yet built, those goals are included, 
         /// otherwise they are excluded from the minimum finding. 
         /// </summary>
         /// <param name="goals">The goals we execute the pathfinding to</param>
         public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
         {
-            bool shouldIncludeGoalsInCurrentTriangle = !FinalPathsAcquired ? true : false;
+            bool shouldIncludeGoalsInCurrentTriangle = !ReachedPathsBuilt ? true : false;
             if (currentEdge != null)
             {
                 distanceFromClosestGoalPoint = 
@@ -210,7 +209,7 @@ namespace TriangulatedPolygonAStar
             alreadyBuiltPathLength = LengthOfBuiltPathInFunnel(funnel.Path);
             lengthOfShortestPathFromApexToEdge = LengthOfShortestPathFromApexToEdge(currentEdge, funnel.Apex);
             lengthOfLongestPathFromApexToEdge = LengthOfLongestPathFromApexToEdge(funnel.Apex);
-            FinalPathsAcquired = false;
+            ReachedPathsBuilt = false;
             UpdateEstimationToClosestGoalPoint(goals);
         }
         

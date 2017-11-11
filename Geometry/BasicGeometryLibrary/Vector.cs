@@ -99,7 +99,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// than the tolerance set in <see cref="VectorEqualityCheck.Tolerance"/>.
         /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
         /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
-        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
+        /// a.equals(b) &amp;&amp; b.equals(c) => a.equals(c) will not necessarily hold.
         /// </summary>
         /// <param name="other">The other object to compare this vector with</param>
         /// <returns>true if the two object represent the same point, otherwise false</returns>

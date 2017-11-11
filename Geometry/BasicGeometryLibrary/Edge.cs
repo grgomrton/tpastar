@@ -144,7 +144,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// In such case the highest distance between the two edges is also lower than the tolerance value.
         /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
         /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
-        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
+        /// a.equals(b) &amp;&amp; b.equals(c) => a.equals(c) will not necessarily hold.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object, otherwise false</returns>
@@ -161,7 +161,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         /// <summary>
         /// Returns a hash code for this instance. 
-        /// <see cref="GetHashCode"/> provides a useful distribution only for edges that have been created with 
+        /// <see cref="GetHashCode"/> provides a useful distribution only if the edge has been instantiated with 
         /// <see cref="Edge(TriangulatedPolygonAStar.BasicGeometry.Triangle,TriangulatedPolygonAStar.BasicGeometry.Triangle)"/>.
         /// </summary>
         /// <returns>An integer value that specifies a hash value for this instance</returns>

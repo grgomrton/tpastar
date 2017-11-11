@@ -92,7 +92,7 @@ namespace TriangulatedPolygonAStar
                 }
                 else
                 {
-                    if (!partialPath.FinalPathsAcquired)
+                    if (!partialPath.ReachedPathsBuilt)
                     {
                         foreach (IVector goal in goals)
                         {
@@ -107,7 +107,7 @@ namespace TriangulatedPolygonAStar
                                 }
                             }
                         }
-                        partialPath.FinalPathsAcquired = true;
+                        partialPath.ReachedPathsBuilt = true;
                         partialPath.UpdateEstimationToClosestGoalPoint(goals);
                         
                         AddToOpenSet(partialPath);

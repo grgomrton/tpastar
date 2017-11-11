@@ -44,7 +44,7 @@ namespace TriangulatedPolygonAStar.Tests
             
             var initialPath = new TPAPath(start, t);
 
-            initialPath.FinalPathsAcquired.Should().BeFalse();
+            initialPath.ReachedPathsBuilt.Should().BeFalse();
         }
         
         [Test]
@@ -88,7 +88,7 @@ namespace TriangulatedPolygonAStar.Tests
             var distaneBetweenStartAndOutsideGoal = 0.3;
             var goals = new[] { goalInT, goalOutsideT };
             var initialPath = new TPAPath(start, t);
-            initialPath.FinalPathsAcquired = true;
+            initialPath.ReachedPathsBuilt = true;
             
             initialPath.UpdateEstimationToClosestGoalPoint(goals);
 
