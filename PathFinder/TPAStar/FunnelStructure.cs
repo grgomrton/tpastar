@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
 {
+    /// <summary>
+    /// The funnel structure from the Funnel algorithm that can be used to determine the 
+    /// euclidean shortest path between a start and a goal point along a set of adjacent triangles.
+    /// </summary>
     public class FunnelStructure
     {
         private LinkedList<IVector> funnel;
@@ -11,6 +15,11 @@ namespace TriangulatedPolygonAStar
         
         private enum Side { Left, Right, Both, None }
 
+        /// <summary>
+        /// Initializes a new instance of a <see cref="FunnelStructure"/> class 
+        /// by the first point in the path.
+        /// </summary>
+        /// <param name="startPoint">The start point of the path</param>
         public FunnelStructure(IVector startPoint)
         {
             CheckForNullArgument(startPoint, nameof(startPoint));
@@ -21,6 +30,12 @@ namespace TriangulatedPolygonAStar
             path.AddFirst(startPoint);
         }
 
+        /// <summary>
+        /// Initializes a new instance of a <see cref="FunnelStructure"/> class by 
+        /// another funnel instance. The instantiation will result in a 
+        /// deep copy of the specified one.
+        /// </summary>
+        /// <param name="other">The other funnel to copy the values from</param>
         public FunnelStructure(FunnelStructure other)
         {
             CheckForNullArgument(other, nameof(other));
@@ -30,16 +45,27 @@ namespace TriangulatedPolygonAStar
             path = new LinkedList<IVector>(other.path);
         }
 
+        /// <summary>
+        /// The path which is built by stepping over the specified edges.
+        /// Once a goal point has added to the funnel, the path contains the complete path.
+        /// </summary>
         public LinkedList<IVector> Path
         {
             get { return path; }
         }
-
+        
+        /// <summary>
+        /// The apex of the funnel. 
+        /// </summary>
         public LinkedListNode<IVector> Apex
         {
             get { return apex; }
         }
         
+        /// <summary>
+        /// Extends the funnel by adding a new edge at the end.
+        /// </summary>
+        /// <param name="edge">The edge that was stepped over</param>
         public void StepOver(IEdge edge)
         {
             CheckForNullArgument(edge, nameof(edge));
@@ -76,6 +102,11 @@ namespace TriangulatedPolygonAStar
             }
         }
 
+        /// <summary>
+        /// Cleans up the funnel and adds the required points to the path to define a
+        /// complete path.
+        /// </summary>
+        /// <param name="goal">The last point of the path</param>
         public void FinalizePath(IVector goal)
         {
             CheckForNullArgument(goal, nameof(goal));

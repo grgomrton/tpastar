@@ -207,7 +207,6 @@ namespace TriangulatedPolygonAStar.Tests
             funnel.Path.First.Value.Should().Be(origin);
             funnel.Path.First.Next.Value.Should().Be(a);
             funnel.Path.First.Next.Next.Value.Should().Be(d);
-
         }
         
     }
