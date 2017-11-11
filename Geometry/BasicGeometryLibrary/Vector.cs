@@ -81,6 +81,9 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// Determines whether the specified object represents the same point in the space as this vector.
         /// Two vectors are considered to represent the same point if the cartesian distance between them is smaller 
         /// than the tolerance set in <see cref="VectorEqualityCheck.Tolerance"/>.
+        /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
+        /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
+        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
         /// </summary>
         /// <param name="other">The other object to compare this vector with</param>
         /// <returns>true if the two object represent the same point, otherwise false</returns>
@@ -92,6 +95,20 @@ namespace TriangulatedPolygonAStar.BasicGeometry
                 return otherVector.DistanceFrom(this) < VectorEqualityCheck.Tolerance;
             }
             return false;
+        }
+        
+        /// <summary>
+        /// Returns a constant value hash code for this instance.
+        /// The reason for using constant value is that this is the only hashcode which will never break
+        /// the a.equals(b) => a.gethashcode() == b.gethashcode() rule for vectors compared with absolute precision, 
+        /// which is a necessary requirement to ensure that the instance will be found using hash-based search.
+        /// It also means that vector instances cannot be stored effectively in hash based structures. 
+        /// Storing vectors in hashmap will cause the map to fall back to linear search.  
+        /// </summary>
+        /// <returns>An integer value that specifies a hash value for this instance</returns>
+        public override int GetHashCode()
+        {
+            return 0;
         }
 
         /// <summary>

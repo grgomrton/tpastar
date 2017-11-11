@@ -126,6 +126,9 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// Two edges are considered to be equal if their endpoints are closer than the value 
         /// specified in <see cref="VectorEqualityCheck.Tolerance"/>.
         /// In such case the highest distance between the two edges is also lower than the tolerance value.
+        /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
+        /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
+        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
         /// <returns>true if the specified object is equal to the current object, otherwise false</returns>

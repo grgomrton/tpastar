@@ -165,7 +165,16 @@ namespace TriangulatedPolygonAStar.BasicGeometry
                    (u + v < 1.0 + lowU * u + lowV * v); // return (u >= 0) && (v >= 0) && (u + v < 1)
         }
 
-        /// <inheritdoc cref="ITriangle.Equals(object)" />
+        /// <summary>
+        /// Determines whether the specified object represents the same triangle as this one.
+        /// Two triangles are considered to be equal if their endpoints are closer than the value 
+        /// specified in <see cref="VectorEqualityCheck.Tolerance"/>.
+        /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
+        /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
+        /// a.equals(b) && b.equals(c) => a.equals(c) will not necessarily hold.
+        /// </summary>
+        /// <param name="other">The other object to compare with</param>
+        /// <returns>true if the specified object is equal to the current object, otherwise false</returns>
         public override bool Equals(object other)
         {
             Triangle otherTriangle = other as Triangle;
