@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TriangulatedPolygonAStar.BasicGeometry;
@@ -8,100 +9,255 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class TPAPathTests
     {
+        private static double AssertionPrecision = 0.00001;
+        
         [OneTimeSetUp]
         public void BeforeTheseTestCases()
         {
             VectorEqualityCheck.Tolerance = 0.001;
         }
-        
-        [Test]
-        public void afterSteppingIntoATriangleExplorableTrianglesShouldNotContainThePreviousOne()
-        {
-            var t2a = new Vector(10.0, 7.5);
-            var t2b = new Vector(10.0, 12.5);
-            var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c, 0);
-            var t3a = new Vector(5.0, 10.0);
-            var t3b = new Vector(10.0, 12.5);
-            var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c, 1);
-            t2.SetNeighbours(t3);
-            t3.SetNeighbours(t2);
-            var startPoint = new Vector(7.5, 10.0);
-            var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var path = new TPAPath(startPoint, t2);
-
-            var pathsAfterSteppingIntoT2 = path.ExploreNeighbourTriangle(goalPoints);
-            var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
-            var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
-
-            pathsAfterSteppingIntoT2.Count().Should().Be(1);
-            theOnlyPathThatShouldBeCreated.CurrentTriangle.ShouldBeEquivalentTo(t3);
-            pathsAfterSteppingIntoT3.Count().Should().Be(0);
-        }
 
         [Test]
-        public void initialPathShouldContainEveryNeighbourOfStartTriangle()
+        public void InitiallyFinalPathsShouldNotBeAcquired()
         {
-            var t2a = new Vector(10.0, 7.5);
-            var t2b = new Vector(10.0, 12.5);
-            var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c, 0);
-            var t3a = new Vector(5.0, 10.0);
-            var t3b = new Vector(10.0, 12.5);
-            var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c, 1);
-            var t4a = new Vector(10.0, 12.5);
-            var t4b = new Vector(12.5, 15.0);
-            var t4c = new Vector(5.0, 15.0);
-            var t4 = new Triangle(t4a, t4b, t4c, 2);
-            t2.SetNeighbours(t3);
-            t3.SetNeighbours(t2, t4);
-            var s = new Vector(9.0, 11.5);
-            var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var initialPath = new TPAPath(s, t3);
-
-            var pathsAfterSteppingIntoT3 = initialPath.ExploreNeighbourTriangle(goalPoints);
-
-            pathsAfterSteppingIntoT3.Count().Should().Be(2);
-            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t2));
-            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t4));
-        }
-        
-        [Test]
-        public void afterSteppingIntoATriangleExplorableTrianglesShouldContainTheOneWeAreNotComingFrom()
-        {
-            var t2a = new Vector(10.0, 7.5);
-            var t2b = new Vector(10.0, 12.5);
-            var t2c = new Vector(5.0, 10.0);
-            var t2 = new Triangle(t2a, t2b, t2c, 0);
-            var t3a = new Vector(5.0, 10.0);
-            var t3b = new Vector(10.0, 12.5);
-            var t3c = new Vector(5.0, 15.0);
-            var t3 = new Triangle(t3a, t3b, t3c, 1);
-            var t4a = new Vector(10.0, 12.5);
-            var t4b = new Vector(12.5, 15.0);
-            var t4c = new Vector(5.0, 15.0);
-            var t4 = new Triangle(t4a, t4b, t4c, 2);
-            var t5a = new Vector(15.0, 12.5);
-            var t5b = new Vector(12.5, 15.0);
-            var t5c = new Vector(10.0, 12.5);
-            var t5 = new Triangle(t5a, t5b, t5c, 3);
-            t2.SetNeighbours(t3);
-            t3.SetNeighbours(t2, t4);
-            t4.SetNeighbours(t3, t5);
-            t5.SetNeighbours(t4);
-            var s = new Vector(9.0, 11.5);
-            var goalPoints = new [] { new Vector(100.0, 100.0) };
-            var initialPath = new TPAPath(s, t2);
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var t = new Triangle(a, b, c, 0);
+            var start = new Vector(0.1, 0.1);
             
-            var pathsAfterSteppingIntoT2 = initialPath.ExploreNeighbourTriangle(goalPoints);
-            var theOnlyPathThatShouldBeCreated = pathsAfterSteppingIntoT2.First();
-            var pathsAfterSteppingIntoT3 = theOnlyPathThatShouldBeCreated.ExploreNeighbourTriangles(goalPoints);
+            var initialPath = new TPAPath(start, t);
 
-            pathsAfterSteppingIntoT2.Count().Should().Be(1);
-            pathsAfterSteppingIntoT3.Should().Contain(path => path.CurrentTriangle.Equals(t4));
-            pathsAfterSteppingIntoT3.Should().NotContain(path => path.CurrentTriangle.Equals(t2));
+            initialPath.FinalPathsAcquired.Should().BeFalse();
+        }
+        
+        [Test]
+        public void InitiallyCurrentEdgeShouldNotBeSet()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var t = new Triangle(a, b, c, 0);
+            var start = new Vector(0.1, 0.1);
+            
+            var initialPath = new TPAPath(start, t);
+
+            initialPath.CurrentEdge.Should().BeNull();
+        }
+
+        [Test]
+        public void InitialyCurrentTriangleShouldBeStartTriangle()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var t = new Triangle(a, b, c, 0);
+            var start = new Vector(0.1, 0.1);
+            
+            var initialPath = new TPAPath(start, t);
+
+            initialPath.CurrentTriangle.Should().Be(t);            
+        }
+
+        [Test]
+        public void AfterBuildingFinalPathsFromTheStartTriangleTheCostEstimationShouldBeCalculatedBetweenTheApexAndTheGoalOutsideTheTriangle()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var t = new Triangle(a, b, c, 0);
+            var start = new Vector(0.1, 0.1);
+            var goalInT = new Vector(0.2, 0.1);
+            var goalOutsideT = new Vector(-0.2, 0.1);
+            var distaneBetweenStartAndOutsideGoal = 0.3;
+            var goals = new[] { goalInT, goalOutsideT };
+            var initialPath = new TPAPath(start, t);
+            initialPath.FinalPathsAcquired = true;
+            
+            initialPath.UpdateEstimationToClosestGoalPoint(goals);
+
+            t.ContainsPoint(goalOutsideT).Should().BeFalse();
+            initialPath.MinimalTotalCost.Should()
+                .BeApproximately(distaneBetweenStartAndOutsideGoal, AssertionPrecision);
+        }
+
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleCurrentTriangleShouldMove()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            initialPath.CurrentTriangle.Should().Be(t1);
+            pathToT2.CurrentTriangle.Should().Be(t2);
+        }
+
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleCurrentEdgeShouldBeTheCommonEdge()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            var commonEdge = new Edge(a, c);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            initialPath.CurrentEdge.Should().BeNull();
+            initialPath.CurrentTriangle.Should().Be(t1);
+            pathToT2.CurrentEdge.Should().Be(commonEdge);
+            pathToT2.CurrentTriangle.Should().Be(t2);
+        }
+        
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleMinimalPathToEdgeShouldBeTheDistanceBetweenApexAndEdgeIfEdgeIsVisibleFromApex()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var distanceBetweenCommonEdgeAndStart = 0.1;
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            pathToT2.ShortestPathToEdgeLength.Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndStart, AssertionPrecision);
+        }
+
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleMaximalPathToEdgeShouldBeTheLenghtOfTheLongerSideOfFunnelFromApexToEdge()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var distanceBetweenStartAndPointC = 0.90554;
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            pathToT2.LongestPathToEdgeLength.Should()
+                .BeApproximately(distanceBetweenStartAndPointC, AssertionPrecision);
+        }
+        
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleTheCostShouldBeTheDistanceBetweenStartAndEdgePlusTheDistanceBetweenEdgeAndClosestGoal()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var goalInT2 = new Vector(-0.25, 0.5);
+            var commonEdge = new Edge(a, c);
+            var distanceBetweenCommonEdgeAndStart = 0.1;
+            var distanceBetweenCommonEdgeAndGoal = 0.25;
+            var distanceBetweenCommonEdgeAndStartPlusDistanceBetweenCommonEdgeAndGoal = 0.35;
+            var goals = new[] {goalInT2};
+            var initialPath = new TPAPath(start, t1);
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            commonEdge.DistanceFrom(start).Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndStart, AssertionPrecision);
+            commonEdge.DistanceFrom(goalInT2).Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndGoal, AssertionPrecision);
+            pathToT2.MinimalTotalCost.Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndStartPlusDistanceBetweenCommonEdgeAndGoal,
+                    AssertionPrecision);
+        }
+
+        [Test]
+        public void PathShouldNotProceedToNotAdjacentTriangle()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var e = new Vector(0.0, -1.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, e, 1);
+            var start = new Vector(0.1, 0.1);
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+
+            Action buildPathToT2 = () => initialPath.BuildPartialPathTo(t2, goals);
+
+            buildPathToT2.ShouldThrow<ArgumentException>().And.Message.Should().Contain("triangle");
+        }
+
+        [Test]
+        public void PathShouldNotInitializeIfStartPointIsNotInStartTriangle()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var start = new Vector(-0.1, -0.1);
+
+            Action init = () => new TPAPath(start, t1);
+
+            init.ShouldThrow<ArgumentException>().And.Message.Should().Contain("fall");
+        }
+
+        [Test]
+        public void AfterSteppingIntoNeighbourTriangleTheCostShouldBeTheDistanceBetweenStartAndEdgePlusTheDistanceBetweenEdgeAndClosestGoalChoosenFromMultipleOnes()
+        {
+            var a = new Vector(0.0,0.0);
+            var b = new Vector(1.0, 0.0);
+            var c = new Vector(0.0, 1.0);
+            var d = new Vector(-1.0, 0.0);
+            var t1 = new Triangle(a, b, c, 0);
+            var t2 = new Triangle(a, d, c, 1);
+            t1.SetNeighbours(t2);
+            var start = new Vector(0.1, 0.1);
+            var goalInT2 = new Vector(-0.25, 0.5);
+            var furtherGoal = new Vector(-1.0, 0.5);
+            var commonEdge = new Edge(a, c);
+            var distanceBetweenCommonEdgeAndStart = 0.1;
+            var distanceBetweenCommonEdgeAndGoal = 0.25;
+            var distanceBetweenCommonEdgeAndStartPlusDistanceBetweenCommonEdgeAndGoal = 0.35;
+            var goals = new[] {goalInT2, furtherGoal};
+            var initialPath = new TPAPath(start, t1);
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+
+            commonEdge.DistanceFrom(start).Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndStart, AssertionPrecision);
+            commonEdge.DistanceFrom(goalInT2).Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndGoal, AssertionPrecision);
+            pathToT2.MinimalTotalCost.Should()
+                .BeApproximately(distanceBetweenCommonEdgeAndStartPlusDistanceBetweenCommonEdgeAndGoal,
+                    AssertionPrecision);
         }
         
     }

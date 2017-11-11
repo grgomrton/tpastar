@@ -82,7 +82,7 @@ namespace TriangulatedPolygonAStar
                         {
                             if (partialPath.CurrentTriangle.ContainsPoint(goal))
                             {
-                                LinkedList<IVector> newCandidate = partialPath.CompletePathTo(goal);
+                                LinkedList<IVector> newCandidate = partialPath.BuildCompletePathTo(goal);
                                 double newCandidateLength = GetLength(newCandidate);
                                 if ((bestCandidate.Count == 1) || (newCandidateLength < bestCandidateLength))
                                 {
@@ -102,7 +102,7 @@ namespace TriangulatedPolygonAStar
                         {
                             if (!neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle).Equals(partialPath.CurrentEdge))
                             {
-                                TPAPath pathToNeighbour = partialPath.StepToNeighbour(neighbour, goals);
+                                TPAPath pathToNeighbour = partialPath.BuildPartialPathTo(neighbour, goals);
                                 if (IsGoodCandidate(pathToNeighbour))
                                 {
                                     AddToOpenSet(pathToNeighbour);

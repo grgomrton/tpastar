@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TriangulatedPolygonAStar
 {
@@ -30,6 +29,10 @@ namespace TriangulatedPolygonAStar
         {
             CheckForNullArgument(startPoint, nameof(startPoint));
             CheckForNullArgument(startTriangle, nameof(startTriangle));
+            if (!startTriangle.ContainsPoint(startPoint))
+            {
+                throw new ArgumentException("The specified point does not fall inside the specified triangle");
+            }
             
             funnel = new FunnelStructure(startPoint);
             currentTriangle = startTriangle;
@@ -111,17 +114,25 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Returns the set of paths which can be built by proceeding the graph exploration with the approachable 
-        /// neighbours of the current triangle. A path built to the neighbour triangle has a <see cref="FinalPathsAcquired"/>
-        /// value of false.
+        /// Returns a new path which is built by proceeding into the specified neighbour triangle from the triangle this 
+        /// path currently stands on. The resulting path has a <see cref="FinalPathsAcquired"/>
+        /// value of false, and every cost function is updated accordingly.
         /// </summary>
-        /// <param name="neighbour"></param>
-        /// <param name="goals"></param>
-        /// <returns>The set of the resulting paths, among each one of them is standing on one of the approachable neighbour triangles</returns>
-        public TPAPath StepToNeighbour(ITriangle neighbour, IEnumerable<IVector> goals)
+        /// <param name="neighbour">The neighbour triangle to step into</param>
+        /// <param name="goals">The goals we execute the pathfinding to</param>
+        /// <returns>The partial path which leads to the neighbour triangle</returns>
+        public TPAPath BuildPartialPathTo(ITriangle neighbour, IEnumerable<IVector> goals)
         {
             CheckForNullArgument(neighbour, nameof(neighbour));
-            if (!CurrentTriangle.Neighbours.Contains(neighbour))
+            bool isAdjacent = false;
+            foreach (ITriangle triangle in CurrentTriangle.Neighbours)
+            {
+                if (triangle.Equals(neighbour))
+                {
+                    isAdjacent = true;
+                }
+            }
+            if (!isAdjacent)
             {
                 throw new ArgumentException("The triangle is not adjacent with the one this path is standing on", nameof(neighbour));
             }
@@ -133,11 +144,12 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Returns the finalized paths to the goal points which fall inside the triangle this path currently stands on.
+        /// Returns the complete, final path to the specified goal point. 
+        /// The goal has to be contained by the current triangle this path stands on.
         /// </summary>
-        /// <param name="goal"></param>
-        /// <returns>The set of finalized paths to the reached goal points</returns>
-        public LinkedList<IVector> CompletePathTo(IVector goal)
+        /// <param name="goal">The goal to build the complete path to</param>
+        /// <returns>The completed path to the reached goal point</returns>
+        public LinkedList<IVector> BuildCompletePathTo(IVector goal)
         {
             CheckForNullArgument(goal, nameof(goal));
             if (!currentTriangle.ContainsPoint(goal))
@@ -145,19 +157,19 @@ namespace TriangulatedPolygonAStar
                 throw new ArgumentException("This path has not reached the specified goal point", nameof(goal));
             }
 
-            FunnelStructure funnelForPathToGoal = new FunnelStructure(this.funnel);
-            funnelForPathToGoal.FinalizePath(goal);
+            FunnelStructure funnelCopy = new FunnelStructure(this.funnel);
+            funnelCopy.FinalizePath(goal);
             
-            return funnelForPathToGoal.Path;
+            return funnelCopy.Path;
         }
         
         /// <summary>
-        /// Calculates the minimal length between the current edge and the closest goal point depending on, whether
+        /// Calculates the minimal length between the current edge and the closest goal point baed on whether
         /// the paths reached by stepping into this triangle have been built, indicated by the 
         /// <see cref="FinalPathsAcquired"/> property. If they have not yet built, those goals are included, 
         /// otherwise they are excluded from the minimum finding. 
         /// </summary>
-        /// <param name="goals"></param>
+        /// <param name="goals">The goals we execute the pathfinding to</param>
         public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
         {
             bool shouldIncludeGoalsInCurrentTriangle = !FinalPathsAcquired ? true : false;
