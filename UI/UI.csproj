@@ -47,6 +47,7 @@
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
     <Compile Include="Canvas\IDrawable.cs" />
+    <Compile Include="Canvas\IOverlay.cs" />
     <Compile Include="Drawables\DrawableTriangle.cs" />
     <Compile Include="Drawables\GeometryExtensions.cs" />
     <Compile Include="Drawables\GoalPoint.cs" />

@@ -25,6 +25,7 @@ namespace TriangulatedPolygonAStar.UI
     {
         /// <summary>
         /// Draws the visual representation of the object to the specified canvas.
+        /// Every drawable need to use the same coordinate-system.
         /// </summary>
         /// <param name="canvas">The canvas to draw onto</param>
         void Draw(Graphics canvas);

@@ -33,6 +33,7 @@ namespace TriangulatedPolygonAStar.UI
         private static float LeftRightPaddingInPercent = 10;
         
         private List<IDrawable> drawables;
+        private List<IOverlay> overlays;
         private float translationXBeforeScaling;
         private float translationYBeforeScaling;
         private float magnification;
@@ -45,6 +46,7 @@ namespace TriangulatedPolygonAStar.UI
         {
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
             drawables = new List<IDrawable>();
+            overlays = new List<IOverlay>();
             InitializeComponent();
         }
 
@@ -56,7 +58,6 @@ namespace TriangulatedPolygonAStar.UI
         public void AddDrawable(IDrawable drawable)
         {
             drawables.Add(drawable);
-            AutoScale();
             Invalidate();
         }
 
@@ -70,7 +71,6 @@ namespace TriangulatedPolygonAStar.UI
             {
                 drawables.Remove(drawable);
             }
-            AutoScale();
             Invalidate();
         }
         
@@ -80,6 +80,25 @@ namespace TriangulatedPolygonAStar.UI
         public void ClearDrawables()
         {
             drawables.Clear();
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Adds an overlay layer to the canvas.
+        /// </summary>
+        /// <param name="overlay">An overlay which will not be scaled or translated during draw</param>
+        public void AddOverlay(IOverlay overlay)
+        {
+            overlays.Add(overlay);
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Aligns the translation and magnification settings in a way
+        /// that every drawable fit the canvas.
+        /// </summary>
+        public void ScaleToFit()
+        {
             AutoScale();
             Invalidate();
         }
@@ -110,6 +129,18 @@ namespace TriangulatedPolygonAStar.UI
                 try
                 {
                     drawable.Draw(canvas);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("An item failed to draw: \n" + e);
+                }
+            }
+            canvas.Transform = new Matrix();
+            foreach (var overlay in overlays)
+            {
+                try
+                {
+                    overlay.Draw(canvas);
                 }
                 catch (Exception e)
                 {

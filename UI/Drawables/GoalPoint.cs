@@ -23,7 +23,7 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class GoalPoint : Point
     {
-        private static float GoalRadius = 0.8f;
+        private static float GoalRadius = 0.08f;
         private static Color Color = Color.Green; 
         
         /// <summary>

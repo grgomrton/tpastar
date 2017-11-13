@@ -1,111 +1,117 @@
 ﻿using System;
 using System.Drawing;
-using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
     /// Draws signs and instructions.
     /// </summary>
-    public class Legend : IDrawable
+    public class Legend : IOverlay
     {
-        private static Color EdgeColor = Color.DarkGray;
-        private static float EdgeWidth = 0.01f;
-        private static Pen EdgePen = new Pen(EdgeColor, EdgeWidth);
+        private static int WidthInPx = 280;
+        private static int HeightInPx = 110;
+        private static int PaddingLeftRightInPx = 16;
+        private static int PaddingTopBottomInPx = 10;
+        private static int IconBoxWidthHeight = 20;
+        private static int EdgeWidthInPx = 1;
+        private static Pen EdgePen = new Pen(Color.DarkGray, EdgeWidthInPx);
         private static Brush FillBrush = new SolidBrush(Color.White);
-        private static float Width = 54.0f;
-        private static float Height = 14.0f;
-        private static Color TextColor = Color.Black;
-        private static float TitleFontSize = 1.8f;
-        private static float CaptionFontSize = 1.3f;
-        private static Brush CaptionBrush = new SolidBrush(TextColor);
-
+        
+        private static int TitleFontSizeInPx = 14;
+        private static int CaptionFontSizeInPx = 11;
+        private static Brush CaptionBrush = new SolidBrush(Color.Black);
+        private static Font TitleFont = new Font(FontFamily.GenericSansSerif, TitleFontSizeInPx, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Pixel);
+        private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, CaptionFontSizeInPx, FontStyle.Italic, GraphicsUnit.Pixel);
+        
         private static string LegendTitle = "Legend";
-        private static string InstructionsTitle = "Instructions";
+        private static string InstructionsTitle = "Interactions";
         private static string StartCaption = "Start";
         private static string GoalCaption = "Goal";
         private static string PathCaption = "Path";
-        private static string[] Instructions = { "Left-click: Add goal","Right-click: Remove goal","Left-down + Move: Relocate start or goal" };
+        private static string[] Instructions = { "Left-click: Add","Right-click: Remove","Left-down + Move: Relocate" };
 
-        private static Font TitleFont = new Font(FontFamily.GenericSansSerif, TitleFontSize, FontStyle.Bold | FontStyle.Italic);
-        private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, CaptionFontSize, FontStyle.Italic);
-        private static IVector IconBoxWidth = new Vector(2.5, 0.0);
-        private static IVector IconBoxHeight = new Vector(0.0, 2.5);
-        private static IVector VerticalTranslationOfInstruction = new Vector(0.0, 2.5);
+        private static Brush GoalBrush = new SolidBrush(Color.Green);
+        private static Brush StartBrush = new SolidBrush(Color.Blue);
+        private static Pen PathPen = new Pen(Color.Green);
+        private static int InstructionsAlignmentFromLeftInPx = 100;
         
-        private IVector topLeft;
-        private IVector legendTitleLocation;
-        private IVector instructionTitleLocation;
-        private StartPoint startPointToDraw;
-        private GoalPoint goalPointToDraw;
-        private PolyLine pathIcon;
-        private IVector instructionLocation;
-        private IVector pathCaptionLocation;
-        
+        private Rectangle container;
+        private Rectangle legendTitleBox;
+        private Rectangle startIconBox;
+        private Rectangle goalIconBox;
+        private Rectangle pathIconBox;
+        private Rectangle instructionTitleBox;
+        private Rectangle firstInstructionBox;
+        private StringFormat captionStringFormat;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="Legend"/> class which
         /// displays the meaning of signs and instructions. 
         /// </summary>
-        /// <param name="topLeftAbsolutePosition">The position in the world where the legend need to be drawn</param>
-        public Legend(IVector topLeftAbsolutePosition)
+        /// <param name="topCoordinateOnCanvas">The vertical coordinate of the on the canvas</param>
+        /// <param name="leftCoordinateOnCanvas">The horizontal coordinate of the on the canvas</param>
+        public Legend(int topCoordinateOnCanvas, int leftCoordinateOnCanvas)
         {
-            topLeft = topLeftAbsolutePosition;
-            legendTitleLocation = topLeft.Plus(IconBoxWidth.Times(0.75)).Plus(IconBoxHeight.Times(0.5));
-            var startPointPosition = topLeft.Plus(IconBoxWidth.Times(1.25)).Plus(IconBoxHeight.Times(2.5));
-            var goalPointPosition = topLeft.Plus(IconBoxWidth.Times(1.25)).Plus(IconBoxHeight.Times(3.5));
-            var pathIconLeftEndpoint = topLeft.Plus(IconBoxWidth.Times(1.0)).Plus(IconBoxHeight.Times(4.5));
-            pathCaptionLocation = topLeft.Plus(IconBoxWidth.Times(2.25)).Plus(IconBoxHeight.Times(4.5));
-            instructionTitleLocation = topLeft.Plus(IconBoxWidth.Times(6.0)).Plus(IconBoxHeight.Times(0.5));
-            instructionLocation = topLeft.Plus(IconBoxWidth.Times(6.0)).Plus(IconBoxHeight.Times(2.5));
+            container = new Rectangle(topCoordinateOnCanvas, leftCoordinateOnCanvas, WidthInPx, HeightInPx);
             
-            startPointToDraw = new StartPoint(startPointPosition);
-            goalPointToDraw = new GoalPoint(goalPointPosition);
-            var pathIconRightEndpoint = pathIconLeftEndpoint.Plus(IconBoxWidth.Times(0.5));
-            var displayLengthOfPathIcon = false;
-            pathIcon = new PolyLine(new[]{ pathIconLeftEndpoint, pathIconRightEndpoint }, displayLengthOfPathIcon );
-
-            var topLeftF = topLeft.ToPointF();
-            var maxX = Math.Max(topLeftF.X, topLeftF.X + Width);
-            var minX = Math.Min(topLeftF.X, topLeftF.X + Width);
-            var maxY = Math.Max(topLeftF.Y, topLeftF.Y + Height);
-            var minY = Math.Min(topLeftF.Y, topLeftF.Y + Height);
-            BoundingBoxHigh = new PointF(maxX, maxY);
-            BoundingBoxLow = new PointF(minX, minY);
+            captionStringFormat = new StringFormat(StringFormat.GenericTypographic);
+            captionStringFormat.Alignment = StringAlignment.Near;
+            captionStringFormat.LineAlignment = StringAlignment.Center;
+            
+            legendTitleBox = new Rectangle(container.X + PaddingLeftRightInPx, container.Y + PaddingTopBottomInPx, WidthInPx, 2 * TitleFontSizeInPx);
+            startIconBox = new Rectangle(legendTitleBox.Left, legendTitleBox.Bottom, 
+                IconBoxWidthHeight, IconBoxWidthHeight);
+            goalIconBox = new Rectangle(legendTitleBox.Left, startIconBox.Bottom, IconBoxWidthHeight, IconBoxWidthHeight);
+            pathIconBox = new Rectangle(legendTitleBox.Left, goalIconBox.Bottom, IconBoxWidthHeight, IconBoxWidthHeight);
+            instructionTitleBox = new Rectangle(container.X + InstructionsAlignmentFromLeftInPx, container.Y + PaddingTopBottomInPx, WidthInPx, 2 * TitleFontSizeInPx);
+            firstInstructionBox = new Rectangle(instructionTitleBox.Left, instructionTitleBox.Bottom, WidthInPx, IconBoxWidthHeight);
         }
-        
-        /// <inheritdoc />
-        public PointF BoundingBoxHigh { get; private set; }
-
-        /// <inheritdoc />
-        public PointF BoundingBoxLow { get; private set; }
 
         /// <inheritdoc />
         public void Draw(Graphics canvas)
         {
-            var topLeftF = topLeft.ToPointF();
-            canvas.FillRectangle(FillBrush, topLeftF.X, topLeftF.Y, Width, Height);
-            canvas.DrawRectangle(EdgePen, topLeftF.X, topLeftF.Y, Width, Height);
+            canvas.FillRectangle(FillBrush, container);
+            canvas.DrawRectangle(EdgePen, container);
+            canvas.DrawString(LegendTitle, TitleFont, CaptionBrush, legendTitleBox);
+            //canvas.DrawRectangle(Pens.BlueViolet, startIconBox);
+            DrawPointIcon(StartBrush, startIconBox, canvas);
+            DrawCaption(StartCaption, startIconBox, captionStringFormat, canvas);
             
-            canvas.DrawString(LegendTitle, TitleFont, CaptionBrush, legendTitleLocation.ToPointF());                     
-            DrawPointWithCaption(startPointToDraw, StartCaption, canvas);
-            DrawPointWithCaption(goalPointToDraw, GoalCaption, canvas);
-            pathIcon.Draw(canvas);
-            canvas.DrawString(PathCaption, CaptionFont, CaptionBrush, pathCaptionLocation.ToPointF());
+            //canvas.DrawRectangle(Pens.BlueViolet, startCaptionBox);
+            DrawPointIcon(GoalBrush, goalIconBox, canvas);
+            DrawCaption(GoalCaption, goalIconBox, captionStringFormat, canvas);
             
-            canvas.DrawString(InstructionsTitle, TitleFont, CaptionBrush, instructionTitleLocation.ToPointF());
-            var instructionLineLocation = instructionLocation; 
-            foreach (var instructionLine in Instructions)
+            DrawPathIcon(PathPen, pathIconBox, canvas);
+            DrawCaption(PathCaption, pathIconBox, captionStringFormat, canvas);
+
+            canvas.DrawString(InstructionsTitle, TitleFont, CaptionBrush, instructionTitleBox);
+            var instructionBox = firstInstructionBox;
+            foreach (var instruction in Instructions)
             {
-                canvas.DrawString(instructionLine, CaptionFont, CaptionBrush, instructionLineLocation.ToPointF());
-                instructionLineLocation = instructionLineLocation.Plus(VerticalTranslationOfInstruction);
-            }            
+                //canvas.DrawRectangle(Pens.BlueViolet, instructionBox);
+                canvas.DrawString(instruction, CaptionFont, CaptionBrush, instructionBox, captionStringFormat);
+                instructionBox = new Rectangle(instructionBox.Left, instructionBox.Top + instructionBox.Height, instructionBox.Width, instructionBox.Height);
+            }
         }
 
-        private static void DrawPointWithCaption(Point pointToDraw, String caption, Graphics canvas)
+        private static void DrawPointIcon(Brush brush, Rectangle iconBox, Graphics canvas)
         {
-            pointToDraw.Draw(canvas);
-            var startCaptionLocation = pointToDraw.Position.Plus(IconBoxWidth).ToPointF();
-            canvas.DrawString(caption, CaptionFont, CaptionBrush, startCaptionLocation);
+            var centerPoint = new PointF(iconBox.Left + iconBox.Width * 0.5f, iconBox.Top + iconBox.Height * 0.5f);
+            var radius = 0.25f * Math.Min(iconBox.Width, iconBox.Height);
+            canvas.FillEllipse(brush, centerPoint.X - radius, centerPoint.Y - radius, 2*radius, 2*radius);
+        }
+        
+        private static void DrawPathIcon(Pen pen, Rectangle iconBox, Graphics canvas)
+        {
+            var left = new PointF(iconBox.Left + iconBox.Width * 0.2f, iconBox.Top + iconBox.Height * 0.5f);
+            var right = new PointF(iconBox.Right - iconBox.Width * 0.2f, iconBox.Top + iconBox.Height * 0.5f);
+            canvas.DrawLine(pen, left.X, left.Y, right.X, right.Y);
+        }
+
+        private static void DrawCaption(string caption, Rectangle iconBox, StringFormat stringFormat, Graphics canvas)
+        {
+            var captionBox = new Rectangle(iconBox.Right, iconBox.Top, WidthInPx, IconBoxWidthHeight);
+            canvas.DrawString(caption, CaptionFont, CaptionBrush, captionBox, stringFormat);
         }
 
     }

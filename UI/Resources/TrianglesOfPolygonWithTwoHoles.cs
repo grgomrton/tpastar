@@ -25,19 +25,19 @@ namespace TriangulatedPolygonAStar.UI.Resources
         {
             var triangleSet = new List<Triangle>();
             
-            var cr0 = new Vector(20.0, 40.0);
-            var cr1 = new Vector(20.0, 30.0);
-            var cr2 = new Vector(30.0, 20.0);
-            var cr3 = new Vector(50.0, 30.0);
-            var cr4 = new Vector(70.0, 20.0);
-            var cl0 = new Vector(0.0, 40.0);
-            var cl1 = new Vector(0.0, 30.0);
-            var cl2 = new Vector(40.0, 15.0);
-            var cl3 = new Vector(50.0, 25.0);
-            var cl4 = new Vector(60.0, 10.0);
-            var cl5 = new Vector(30.0, 10.0);    
-            var cp0 = new Vector(10.0, 70.0);
-            var cp1 = new Vector(60.0, -5.0);
+            var cr0 = new Vector(2.0, 4.0);
+            var cr1 = new Vector(2.0, 3.0);
+            var cr2 = new Vector(3.0, 2.0);
+            var cr3 = new Vector(5.0, 3.0);
+            var cr4 = new Vector(7.0, 2.0);
+            var cl0 = new Vector(0.0, 4.0);
+            var cl1 = new Vector(0.0, 3.0);
+            var cl2 = new Vector(4.0, 1.5);
+            var cl3 = new Vector(5.0, 2.5);
+            var cl4 = new Vector(6.0, 1.0);
+            var cl5 = new Vector(3.0, 1.0);    
+            var cp0 = new Vector(1.0, 7.0);
+            var cp1 = new Vector(6.0, -0.5);
             
             Triangle t0 = new Triangle(cp0, cl0, cr0, 0);
             triangleSet.Add(t0);

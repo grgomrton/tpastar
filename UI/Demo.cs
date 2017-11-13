@@ -51,9 +51,9 @@ namespace TriangulatedPolygonAStar.UI
         {
             InitializeComponent();
 
-            var startPosition = new Vector(10.0, 50.0);
+            var startPosition = new Vector(1.0, 5.0);
             start = new StartPoint(startPosition);
-            goals = new List<Point> { new GoalPoint(new Vector(51.0, 26.0)) };
+            goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
             currentlyEditedPoint = null;
             path = null;
 
@@ -72,9 +72,10 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.AddDrawable(goalPoint);
             }
-            var legend = new Legend(new Vector(-30.0, -10.0));
-            display.AddDrawable(legend);
+            var legend = new Legend(10, 10);
+            display.AddOverlay(legend);
             
+            display.ScaleToFit();
             FindPathToGoal();
         }
 
