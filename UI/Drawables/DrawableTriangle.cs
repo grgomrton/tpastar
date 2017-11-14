@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * Copyright 2017 Márton Gergó
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using TriangulatedPolygonAStar.BasicGeometry;
@@ -30,17 +31,11 @@ namespace TriangulatedPolygonAStar.UI
         private static Color TraversionShade = Color.FromArgb(30, 30, 30);
         private static Color EdgeColor = Color.Gray;
         private static float EdgeWidth = 0.1f;
-        private static Pen EdgePen = new Pen(EdgeColor, EdgeWidth); 
-        private static Color TextColor = Color.Black;
-        private static float FontSize = 1.2f;
-        private static Brush CaptionBrush = new SolidBrush(TextColor);
-        private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, FontSize);
-        
+        private static Pen EdgePen = new Pen(EdgeColor, EdgeWidth);
+
         private readonly string displayName;
         private readonly PointF[] corners;
-        private readonly PointF captionPosition;
-        private int traversionCount;
-        private TriangleEvaluationResult lastEvaluationResult;
+        private List<TriangleEvaluationResult> traversions;
         
         /// <summary>
         /// Initializes a new instance of <see cref="DrawableTriangle"/> which draws
@@ -49,11 +44,11 @@ namespace TriangulatedPolygonAStar.UI
         /// <param name="triangle">The triangle to draw</param>
         public DrawableTriangle(Triangle triangle)
         {
-            this.displayName = "t" + triangle.Id;
+            displayName = "t" + triangle.Id;
             corners = triangle.ToPointFs().ToArray();
             BoundingBoxLow = new PointF(corners.Select(vertex => vertex.X).Min(), corners.Select(vertex => vertex.Y).Min());
             BoundingBoxHigh = new PointF(corners.Select(vertex => vertex.X).Max(), corners.Select(vertex => vertex.Y).Max());
-            captionPosition = triangle.GetCentroid().ToPointF();
+            traversions = new List<TriangleEvaluationResult>();
         }
 
         /// <summary>
@@ -61,26 +56,25 @@ namespace TriangulatedPolygonAStar.UI
         /// exploring the triangle graph.
         /// </summary>
         /// <param name="metadata">The result of the evaluation of the triangle</param>
-        public void IncreaseTraversionCount(TriangleEvaluationResult metadata)
+        public void AddMetaData(TriangleEvaluationResult metadata)
         {
-            traversionCount++;
-            lastEvaluationResult = metadata;
+            traversions.Add(metadata);
         }
 
         /// <summary>
         /// Clears the stored information which was gathered during triangle map exploration.
         /// </summary>
-        public void ResetMetaData()
+        public void ClearMetaData()
         {
-            traversionCount = 0;
-            lastEvaluationResult = null;
+            traversions.Clear();
         }
 
         /// <inheritdoc />
         public void Draw(Graphics canvas)
         {
-            DrawTriangle(canvas);
-            //DrawMetaData(canvas);
+            var fillBrush = new SolidBrush(GetShade(traversions.Count));
+            canvas.FillPolygon(fillBrush, corners);
+            canvas.DrawPolygon(EdgePen, corners);
         }
 
         /// <inheritdoc />
@@ -89,22 +83,16 @@ namespace TriangulatedPolygonAStar.UI
         /// <inheritdoc />
         public PointF BoundingBoxLow { get; }
 
-        private void DrawTriangle(Graphics canvas)
-        {
-            var fillBrush = new SolidBrush(GetShade(traversionCount));
-            canvas.FillPolygon(fillBrush, corners);
-            canvas.DrawPolygon(EdgePen, corners);
-        }
+        /// <summary>
+        /// The user friendly name of the triangle which constains its' id.
+        /// </summary>
+        public string DisplayName { get { return displayName; } }
 
-        private void DrawMetaData(Graphics canvas)
-        {
-            var caption = String.Format("{0}", 
-                displayName, 
-                traversionCount, 
-                lastEvaluationResult?.ShortestPathToEdgeLength,
-                lastEvaluationResult?.EstimatedMinimalCost);
-            canvas.DrawString(caption, CaptionFont, CaptionBrush, captionPosition);
-        }
+        /// <summary>
+        /// The set of meta information about explorations of this triangle 
+        /// since the metadata was cleared.
+        /// </summary>
+        public IEnumerable<TriangleEvaluationResult> Traversions { get { return traversions; } }
         
         private static Color GetShade(int traversionCount)
         {

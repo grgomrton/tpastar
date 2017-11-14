@@ -51,18 +51,39 @@ namespace TriangulatedPolygonAStar.UI
         }
 
         /// <summary>
-        /// Adds a drawable object to the list of objects to draw. 
+        /// Adds a drawable object to the list of objects to draw if it is not already in the list.
         /// Every drawable should use identical coordinate system for drawing.
         /// </summary>
         /// <param name="drawable">The drawable to add</param>
         public void AddDrawable(IDrawable drawable)
         {
-            drawables.Add(drawable);
-            Invalidate();
+            if (!drawables.Contains(drawable))
+            {
+                drawables.Add(drawable);
+                Invalidate();
+            }
         }
 
         /// <summary>
-        /// Removes the specified drawable from the list.
+        /// Indicates, whether the specified drawable is currently drawn.
+        /// </summary>
+        /// <param name="drawable">To drawable to check</param>
+        public bool Draws(IDrawable drawable)
+        {
+            return drawables.Contains(drawable);
+        }
+        
+        /// <summary>
+        /// Indicates, whether the specified overlay is currently drawn.
+        /// </summary>
+        /// <param name="overlay">The overlay layer to check.</param>
+        public bool Draws(IOverlay overlay)
+        {
+            return overlays.Contains(overlay);
+        }
+
+        /// <summary>
+        /// Removes the specified drawable from the drawn items if it was drawn.
         /// </summary>
         /// <param name="drawable">The drawable to remove</param>
         public void RemoveDrawable(IDrawable drawable)
@@ -70,8 +91,8 @@ namespace TriangulatedPolygonAStar.UI
             if (drawables.Contains(drawable))
             {
                 drawables.Remove(drawable);
+                Invalidate();
             }
-            Invalidate();
         }
         
         /// <summary>
@@ -84,13 +105,29 @@ namespace TriangulatedPolygonAStar.UI
         }
 
         /// <summary>
-        /// Adds an overlay layer to the canvas.
+        /// Adds an overlay layer to the canvas if it is not already in the list.
         /// </summary>
-        /// <param name="overlay">An overlay which will not be scaled or translated during draw</param>
+        /// <param name="overlay">An overlay which will not be scaled or translated during update</param>
         public void AddOverlay(IOverlay overlay)
         {
-            overlays.Add(overlay);
-            Invalidate();
+            if (!overlays.Contains(overlay))
+            {
+                overlays.Add(overlay);   
+                Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Removes the specified drawable from the list if it is contained.
+        /// </summary>
+        /// <param name="drawable">The overlay to remove</param>
+        public void RemoveOverlay(IOverlay overlay)
+        {
+            if (overlays.Contains(overlay))
+            {
+                overlays.Remove(overlay);   
+                Invalidate();
+            }
         }
 
         /// <summary>

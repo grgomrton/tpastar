@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿﻿/**
  * Copyright 2017 Márton Gergó
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using TriangulatedPolygonAStar.BasicGeometry;
 using TriangulatedPolygonAStar.UI.Resources;
@@ -31,17 +33,23 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public partial class Demo : Form
     {
+        private static readonly double StartX = 1.8;
+        private static readonly double StartY = 2.4;
+        private static readonly double GoalX = 6.0;
+        private static readonly double GoalY = 1.75;
+        private static readonly int TimeOutInMillseconds = 1000;
+        
         private Point start;
         private List<Point> goals;
-        private Point currentlyEditedPoint;
-        
         private IEnumerable<Triangle> triangles;
-        private Dictionary<ITriangle, DrawableTriangle> trianglesToDraw;
-        
         private TPAStarPathFinder pathFinder;
+        
         private PolyLine path;
-
-        private static int TimeOutInMillseconds = 1000;
+        private PoseDisplay poseDiplay;
+        private MetaDisplay metaDisplay;
+        private Dictionary<ITriangle, DrawableTriangle> drawableTriangles;
+        private Point currentlyEditedPoint;
+        private ITriangle triangleUnderCursor;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Demo"/> class which can be 
@@ -51,19 +59,20 @@ namespace TriangulatedPolygonAStar.UI
         {
             InitializeComponent();
 
-            var startPosition = new Vector(1.0, 5.0);
+            var startPosition = new Vector(StartX, StartY);
             start = new StartPoint(startPosition);
-            goals = new List<Point> { new GoalPoint(new Vector(5.1, 2.6)) };
+            goals = new List<Point> { new GoalPoint(new Vector(GoalX, GoalY)) };
             currentlyEditedPoint = null;
             path = null;
 
             triangles = TriangleMaps.TrianglesOfPolygonWithTwoPolygonHoles;
-            trianglesToDraw = CreateTrianglesToDraw(triangles);
+            drawableTriangles = CreateTrianglesToDraw(triangles);
+            triangleUnderCursor = null;
             
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
             
-            foreach (var triangle in trianglesToDraw.Values)
+            foreach (var triangle in drawableTriangles.Values)
             {
                 display.AddDrawable(triangle);
             }
@@ -72,16 +81,40 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.AddDrawable(goalPoint);
             }
-            var legend = new Legend(10, 10);
+            var title = new Title(15, 5);
+            display.AddOverlay(title);
+            var legend = new Legend(15, 75);
             display.AddOverlay(legend);
+            metaDisplay = new MetaDisplay(start, goals, 15, 15);
+            poseDiplay = new PoseDisplay(15, 15);
+
+            this.KeyUp += ShowHideMeta;
+            display.KeyUp += ShowHideMeta;
             
             display.ScaleToFit();
             FindPathToGoal();
         }
 
+        private void ShowHideMeta(object sender, KeyEventArgs keyEventArgs)
+        {
+            if (keyEventArgs.KeyCode == Keys.Space)
+            {
+                if (display.Draws(metaDisplay) && display.Draws(poseDiplay))
+                {
+                    display.RemoveOverlay(metaDisplay);
+                    display.RemoveOverlay(poseDiplay);
+                }
+                else
+                {
+                    display.AddOverlay(metaDisplay);
+                    display.AddOverlay(poseDiplay);
+                }
+            }
+        }
+
         private void PathFinderOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
         {
-            trianglesToDraw[triangle].IncreaseTraversionCount(result);
+            drawableTriangles[triangle].AddMetaData(result);
         }
 
         private bool IsPointUnderCursor(Point point, MouseEventArgs cursorState)
@@ -92,9 +125,9 @@ namespace TriangulatedPolygonAStar.UI
         
         private void FindPathToGoal()
         {
-            foreach (var triangle in trianglesToDraw.Values)
+            foreach (var triangle in drawableTriangles.Values)
             {
-                triangle.ResetMetaData();
+                triangle.ClearMetaData();
             }
             
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start.Position));
@@ -119,7 +152,7 @@ namespace TriangulatedPolygonAStar.UI
                             path = new PolyLine(pathFindingOutcome.Result);
                             display.AddDrawable(path);
                         }
-                        
+                        metaDisplay.SetPath(pathFindingOutcome.Result);
                     }
                 };
 
@@ -143,6 +176,7 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.RemoveDrawable(path);
                 path = null;
+                metaDisplay.ClearPath();
             }
             
             display.Invalidate();
@@ -179,7 +213,17 @@ namespace TriangulatedPolygonAStar.UI
         private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
         {
             var absolutePosition = GetAbsoluteCoordinateFromMousePosition(cursorState);
-            Text = "Triangulated Polygon A-star demo " + absolutePosition;
+            poseDiplay.SetCurrentPosition(absolutePosition);
+            triangleUnderCursor = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(absolutePosition));
+            if (triangleUnderCursor != null)
+            {
+                metaDisplay.SetSelectedTriangle(drawableTriangles[triangleUnderCursor]);
+            }
+            else
+            {
+                metaDisplay.ClearSelectedTriangle();
+            }
+            display.Invalidate();
             
             if (currentlyEditedPoint != null)
             {
@@ -205,7 +249,7 @@ namespace TriangulatedPolygonAStar.UI
 
         private IVector GetAbsoluteCoordinateFromMousePosition(MouseEventArgs cursorState)
         {
-            return display.GetAbsolutePosition(cursorState.X, cursorState.Y); // it works only because canvas starts at (0,0)
+            return display.GetAbsolutePosition(cursorState.X, cursorState.Y);
         }
 
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)

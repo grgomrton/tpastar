@@ -38,7 +38,7 @@ namespace TriangulatedPolygonAStar.UI
 //            this.display.BackColor = System.Drawing.Color.White;
             this.display.Location = new System.Drawing.Point(0, 0);
             this.display.Name = "display";
-            this.display.Size = new System.Drawing.Size(636, 496);
+            this.display.Size = new System.Drawing.Size(200, 200);
             this.display.TabIndex = 50;
             this.display.Dock = DockStyle.Fill;
             this.display.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DisplayOnMouseDown);
@@ -49,10 +49,10 @@ namespace TriangulatedPolygonAStar.UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(865, 618);
+            this.ClientSize = new System.Drawing.Size(1000, 670);
             this.Controls.Add(this.display);
             this.Name = "Demo";
-            this.Text = "triangulated polygon a-star demo";
+            this.Text = "Triangulated Polygon A-star demo";
 //            this.BackColor = System.Drawing.Color.White;
             this.Load += new System.EventHandler(this.DemoOnLoad);
             this.ResumeLayout(false);

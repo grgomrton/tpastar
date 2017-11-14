@@ -8,8 +8,8 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class Legend : IOverlay
     {
-        private static int WidthInPx = 280;
-        private static int HeightInPx = 110;
+        private static int WidthInPx = 300;
+        private static int HeightInPx = 130;
         private static int PaddingLeftRightInPx = 16;
         private static int PaddingTopBottomInPx = 10;
         private static int IconBoxWidthHeight = 20;
@@ -28,7 +28,7 @@ namespace TriangulatedPolygonAStar.UI
         private static string StartCaption = "Start";
         private static string GoalCaption = "Goal";
         private static string PathCaption = "Path";
-        private static string[] Instructions = { "Left-click: Add","Right-click: Remove","Left-down + Move: Relocate" };
+        private static string[] Instructions = { "Left-click: Add","Right-click: Remove","Left-down + Move: Relocate", "Space: Show / Hide metadata" };
 
         private static Brush GoalBrush = new SolidBrush(Color.Green);
         private static Brush StartBrush = new SolidBrush(Color.Blue);
