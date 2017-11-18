@@ -12,9 +12,9 @@ namespace TriangulatedPolygonAStar.UI
     {
         private static readonly Font CaptionFont;
         private static readonly Brush CaptionBrush;
-        private readonly System.Drawing.Point offset;
-        private readonly IEnumerable<Point> goals;
-        private readonly Point start;
+        private readonly Point offset;
+        private readonly IEnumerable<ILocationMarker> goals;
+        private readonly ILocationMarker start;
         private DrawableTriangle selectedTriangle;
         private IEnumerable<IVector> path;
         
@@ -26,20 +26,13 @@ namespace TriangulatedPolygonAStar.UI
         /// <param name="goals">The set of goal points to display</param>
         /// <param name="distanceFromRightInPx">The horizontal offset from the edge of the canvas</param>
         /// <param name="distanceFromBottomInPx">The vertical offset from the edge of the canvas</param>
-        public MetaDisplay(Point start, IEnumerable<Point> goals, int distanceFromRightInPx, int distanceFromBottomInPx) // TODO add start and maybe path
+        public MetaDisplay(ILocationMarker start, IEnumerable<ILocationMarker> goals, int distanceFromRightInPx, int distanceFromBottomInPx) // TODO add start and maybe path
         {
-            offset = new System.Drawing.Point(-distanceFromRightInPx, -distanceFromBottomInPx);
+            offset = new Point(-distanceFromRightInPx, -distanceFromBottomInPx);
             this.start = start;
             this.goals = goals;
             this.selectedTriangle = null;
             path = null;
-        }
-    
-        static MetaDisplay()
-        {
-            int captionFontSizeInPx = 11;
-            CaptionFont = new Font(FontFamily.GenericMonospace, captionFontSizeInPx, GraphicsUnit.Pixel);
-            CaptionBrush = Brushes.Black;
         }
 
         /// <summary>
@@ -110,18 +103,25 @@ namespace TriangulatedPolygonAStar.UI
             
             builder.AppendLine();
             builder.AppendFormat("{0,-22}", "start:").AppendLine();
-            builder.AppendFormat("       {0:0.00}, {1:0.00}", start.Position.X, start.Position.Y).AppendLine();
+            builder.AppendFormat("       {0:0.00}, {1:0.00}", start.CurrentLocation.X, start.CurrentLocation.Y).AppendLine();
             builder.AppendLine();
             
             builder.AppendLine("goals:");
             foreach (var goal in goals)
             {
-                builder.AppendFormat("       {0:0.00}, {1:0.00}", goal.Position.X, goal.Position.Y).AppendLine();
+                builder.AppendFormat("       {0:0.00}, {1:0.00}", goal.CurrentLocation.X, goal.CurrentLocation.Y).AppendLine();
             }
 
             var caption = builder.ToString();
             var captionSize = canvas.MeasureString(caption, CaptionFont, canvas.ClipBounds.Size);
             canvas.DrawString(caption, CaptionFont, CaptionBrush, canvasSize.Right - captionSize.Width + offset.X, canvasSize.Bottom - captionSize.Height + offset.Y);
+        }
+        
+        static MetaDisplay()
+        {
+            int captionFontSizeInPx = 11;
+            CaptionFont = new Font(FontFamily.GenericMonospace, captionFontSizeInPx, GraphicsUnit.Pixel);
+            CaptionBrush = Brushes.Black;
         }
     }
 }

@@ -16,11 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 using TriangulatedPolygonAStar.BasicGeometry;
 using TriangulatedPolygonAStar.UI.Resources;
@@ -33,23 +31,21 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public partial class Demo : Form
     {
-        private static readonly double StartX = 1.8;
-        private static readonly double StartY = 2.4;
+        private static readonly double StartX = 1.3;
+        private static readonly double StartY = 3.23;
         private static readonly double GoalX = 6.0;
         private static readonly double GoalY = 1.75;
         private static readonly int TimeOutInMillseconds = 1000;
         
-        private Point start;
-        private List<Point> goals;
-        private IEnumerable<Triangle> triangles;
-        private TPAStarPathFinder pathFinder;
-        
+        private readonly ILocationMarker startMarker;
+        private readonly List<ILocationMarker> goalMarkers;
+        private readonly IEnumerable<Triangle> triangles;
+        private readonly Dictionary<ITriangle, DrawableTriangle> drawableTriangles;
+        private readonly TPAStarPathFinder pathFinder;
+        private readonly PoseDisplay poseDiplay;
+        private readonly MetaDisplay metaDisplay;
         private PolyLine path;
-        private PoseDisplay poseDiplay;
-        private MetaDisplay metaDisplay;
-        private Dictionary<ITriangle, DrawableTriangle> drawableTriangles;
-        private Point currentlyEditedPoint;
-        private ITriangle triangleUnderCursor;
+        private ILocationMarker currentlyEditedMarker;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Demo"/> class which can be 
@@ -60,24 +56,21 @@ namespace TriangulatedPolygonAStar.UI
             InitializeComponent();
 
             var startPosition = new Vector(StartX, StartY);
-            start = new StartPoint(startPosition);
-            goals = new List<Point> { new GoalPoint(new Vector(GoalX, GoalY)) };
-            currentlyEditedPoint = null;
-            path = null;
-
+            startMarker = new StartMarker(startPosition);
+            goalMarkers = new List<ILocationMarker> { new GoalMarker(new Vector(GoalX, GoalY)) };
+            currentlyEditedMarker = null;
             triangles = TriangleMaps.TrianglesOfPolygonWithTwoPolygonHoles;
             drawableTriangles = CreateTrianglesToDraw(triangles);
-            triangleUnderCursor = null;
-            
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
+            path = null;
             
             foreach (var triangle in drawableTriangles.Values)
             {
                 display.AddDrawable(triangle);
             }
-            display.AddDrawable(start);
-            foreach (var goalPoint in goals)
+            display.AddDrawable(startMarker);
+            foreach (var goalPoint in goalMarkers)
             {
                 display.AddDrawable(goalPoint);
             }
@@ -85,14 +78,83 @@ namespace TriangulatedPolygonAStar.UI
             display.AddOverlay(title);
             var legend = new Legend(15, 75);
             display.AddOverlay(legend);
-            metaDisplay = new MetaDisplay(start, goals, 15, 15);
+            metaDisplay = new MetaDisplay(startMarker, goalMarkers, 15, 15);
             poseDiplay = new PoseDisplay(15, 15);
-
+            display.ScaleToFit();
+            
             this.KeyUp += ShowHideMeta;
             display.KeyUp += ShowHideMeta;
             
-            display.ScaleToFit();
             FindPathToGoal();
+        }
+        
+        private void DisplayOnMouseDown(object sender, MouseEventArgs cursorState)
+        {
+            if (cursorState.Button == MouseButtons.Left)
+            {
+                var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
+                if (startMarker.IsPositionUnderMarker(cursorAbsolutePosition))
+                {
+                    currentlyEditedMarker = startMarker;
+                }
+                else
+                {
+                    currentlyEditedMarker = goalMarkers.FirstOrDefault(marker => marker.IsPositionUnderMarker(cursorAbsolutePosition));
+                }
+                
+                if (currentlyEditedMarker == null)
+                {
+                    AddNewGoalPointAndSetToEdit(cursorState);
+                }
+            }
+        }
+        
+        private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
+        {
+            var absolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
+            poseDiplay.SetCurrentPosition(absolutePosition);
+            var triangleUnderCursor = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(absolutePosition));
+            if (triangleUnderCursor != null)
+            {
+                metaDisplay.SetSelectedTriangle(drawableTriangles[triangleUnderCursor]);
+            }
+            else
+            {
+                metaDisplay.ClearSelectedTriangle();
+            }
+            display.Invalidate();
+            
+            if (currentlyEditedMarker != null)
+            {
+                currentlyEditedMarker.SetLocation(absolutePosition);
+                FindPathToGoal();
+            }
+        }
+
+        private void DisplayOnMouseUp(object sender, MouseEventArgs cursorState)
+        {
+            if (cursorState.Button == MouseButtons.Right)
+            {
+                var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
+                var goalToDelete = goalMarkers.FirstOrDefault(marker => marker.IsPositionUnderMarker(cursorAbsolutePosition));
+                if (goalToDelete != null)
+                {
+                    goalMarkers.Remove(goalToDelete);
+                    display.RemoveDrawable(goalToDelete);
+                    FindPathToGoal();
+                }
+            }
+            currentlyEditedMarker = null;
+        }
+        
+        private void PathFinderOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
+        {
+            drawableTriangles[triangle].AddMetaData(result);
+        }
+        
+        private void DemoOnLoad(object sender, EventArgs e)
+        {
+            display.Invalidate();
         }
 
         private void ShowHideMeta(object sender, KeyEventArgs keyEventArgs)
@@ -111,16 +173,15 @@ namespace TriangulatedPolygonAStar.UI
                 }
             }
         }
-
-        private void PathFinderOnTriangleExplored(ITriangle triangle, TriangleEvaluationResult result)
+        
+        private void AddNewGoalPointAndSetToEdit(MouseEventArgs cursorState)
         {
-            drawableTriangles[triangle].AddMetaData(result);
-        }
-
-        private bool IsPointUnderCursor(Point point, MouseEventArgs cursorState)
-        {
-            var cursorAbsolutePosition = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
-            return cursorAbsolutePosition.DistanceFrom(point.Position) < 2*point.Radius;
+            var newGoalPoint = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
+            var newGoal = new GoalMarker(newGoalPoint);
+            goalMarkers.Add(newGoal);
+            display.AddDrawable(newGoal);
+            currentlyEditedMarker = newGoal;
+            FindPathToGoal();
         }
         
         private void FindPathToGoal()
@@ -130,7 +191,7 @@ namespace TriangulatedPolygonAStar.UI
                 triangle.ClearMetaData();
             }
             
-            var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(start.Position));
+            var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(startMarker.CurrentLocation));
             if (startTriangle != null)
             {
                 var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;  
@@ -160,8 +221,8 @@ namespace TriangulatedPolygonAStar.UI
                 {
                     Task<IEnumerable<IVector>>.Factory
                         .StartNew(() =>
-                                pathFinder.FindPath(start.Position, startTriangle,
-                                    goals.Select(point => point.Position)),
+                                pathFinder.FindPath(startMarker.CurrentLocation, startTriangle,
+                                    goalMarkers.Select(point => point.CurrentLocation)),
                             cancellationToken)
                         .ContinueWith(visualizePath, cancellationToken)
                         .Wait(2 * TimeOutInMillseconds);
@@ -181,77 +242,7 @@ namespace TriangulatedPolygonAStar.UI
             
             display.Invalidate();
         }
-
-        private void DemoOnLoad(object sender, EventArgs e)
-        {
-            display.Invalidate();
-        }
-
-        private void DisplayOnMouseDown(object sender, MouseEventArgs cursorState)
-        {
-            if (cursorState.Button == MouseButtons.Left)
-            {
-                var points = goals.Concat(new[] {start});
-                currentlyEditedPoint = points.FirstOrDefault(point => IsPointUnderCursor(point, cursorState));
-                if (currentlyEditedPoint == null)
-                {
-                    AddNewGoalPointAndSetToEdit(cursorState);
-                }
-            }
-        }
-
-        private void AddNewGoalPointAndSetToEdit(MouseEventArgs cursorState)
-        {
-            var newGoalPoint = display.GetAbsolutePosition(cursorState.X, cursorState.Y);
-            var newGoal = new GoalPoint(newGoalPoint);
-            goals.Add(newGoal);
-            display.AddDrawable(newGoal);
-            currentlyEditedPoint = newGoal;
-            FindPathToGoal();
-        }
         
-        private void DisplayOnMouseMove(object sender, MouseEventArgs cursorState)
-        {
-            var absolutePosition = GetAbsoluteCoordinateFromMousePosition(cursorState);
-            poseDiplay.SetCurrentPosition(absolutePosition);
-            triangleUnderCursor = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(absolutePosition));
-            if (triangleUnderCursor != null)
-            {
-                metaDisplay.SetSelectedTriangle(drawableTriangles[triangleUnderCursor]);
-            }
-            else
-            {
-                metaDisplay.ClearSelectedTriangle();
-            }
-            display.Invalidate();
-            
-            if (currentlyEditedPoint != null)
-            {
-                currentlyEditedPoint.SetPosition(absolutePosition);
-                FindPathToGoal();
-            }
-        }
-
-        private void DisplayOnMouseUp(object sender, MouseEventArgs cursorState)
-        {
-            if (cursorState.Button == MouseButtons.Right)
-            {
-                var goalToDelete = goals.FirstOrDefault(goal => IsPointUnderCursor(goal, cursorState));
-                if (goalToDelete != null)
-                {
-                    goals.Remove(goalToDelete);
-                    display.RemoveDrawable(goalToDelete);
-                    FindPathToGoal();
-                }
-            }
-            currentlyEditedPoint = null;
-        }
-
-        private IVector GetAbsoluteCoordinateFromMousePosition(MouseEventArgs cursorState)
-        {
-            return display.GetAbsolutePosition(cursorState.X, cursorState.Y);
-        }
-
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)
         {
             var trianglesToDraw = new Dictionary<ITriangle, DrawableTriangle>();
@@ -262,6 +253,5 @@ namespace TriangulatedPolygonAStar.UI
             }
             return trianglesToDraw;
         }
-
     }
 }

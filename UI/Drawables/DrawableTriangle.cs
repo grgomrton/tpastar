@@ -23,20 +23,16 @@ using TriangulatedPolygonAStar.BasicGeometry;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// The visual representation of a <see cref="Triangle"/>.
+    /// The visual representation of a triangle.
     /// </summary>
     public class DrawableTriangle : IDrawable
     {
-        private static Color FillColor = Color.White;
-        private static Color TraversionShade = Color.FromArgb(30, 30, 30);
-        private static Color EdgeColor = Color.Gray;
-        private static float EdgeWidth = 0.1f;
-        private static Pen EdgePen = new Pen(EdgeColor, EdgeWidth);
-
-        private readonly string displayName;
+        private static readonly Color FillColor;
+        private static readonly Color TraversionShade;
+        private static readonly Pen EdgePen;
         private readonly PointF[] corners;
-        private List<TriangleEvaluationResult> traversions;
-        
+        private readonly List<TriangleEvaluationResult> traversions;
+
         /// <summary>
         /// Initializes a new instance of <see cref="DrawableTriangle"/> which draws
         /// a <see cref="Triangle"/> to the canvas.
@@ -44,13 +40,36 @@ namespace TriangulatedPolygonAStar.UI
         /// <param name="triangle">The triangle to draw</param>
         public DrawableTriangle(Triangle triangle)
         {
-            displayName = "t" + triangle.Id;
             corners = triangle.ToPointFs().ToArray();
+            DisplayName = "t" + triangle.Id;
             BoundingBoxLow = new PointF(corners.Select(vertex => vertex.X).Min(), corners.Select(vertex => vertex.Y).Min());
             BoundingBoxHigh = new PointF(corners.Select(vertex => vertex.X).Max(), corners.Select(vertex => vertex.Y).Max());
             traversions = new List<TriangleEvaluationResult>();
         }
 
+        /// <summary>
+        /// The user friendly name of the triangle.
+        /// </summary>
+        public string DisplayName { get; private set; }
+        
+        /// <summary>
+        /// The set of meta information about explorations of this triangle 
+        /// since the metadata was cleared.
+        /// </summary>
+        public IEnumerable<TriangleEvaluationResult> Traversions
+        {
+            get
+            {
+                return traversions;
+            }
+        }
+        
+        /// <inheritdoc />
+        public PointF BoundingBoxHigh { get; private set; }
+
+        /// <inheritdoc />
+        public PointF BoundingBoxLow { get; private set; }
+        
         /// <summary>
         /// Increases the amount of time this triangle have been stepped into during
         /// exploring the triangle graph.
@@ -76,23 +95,6 @@ namespace TriangulatedPolygonAStar.UI
             canvas.FillPolygon(fillBrush, corners);
             canvas.DrawPolygon(EdgePen, corners);
         }
-
-        /// <inheritdoc />
-        public PointF BoundingBoxHigh { get; }
-
-        /// <inheritdoc />
-        public PointF BoundingBoxLow { get; }
-
-        /// <summary>
-        /// The user friendly name of the triangle which constains its' id.
-        /// </summary>
-        public string DisplayName { get { return displayName; } }
-
-        /// <summary>
-        /// The set of meta information about explorations of this triangle 
-        /// since the metadata was cleared.
-        /// </summary>
-        public IEnumerable<TriangleEvaluationResult> Traversions { get { return traversions; } }
         
         private static Color GetShade(int traversionCount)
         {
@@ -100,6 +102,14 @@ namespace TriangulatedPolygonAStar.UI
             var g = Convert.ToInt32(Math.Max(FillColor.G - traversionCount * TraversionShade.G, 0));
             var b = Convert.ToInt32(Math.Max(FillColor.B - traversionCount * TraversionShade.B, 0));
             return Color.FromArgb(r, g, b);
+        }
+        
+        static DrawableTriangle()
+        {
+            FillColor = Color.White;
+            TraversionShade = Color.FromArgb(30, 30, 30);
+            var edgeWidth = 0.1f;
+            EdgePen = new Pen(Color.Gray, edgeWidth);
         }
     }
 }

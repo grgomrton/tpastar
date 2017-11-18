@@ -50,13 +50,13 @@
     <Compile Include="Canvas\IOverlay.cs" />
     <Compile Include="Drawables\DrawableTriangle.cs" />
     <Compile Include="Drawables\GeometryExtensions.cs" />
-    <Compile Include="Drawables\GoalPoint.cs" />
+    <Compile Include="Drawables\GoalMarker.cs" />
+    <Compile Include="Drawables\ILocationMarker.cs" />
     <Compile Include="Drawables\Legend.cs" />
     <Compile Include="Drawables\MetaDisplay.cs" />
-    <Compile Include="Drawables\Point.cs" />
     <Compile Include="Drawables\PolyLine.cs" />
     <Compile Include="Drawables\PoseDisplay.cs" />
-    <Compile Include="Drawables\StartPoint.cs" />
+    <Compile Include="Drawables\StartMarker.cs" />
     <Compile Include="Drawables\Title.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

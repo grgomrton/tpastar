@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TriangulatedPolygonAStar.UI
@@ -8,41 +9,35 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class Legend : IOverlay
     {
-        private static int WidthInPx = 300;
-        private static int HeightInPx = 130;
-        private static int PaddingLeftRightInPx = 16;
-        private static int PaddingTopBottomInPx = 10;
-        private static int IconBoxWidthHeight = 20;
-        private static int EdgeWidthInPx = 1;
-        private static Pen EdgePen = new Pen(Color.DarkGray, EdgeWidthInPx);
-        private static Brush FillBrush = new SolidBrush(Color.White);
-        
-        private static int TitleFontSizeInPx = 14;
-        private static int CaptionFontSizeInPx = 11;
-        private static Brush CaptionBrush = new SolidBrush(Color.Black);
-        private static Font TitleFont = new Font(FontFamily.GenericSansSerif, TitleFontSizeInPx, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Pixel);
-        private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, CaptionFontSizeInPx, FontStyle.Italic, GraphicsUnit.Pixel);
-        
-        private static string LegendTitle = "Legend";
-        private static string InstructionsTitle = "Interactions";
-        private static string StartCaption = "Start";
-        private static string GoalCaption = "Goal";
-        private static string PathCaption = "Path";
-        private static string[] Instructions = { "Left-click: Add","Right-click: Remove","Left-down + Move: Relocate", "Space: Show / Hide metadata" };
-
-        private static Brush GoalBrush = new SolidBrush(Color.Green);
-        private static Brush StartBrush = new SolidBrush(Color.Blue);
-        private static Pen PathPen = new Pen(Color.Green);
-        private static int InstructionsAlignmentFromLeftInPx = 100;
-        
-        private Rectangle container;
-        private Rectangle legendTitleBox;
-        private Rectangle startIconBox;
-        private Rectangle goalIconBox;
-        private Rectangle pathIconBox;
-        private Rectangle instructionTitleBox;
-        private Rectangle firstInstructionBox;
-        private StringFormat captionStringFormat;
+        private static readonly int WidthInPx;
+        private static readonly int HeightInPx;
+        private static readonly int PaddingLeftRightInPx;
+        private static readonly int PaddingTopBottomInPx;
+        private static readonly int IconBoxWidthHeight;
+        private static readonly Pen EdgePen;
+        private static readonly Brush FillBrush;
+        private static readonly Brush CaptionBrush;
+        private static readonly Font TitleFont;
+        private static readonly Font CaptionFont;
+        private static readonly int TitleFontSizeInPx;
+        private static readonly string LegendTitle;
+        private static readonly string InstructionsTitle;
+        private static readonly string StartCaption;
+        private static readonly string GoalCaption;
+        private static readonly string PathCaption;
+        private static readonly IEnumerable<string> Instructions;
+        private static readonly Brush GoalBrush;
+        private static readonly Brush StartBrush;
+        private static readonly Pen PathPen;
+        private static readonly int InstructionsAlignmentFromLeftInPx;
+        private readonly Rectangle container;
+        private readonly Rectangle legendTitleBox;
+        private readonly Rectangle startIconBox;
+        private readonly Rectangle goalIconBox;
+        private readonly Rectangle pathIconBox;
+        private readonly Rectangle instructionTitleBox;
+        private readonly Rectangle firstInstructionBox;
+        private readonly StringFormat captionStringFormat;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Legend"/> class which
@@ -93,7 +88,7 @@ namespace TriangulatedPolygonAStar.UI
                 instructionBox = new Rectangle(instructionBox.Left, instructionBox.Top + instructionBox.Height, instructionBox.Width, instructionBox.Height);
             }
         }
-
+        
         private static void DrawPointIcon(Brush brush, Rectangle iconBox, Graphics canvas)
         {
             var centerPoint = new PointF(iconBox.Left + iconBox.Width * 0.5f, iconBox.Top + iconBox.Height * 0.5f);
@@ -113,6 +108,35 @@ namespace TriangulatedPolygonAStar.UI
             var captionBox = new Rectangle(iconBox.Right, iconBox.Top, WidthInPx, IconBoxWidthHeight);
             canvas.DrawString(caption, CaptionFont, CaptionBrush, captionBox, stringFormat);
         }
+        
+        static Legend()
+        {
+            WidthInPx = 300;
+            HeightInPx = 130;
+            PaddingLeftRightInPx = 16;
+            PaddingTopBottomInPx = 10;
+            IconBoxWidthHeight = 20;
+            var edgeWidthInPx = 1;
+            EdgePen = new Pen(Color.DarkGray, edgeWidthInPx);
+        
+            FillBrush = new SolidBrush(Color.White);
+            CaptionBrush = new SolidBrush(Color.Black);
+            TitleFontSizeInPx = 14;
+            TitleFont = new Font(FontFamily.GenericSansSerif, TitleFontSizeInPx, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Pixel);
+            var captionFontSizeInPx = 11;
+            CaptionFont = new Font(FontFamily.GenericSansSerif, captionFontSizeInPx, FontStyle.Italic, GraphicsUnit.Pixel);
+        
+            LegendTitle = "Legend";
+            InstructionsTitle = "Interactions";
+            StartCaption = "Start";
+            GoalCaption = "Goal";
+            PathCaption = "Path";
+            Instructions = new[] {"Left-click: Add","Right-click: Remove","Left-down + Move: Relocate", "Space: Show / Hide metadata"};
 
+            GoalBrush = Brushes.Green;
+            StartBrush = Brushes.Blue;
+            PathPen = Pens.Green;
+            InstructionsAlignmentFromLeftInPx = 100;
+        }
     }
 }

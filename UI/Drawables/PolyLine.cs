@@ -26,16 +26,11 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class PolyLine : IDrawable
     {
-        private static Color LineColor = Color.Green;
-        private static float LineWidth = 0.04f;
-        private static Pen LinePen = new Pen(LineColor, LineWidth);
-        private static Color TextColor = Color.Black;
-        private static float FontSize = 0.12f;
-        private static string CaptionFormat = "{0:0.00}";
-        private static Brush CaptionBrush = new SolidBrush(TextColor);
-        private static Font CaptionFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Bold);
-        private static SizeF CaptionTranslation = new SizeF(-2 * FontSize, -3 * FontSize);
-
+        private static readonly Pen LinePen;
+        private static readonly Brush CaptionBrush;
+        private static readonly Font CaptionFont;
+        private static readonly SizeF CaptionTranslation;
+        private static readonly string CaptionFormat;
         private IEnumerable<PointF> vertices;
 
         /// <summary>
@@ -66,22 +61,36 @@ namespace TriangulatedPolygonAStar.UI
                 throw new ArgumentOutOfRangeException("Empty sets are not allowed", nameof(vertices));
             }
             this.vertices = vertices.Select(point => point.ToPointF());
-            BoundingBoxLow = new PointF(this.vertices.Select(vertex => vertex.X).Min(), this.vertices.Select(vertex => vertex.Y).Min());
-            BoundingBoxHigh = new PointF(this.vertices.Select(vertex => vertex.X).Max(), this.vertices.Select(vertex => vertex.Y).Max());
+            BoundingBoxLow = new PointF(this.vertices.Select(vertex => vertex.X).Min(),
+                this.vertices.Select(vertex => vertex.Y).Min());
+            BoundingBoxHigh = new PointF(this.vertices.Select(vertex => vertex.X).Max(),
+                this.vertices.Select(vertex => vertex.Y).Max());
         }
-        
+
         /// <inheritdoc />
         public void Draw(Graphics canvas)
         {
             var length = 0.0;
             if (vertices.Count() > 1)
             {
-                length = this.vertices.Zip(this.vertices.Skip(1), (v1, v2) => Math.Sqrt(Math.Pow(v2.X - v1.X, 2) + Math.Pow(v2.Y - v1.Y, 2))).Sum();
-                canvas.DrawLines(LinePen, vertices.ToArray());     
+                length = this.vertices.Zip(this.vertices.Skip(1),
+                    (v1, v2) => Math.Sqrt(Math.Pow(v2.X - v1.X, 2) + Math.Pow(v2.Y - v1.Y, 2))).Sum();
+                canvas.DrawLines(LinePen, vertices.ToArray());
             }
-            
+
             var captionPosition = vertices.Last() + CaptionTranslation;
             canvas.DrawString(String.Format(CaptionFormat, length), CaptionFont, CaptionBrush, captionPosition);
+        }
+
+        static PolyLine()
+        {
+            var width = 0.04f;
+            LinePen = new Pen(Color.Green, width);
+            CaptionBrush = Brushes.Black;
+            var fontSize = 0.12f;
+            CaptionFont = new Font(FontFamily.GenericSansSerif, fontSize, FontStyle.Bold);
+            CaptionTranslation = new SizeF(-2 * fontSize, -3 * fontSize);
+            CaptionFormat = "{0:0.00}";
         }
     }
 }

@@ -14,7 +14,7 @@ namespace TriangulatedPolygonAStar.UI
     {
         private static readonly Font CaptionFont;
         private static readonly Brush CaptionBrush;
-        private System.Drawing.Point offset;
+        private readonly Point offset;
         private IVector currentPosition;
 
         /// <summary>
@@ -26,14 +26,7 @@ namespace TriangulatedPolygonAStar.UI
         public PoseDisplay(int distanceFromLeftInPx, int distanceFromBottomInPx)
         {
             SetCurrentPosition(new Vector(0.0, 0.0));
-            offset = new System.Drawing.Point(distanceFromLeftInPx, -distanceFromBottomInPx);
-        }
-
-        static PoseDisplay()
-        {
-            int captionFontSizeInPx = 11;
-            CaptionFont = new Font(FontFamily.GenericMonospace, captionFontSizeInPx, GraphicsUnit.Pixel);
-            CaptionBrush = Brushes.Black;
+            offset = new Point(distanceFromLeftInPx, -distanceFromBottomInPx);
         }
         
         /// <summary>
@@ -52,6 +45,13 @@ namespace TriangulatedPolygonAStar.UI
             var caption = String.Format("{0:0.00}, {1:0.00}", currentPosition.X, currentPosition.Y);
             var captionSize = canvas.MeasureString(caption, CaptionFont);
             canvas.DrawString(caption, CaptionFont, CaptionBrush, offset.X, canvasSize.Bottom - captionSize.Height + offset.Y);
+        }
+        
+        static PoseDisplay()
+        {
+            var captionFontSizeInPx = 11;
+            CaptionFont = new Font(FontFamily.GenericMonospace, captionFontSizeInPx, GraphicsUnit.Pixel);
+            CaptionBrush = Brushes.Black;
         }
     }
 }

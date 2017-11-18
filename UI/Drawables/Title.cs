@@ -7,10 +7,10 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public class Title : IOverlay
     {
-        private static readonly string Text = "tpastar";
+        private static readonly string Text;
         private static readonly Brush TitleBrush;
         private static readonly Font TitleFont;
-        private readonly System.Drawing.Point offset;
+        private readonly Point offset;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="Title"/> class, which displays
@@ -20,20 +20,21 @@ namespace TriangulatedPolygonAStar.UI
         /// <param name="distanceFromTopInPx">The distance from the top edge of the canvas</param>
         public Title(int distanceFromLeftInPx, int distanceFromTopInPx)
         {
-                offset = new System.Drawing.Point(distanceFromLeftInPx, distanceFromTopInPx);
-        }
-
-        static Title()
-        {
-            var titleSizeInPx = 50;
-            TitleBrush = Brushes.Black;
-            TitleFont = new Font(FontFamily.GenericSansSerif, titleSizeInPx, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Pixel);
+            offset = new Point(distanceFromLeftInPx, distanceFromTopInPx);
         }
 
         /// <inheritdoc />
         public void Draw(Graphics canvas)
         {
             canvas.DrawString(Text, TitleFont, TitleBrush, offset.X, offset.Y);
+        }
+        
+        static Title()
+        {
+            Text = "tpastar";
+            var titleSizeInPx = 50;
+            TitleBrush = Brushes.Black;
+            TitleFont = new Font(FontFamily.GenericSansSerif, titleSizeInPx, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Pixel);
         }
     }
 }
