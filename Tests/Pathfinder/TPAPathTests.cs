@@ -213,6 +213,125 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
+        public void DuringEstimatingShortestPathRightSideOfFunnelShouldBeTraversedIfClosestPointIsNotVisibleFromApex()
+        {
+            var origin = new Vector(0.0, 0.0);
+            var a = new Vector(1.0, 2.0);
+            var b = new Vector(1.0, 3.0);
+            var t1 = new Triangle(origin, a, b, 1);
+            var c = new Vector(2.0, 2.5);
+            var t2 = new Triangle(a, b, c, 2);
+            var d = new Vector(3.0, 9.0);
+            var t3 = new Triangle(b, c, d, 3);
+            var e = new Vector(3.0, 0.0);
+            var t4 = new Triangle(c, e, d, 4);
+            var f = new Vector(4.0, 0.0);
+            var t5 = new Triangle(d, e, f, 5);
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1, t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4);
+            var start = origin;
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+            var squareRootFive = 2.23607;
+            var squareRootOnePointTwentyFive = 1.11803;
+            var onePlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.35410;
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+            var pathToT3 = pathToT2.BuildPartialPathTo(t3, goals);
+            var pathToT4 = pathToT3.BuildPartialPathTo(t4, goals);
+            var pathToT5 = pathToT4.BuildPartialPathTo(t5, goals);
+
+            var edgeBetweenDE = new Edge(d, e);
+            pathToT5.CurrentEdge.Should().Be(edgeBetweenDE);
+            pathToT5.ShortestPathToEdgeLength.Should()
+                .BeApproximately(onePlusSquareRootFivePlusSquareRootOnePointTwentyFive, AssertionPrecision);
+        }
+
+        [Test]
+        public void DuringEstimatingShortestPathLeftSideOfFunnelShouldBeTraversedIfClosestPointIsNotVisibleFromApex()
+        {
+            var origin = new Vector(0.0, 0.0);
+            var a = new Vector(1.0, -2.0);
+            var b = new Vector(1.0, -3.0);
+            var t1 = new Triangle(origin, a, b, 1);
+            var c = new Vector(2.0, -2.5);
+            var t2 = new Triangle(a, b, c, 2);
+            var d = new Vector(3.0, -9.0);
+            var t3 = new Triangle(b, c, d, 3);
+            var e = new Vector(3.0, 0.0);
+            var t4 = new Triangle(c, e, d, 4);
+            var f = new Vector(4.0, 0.0);
+            var t5 = new Triangle(d, e, f, 5);
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1, t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4);
+            var start = origin;
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+            var squareRootFive = 2.23607;
+            var squareRootOnePointTwentyFive = 1.11803;
+            var onePlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.35410;
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+            var pathToT3 = pathToT2.BuildPartialPathTo(t3, goals);
+            var pathToT4 = pathToT3.BuildPartialPathTo(t4, goals);
+            var pathToT5 = pathToT4.BuildPartialPathTo(t5, goals);
+
+            var edgeBetweenDE = new Edge(d, e);
+            pathToT5.CurrentEdge.Should().Be(edgeBetweenDE);
+            pathToT5.ShortestPathToEdgeLength.Should()
+                .BeApproximately(onePlusSquareRootFivePlusSquareRootOnePointTwentyFive, AssertionPrecision);
+        }
+        
+        [Test]
+        public void AfterApexHasBeenMovedPartialPathShouldBeCalculatedIntoTheShortestPathLength()
+        {
+            var origin = new Vector(0.0, 0.0);
+            var a = new Vector(1.0, 2.0);
+            var b = new Vector(1.0, 3.0);
+            var t1 = new Triangle(origin, a, b, 1);
+            var c = new Vector(2.0, 2.5);
+            var t2 = new Triangle(a, b, c, 2);
+            var d = new Vector(3.0, 9.0);
+            var t3 = new Triangle(b, c, d, 3);
+            var e = new Vector(3.0, 1.5);
+            var t4 = new Triangle(c, e, d, 4);
+            var f = new Vector(4.0, 1.5);
+            var t5 = new Triangle(d, e, f, 5);
+            var g = new Vector(3.5, 0.0);
+            var t6 = new Triangle(e, f, g, 6);
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1, t3);
+            t3.SetNeighbours(t2, t4);
+            t4.SetNeighbours(t3, t5);
+            t5.SetNeighbours(t4, t6);
+            t6.SetNeighbours(t5);
+            var start = origin;
+            var goals = Enumerable.Empty<IVector>();
+            var initialPath = new TPAPath(start, t1);
+            var squareRootFive = 2.23607;
+            var squareRootOnePointTwentyFive = 1.11803;
+            var squareRootTwo = 1.41421;
+            var sqaureRootTwoPlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.76832;
+            
+            var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
+            var pathToT3 = pathToT2.BuildPartialPathTo(t3, goals);
+            var pathToT4 = pathToT3.BuildPartialPathTo(t4, goals);
+            var pathToT5 = pathToT4.BuildPartialPathTo(t5, goals);
+            var pathToT6 = pathToT5.BuildPartialPathTo(t6, goals);
+
+            var edgeBetweenEF = new Edge(e, f);
+            pathToT6.CurrentEdge.Should().Be(edgeBetweenEF);
+            pathToT6.ShortestPathToEdgeLength.Should()
+                .BeApproximately(sqaureRootTwoPlusSquareRootFivePlusSquareRootOnePointTwentyFive, AssertionPrecision);
+        }
+        
+        [Test]
         public void PathShouldNotProceedToNotAdjacentTriangle()
         {
             var a = new Vector(0.0,0.0);
@@ -275,6 +394,5 @@ namespace TriangulatedPolygonAStar.Tests
                 .BeApproximately(distanceBetweenCommonEdgeAndStartPlusDistanceBetweenCommonEdgeAndGoal,
                     AssertionPrecision);
         }
-        
     }
 }
