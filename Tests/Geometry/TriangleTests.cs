@@ -125,7 +125,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2a, t2b, t2c, 1);
 
-            Action settingNeighbours = () => t1.SetNeighbours(new[] {t2});
+            Action settingNeighbours = () => t1.SetNeighbours(t2);
 
             settingNeighbours.ShouldThrow<ArgumentException>()
                 .And.Message.Should().Contain("not adjacent");
@@ -161,7 +161,7 @@ namespace TriangulatedPolygonAStar.Tests
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2a, t2b, t2c, 1);
-            t1.SetNeighbours(new[] {t2});
+            t1.SetNeighbours(t2);
             
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -180,7 +180,7 @@ namespace TriangulatedPolygonAStar.Tests
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(2.0, 2.0));
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2c, t2a, t2b, 1);
-            t1.SetNeighbours(new[] {t2});
+            t1.SetNeighbours(t2);
 
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -199,7 +199,7 @@ namespace TriangulatedPolygonAStar.Tests
             var expectedCommonEdge = new Edge(new Vector(2.0, 2.0), new Vector(1.0, 1.0));
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2c, t2a, t2b, 1);
-            t1.SetNeighbours(new[] {t2});
+            t1.SetNeighbours(t2);
 
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -218,7 +218,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2c, t2b, t2a, 1);
             var expectedCommonEdge = new Edge(new Vector(3.0, 1.0), new Vector(1.0, 1.0));
-            t1.SetNeighbours(new[] {t2});
+            t1.SetNeighbours(t2);
             
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -237,7 +237,7 @@ namespace TriangulatedPolygonAStar.Tests
             Triangle t1 = new Triangle(t1a, t1b, t1c, 0);
             Triangle t2 = new Triangle(t2a, t2c, t2b, 1);
             
-            t1.SetNeighbours(new[] {t2});
+            t1.SetNeighbours(t2);
             var neighbours = t1.Neighbours;
 
             neighbours.Count().Should().Be(1);
@@ -260,7 +260,7 @@ namespace TriangulatedPolygonAStar.Tests
             var t4c = new Vector(5.0, 15.0);
             var t4 = new Triangle(t4a, t4b, t4c, 0);
             
-            t3.SetNeighbours(new[] {t2, t4});
+            t3.SetNeighbours(t2, t4);
             var neighbours = t3.Neighbours;
 
             neighbours.Count().Should().Be(2);
@@ -424,8 +424,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -448,8 +448,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdge = t2.GetCommonEdgeWith(t1);
 
@@ -472,8 +472,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdge = t1.GetCommonEdgeWith(t2);
 
@@ -496,8 +496,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdge = t2.GetCommonEdgeWith(t1);
 
@@ -520,8 +520,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -542,8 +542,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -564,8 +564,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -586,8 +586,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -608,8 +608,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -630,8 +630,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var commonEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var commonEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -860,8 +860,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
             
             var sharedEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var sharedEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -884,8 +884,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
             
             var sharedEdgeQueriedFromT1 = t1.GetCommonEdgeWith(t2);
             var sharedEdgeQueriedFromT2 = t2.GetCommonEdgeWith(t1);
@@ -908,8 +908,8 @@ namespace TriangulatedPolygonAStar.Tests
             var f = new Vector(2.0, 0.0);
             var t1 = new Triangle(a, b, c, 0);
             var t2 = new Triangle(d, e, f, 1);
-            t1.SetNeighbours(new[]{ t2 });
-            t2.SetNeighbours(new[]{ t1 });
+            t1.SetNeighbours(t2);
+            t2.SetNeighbours(t1);
 
             var distortedEndpointEqualityCheckResult = c.Equals(d);
             var sharedEdgeFromT1 = t1.GetCommonEdgeWith(t2);
@@ -922,8 +922,8 @@ namespace TriangulatedPolygonAStar.Tests
             distortedEndpointEqualityCheckResult.Should().BeTrue();
             equalityCheckT1ToT2.Should().BeTrue();
             equalityCheckT2ToT1.Should().BeTrue();
-            var endpointsOfSharedEdgeFromT1 = new[]{ sharedEdgeFromT1.A, sharedEdgeFromT1.B };
-            var endpointsOfSharedEdgeFromT2 = new[]{ sharedEdgeFromT2.A, sharedEdgeFromT2.B };
+            var endpointsOfSharedEdgeFromT1 = new[]{sharedEdgeFromT1.A, sharedEdgeFromT1.B };
+            var endpointsOfSharedEdgeFromT2 = new[]{sharedEdgeFromT2.A, sharedEdgeFromT2.B };
             endpointsOfSharedEdgeFromT1.Should().Contain(point => point.Equals(b));
             endpointsOfSharedEdgeFromT1.Should().Contain(point => point.Equals(c));
             endpointsOfSharedEdgeFromT1.Should().Contain(point => point.Equals(d));

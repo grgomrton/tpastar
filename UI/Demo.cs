@@ -1,4 +1,4 @@
-﻿﻿﻿/**
+﻿/**
  * Copyright 2017 Márton Gergó
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ namespace TriangulatedPolygonAStar.UI
         private static readonly double StartY = 3.23;
         private static readonly double GoalX = 6.0;
         private static readonly double GoalY = 1.75;
-        private static readonly int TimeOutInMillseconds = 1000;
+        private static readonly int TimeoutInMillseconds = 1000;
         
         private readonly ILocationMarker startMarker;
         private readonly List<ILocationMarker> goalMarkers;
@@ -44,7 +44,7 @@ namespace TriangulatedPolygonAStar.UI
         private readonly TPAStarPathFinder pathFinder;
         private readonly PoseDisplay poseDiplay;
         private readonly MetaDisplay metaDisplay;
-        private PolyLine path;
+        private readonly PolyLine pathDisplay;
         private ILocationMarker currentlyEditedMarker;
         
         /// <summary>
@@ -63,7 +63,7 @@ namespace TriangulatedPolygonAStar.UI
             drawableTriangles = CreateTrianglesToDraw(triangles);
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;
-            path = null;
+            pathDisplay = new PolyLine();
             
             foreach (var triangle in drawableTriangles.Values)
             {
@@ -74,17 +74,18 @@ namespace TriangulatedPolygonAStar.UI
             {
                 display.AddDrawable(goalPoint);
             }
+            display.AddDrawable(pathDisplay);
             var title = new Title(15, 5);
             display.AddOverlay(title);
             var legend = new Legend(15, 75);
             display.AddOverlay(legend);
-            metaDisplay = new MetaDisplay(startMarker, goalMarkers, 15, 15);
+            metaDisplay = new MetaDisplay(startMarker, goalMarkers, pathDisplay, 15, 15);
             poseDiplay = new PoseDisplay(15, 15);
             display.ScaleToFit();
             
             this.KeyUp += ShowHideMeta;
             display.KeyUp += ShowHideMeta;
-            
+
             FindPathToGoal();
         }
         
@@ -190,57 +191,45 @@ namespace TriangulatedPolygonAStar.UI
             {
                 triangle.ClearMetaData();
             }
-            
             var startTriangle = triangles.FirstOrDefault(triangle => triangle.ContainsPoint(startMarker.CurrentLocation));
             if (startTriangle != null)
             {
-                var cancellationToken = new CancellationTokenSource(TimeOutInMillseconds).Token;  
-                
-                Action<Task<IEnumerable<IVector>>> visualizePath = pathFindingOutcome =>
-                {
-                    if (pathFindingOutcome.IsFaulted)
-                    {
-                        throw pathFindingOutcome.Exception;
-                    }
-                    else
-                    {
-                        if (path != null)
-                        {
-                            path.SetVertices(pathFindingOutcome.Result);
-                        }
-                        else
-                        {
-                            path = new PolyLine(pathFindingOutcome.Result);
-                            display.AddDrawable(path);
-                        }
-                        metaDisplay.SetPath(pathFindingOutcome.Result);
-                    }
-                };
-
+                var cancellationToken = new CancellationTokenSource(TimeoutInMillseconds).Token;  
                 try
                 {
-                    Task<IEnumerable<IVector>>.Factory
-                        .StartNew(() =>
-                                pathFinder.FindPath(startMarker.CurrentLocation, startTriangle,
-                                    goalMarkers.Select(point => point.CurrentLocation)),
-                            cancellationToken)
-                        .ContinueWith(visualizePath, cancellationToken)
-                        .Wait(2 * TimeOutInMillseconds);
+                    Task<LinkedList<IVector>>.Factory
+                        .StartNew(() => PathFindingExecution(pathFinder, startMarker.CurrentLocation, startTriangle, goalMarkers.Select(point => point.CurrentLocation)), cancellationToken)
+                        .ContinueWith(result => AssertPathFindingOutcome(pathDisplay, result), cancellationToken)
+                        .Wait(2 * TimeoutInMillseconds);
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("Finding path failed due to timeout or unexpected configuration. Details: \n\n" + e.ToString());
-                }
-
+                    MessageBox.Show("Pathfinding failed due to the reason below.\n\n" + e);
+                }   
             }
             else
             {
-                display.RemoveDrawable(path);
-                path = null;
-                metaDisplay.ClearPath();
+                pathDisplay.SetVertices(Enumerable.Empty<IVector>());
             }
             
             display.Invalidate();
+        }
+
+        private static LinkedList<IVector> PathFindingExecution(TPAStarPathFinder pathFinder, IVector start, ITriangle startTriangle, IEnumerable<IVector> goals)
+        {
+            return pathFinder.FindPath(start, startTriangle, goals);
+        }
+
+        private static void AssertPathFindingOutcome(PolyLine pathDisplay, Task<LinkedList<IVector>> result)
+        {
+            if (result.IsFaulted)
+            {
+                throw result.Exception.InnerException;
+            }
+            else
+            {
+                pathDisplay.SetVertices(result.Result);
+            }
         }
         
         private static Dictionary<ITriangle, DrawableTriangle> CreateTrianglesToDraw(IEnumerable<Triangle> triangles)

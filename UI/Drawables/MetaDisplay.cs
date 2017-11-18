@@ -15,8 +15,8 @@ namespace TriangulatedPolygonAStar.UI
         private readonly Point offset;
         private readonly IEnumerable<ILocationMarker> goals;
         private readonly ILocationMarker start;
+        private readonly PolyLine path;
         private DrawableTriangle selectedTriangle;
-        private IEnumerable<IVector> path;
         
         /// <summary>
         /// Initializes a new instance of <see cref="MetaDisplay" /> class which 
@@ -24,15 +24,16 @@ namespace TriangulatedPolygonAStar.UI
         /// </summary>
         /// <param name="start">The start point to display</param>
         /// <param name="goals">The set of goal points to display</param>
+        /// <param name="path">The path display</param>
         /// <param name="distanceFromRightInPx">The horizontal offset from the edge of the canvas</param>
         /// <param name="distanceFromBottomInPx">The vertical offset from the edge of the canvas</param>
-        public MetaDisplay(ILocationMarker start, IEnumerable<ILocationMarker> goals, int distanceFromRightInPx, int distanceFromBottomInPx) // TODO add start and maybe path
+        public MetaDisplay(ILocationMarker start, IEnumerable<ILocationMarker> goals, PolyLine path, int distanceFromRightInPx, int distanceFromBottomInPx) // TODO add start and maybe path
         {
             offset = new Point(-distanceFromRightInPx, -distanceFromBottomInPx);
             this.start = start;
             this.goals = goals;
+            this.path = path;
             this.selectedTriangle = null;
-            path = null;
         }
 
         /// <summary>
@@ -50,23 +51,6 @@ namespace TriangulatedPolygonAStar.UI
         public void ClearSelectedTriangle()
         {
             this.selectedTriangle = null;
-        }
-
-        /// <summary>
-        /// Sets the points of the path to display.
-        /// </summary>
-        /// <param name="path">The path to display</param>
-        public void SetPath(IEnumerable<IVector> path)
-        {
-            this.path = path;
-        }
-
-        /// <summary>
-        /// Clears the meta-information about the path.
-        /// </summary>
-        public void ClearPath()
-        {
-            this.path = null;
         }
 
         /// <inheritdoc />
@@ -93,12 +77,9 @@ namespace TriangulatedPolygonAStar.UI
             
             builder.AppendLine();
             builder.AppendLine("path:");
-            if (path != null)
+            foreach (var point in path.Vertices)
             {
-                foreach (var point in path)
-                {
-                    builder.AppendFormat("       {0:0.00}, {1:0.00}", point.X, point.Y).AppendLine();
-                }
+                builder.AppendFormat("       {0:0.00}, {1:0.00}", point.X, point.Y).AppendLine();
             }
             
             builder.AppendLine();

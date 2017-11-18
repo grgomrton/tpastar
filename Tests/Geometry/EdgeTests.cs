@@ -184,7 +184,7 @@ namespace TriangulatedPolygonAStar.Tests
             var t1 = new Triangle(a, b, c, Int32.MaxValue);
             var d = new Vector(1.0, 1.0);
             var t2 = new Triangle(b, c, d, 10);
-            t1.SetNeighbours(new[]{ t2 });
+            t1.SetNeighbours(t2);
 
             var sharedEdge = t1.GetCommonEdgeWith(t2);
             var hashCode = sharedEdge.GetHashCode();
