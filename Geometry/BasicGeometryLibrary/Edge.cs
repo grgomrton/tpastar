@@ -29,11 +29,11 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Edge"/> class by two endpoints. 
-        /// Distorted segments which consist of overlapping points are not supported.
+        /// Distorted edges which consist of overlapping points are not supported.
         /// Edges instantiated without neighbour triangles have identical hashes.
         /// </summary>
-        /// <param name="a">The first endpoint of the edge.</param>
-        /// <param name="b">The second endpoint of the edge.</param>
+        /// <param name="a">The first endpoint of the edge</param>
+        /// <param name="b">The second endpoint of the edge</param>
         public Edge(Vector a, Vector b)
         {
             CheckForNullArgument(a, nameof(a));
@@ -141,7 +141,6 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// Determines whether the specified object represents the same edge as this one.
         /// Two edges are considered to be equal if their endpoints are closer than the value 
         /// specified in <see cref="VectorEqualityCheck.Tolerance"/>.
-        /// In such case the highest distance between the two edges is also lower than the tolerance value.
         /// Please note, that since <see cref="Vector"/> instances are compared with an absolute
         /// tolerance, the <see cref="Equals"/> implementation will not be transitive, meaning
         /// a.equals(b) &amp;&amp; b.equals(c) => a.equals(c) will not necessarily hold.

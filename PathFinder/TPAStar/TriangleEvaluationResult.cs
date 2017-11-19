@@ -21,12 +21,11 @@ namespace TriangulatedPolygonAStar
     /// </summary>
     public class TriangleEvaluationResult
     {
-        
         /// <summary>
         /// Initializes a new instance of the <see cref="TriangleEvaluationResult"/> class
         /// which contains the result of a triangle evaluation during exploring the triangle graph.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The result of the evaluation of this triangle</param>
         public TriangleEvaluationResult(TPAPath path)
         {
             EstimatedMinimalCost = path.MinimalTotalCost;

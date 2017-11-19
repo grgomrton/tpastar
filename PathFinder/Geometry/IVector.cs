@@ -53,14 +53,14 @@ namespace TriangulatedPolygonAStar
         IVector Times(double scalar);
 
         /// <summary>
-        /// Returns the cartesian distance from the specified point.
+        /// Returns the cartesian distance between the specified point and this one.
         /// </summary>
         /// <param name="other">The point to measure the distance from</param>
         /// <returns>The distance between the two points</returns>
         double DistanceFrom(IVector other);
 
         /// <summary>
-        /// Returns whether the current vector is in clockwise direction from <paramref name="other"/>.
+        /// Returns whether the current vector is in clockwise direction from the specified one.
         /// Parallel vectors should pass the clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation from</param>
@@ -68,7 +68,7 @@ namespace TriangulatedPolygonAStar
         bool IsInClockWiseDirectionFrom(IVector other);
 
         /// <summary>
-        /// Returns whether the current vector is in counter-clockwise direction from <paramref name="other"/>.
+        /// Returns whether the current vector is in counter-clockwise direction from the specified one.
         /// Parallel vectors should pass the counter-clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation from</param>

@@ -136,7 +136,6 @@ namespace TriangulatedPolygonAStar
             }
         }
 
-        // from the apex view, the left side is the first element, the last one is on the right side
         private void InitFunnel(IEdge firstEdge)
         {
             if (!firstEdge.PointLiesOnEdge(apex.Value))

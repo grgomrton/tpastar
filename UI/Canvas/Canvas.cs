@@ -76,7 +76,7 @@ namespace TriangulatedPolygonAStar.UI
         /// <summary>
         /// Indicates, whether the specified overlay is currently drawn.
         /// </summary>
-        /// <param name="overlay">The overlay layer to check.</param>
+        /// <param name="overlay">The overlay layer to check</param>
         public bool Draws(IOverlay overlay)
         {
             return overlays.Contains(overlay);

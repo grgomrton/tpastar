@@ -25,10 +25,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         private readonly double y;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="Vector"/> class by its two coordinates.
+        /// Initializes a new instance of <see cref="Vector"/> class by its two components.
         /// </summary>
-        /// <param name="x">The value of the horizontal component of the vector</param>
-        /// <param name="y">The value of the vertical component of the vector</param>
+        /// <param name="x">The horizontal component of the vector</param>
+        /// <param name="y">The vertical component of the vector</param>
         public Vector(double x, double y)
         {
             this.x = x;
@@ -168,10 +168,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         }
 
         /// <summary>
-        /// Returns the magnitude of the vector.
+        /// Returns the distance between the two endpoints of this vector.
         /// </summary>
-        /// <param name="a">The vector to calculate the magnitude of</param>
-        /// <returns>The distance between the two endpoints of this vector</returns>
+        /// <param name="a">The vector to calculate the length of</param>
+        /// <returns>The length of this vector</returns>
         public static double Length(this IVector a)
         {
             return Math.Sqrt(Math.Pow(a.X, 2) + Math.Pow(a.Y, 2));

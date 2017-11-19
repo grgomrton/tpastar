@@ -78,7 +78,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         }
 
         /// <summary>
-        /// The unique identifier of this triangle.
+        /// The identifier of this triangle.
         /// </summary>
         public int Id
         {

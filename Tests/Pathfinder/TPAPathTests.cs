@@ -25,7 +25,7 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class TPAPathTests
     {
-        private static double AssertionPrecision = 0.00001;
+        private static double AssertionPrecision = 0.0001;
         
         [OneTimeSetUp]
         public void BeforeTheseTestCases()

@@ -32,21 +32,21 @@ namespace TriangulatedPolygonAStar
         /// No specific order of the endpoints is expected.
         /// </summary>
         IVector B { get; }
-        
-        /// <summary>
-        /// Returns the cartesian distances between the specified point and the edge.
-        /// </summary>
-        /// <param name="point">The point to measure the distance from.</param>
-        /// <returns>The distance between the closest point of the edge and the specified point</returns>
-        double DistanceFrom(IVector point);
 
         /// <summary>
         /// Returns the closest point on this edge from the specified point.
         /// </summary>
-        /// <param name="point">The point to measure the distance from.</param>
+        /// <param name="point">The point to measure the distance from</param>
         /// <returns>The closest point of the edge to the specified point</returns>
         IVector ClosestPointTo(IVector point);
 
+        /// <summary>
+        /// Returns the cartesian distances between the specified point and the edge.
+        /// </summary>
+        /// <param name="point">The point to measure the distance from</param>
+        /// <returns>The distance between the closest point of the edge and the specified point</returns>
+        double DistanceFrom(IVector point);
+        
         /// <summary>
         /// Indicates, whether the specified point lies on this edge.
         /// </summary>

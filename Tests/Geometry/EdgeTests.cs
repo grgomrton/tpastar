@@ -24,7 +24,7 @@ namespace TriangulatedPolygonAStar.Tests
     [TestFixture]
     public class EdgeTests
     {
-        private static double AssertionPrecision = 0.00001;
+        private static double AssertionPrecision = 0.0001;
         
         [SetUp]
         public void BeforeEachTest()

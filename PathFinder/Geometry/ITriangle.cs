@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using System;
 using System.Collections.Generic;
 
 namespace TriangulatedPolygonAStar
@@ -30,11 +29,10 @@ namespace TriangulatedPolygonAStar
         IEnumerable<ITriangle> Neighbours { get; }
         
         /// <summary>
-        /// Returns the edge shared by this triangle and the specified one.
+        /// Returns the edge shared by this triangle and the specified neighbour triangle.
         /// </summary>
-        /// <param name="other">The adjacent triangle</param>
-        /// <returns>The common edge of the two triangles.</returns>
-        /// <exception cref="ArgumentException">In case the triangles have no common edge</exception>
+        /// <param name="other">The neighbour triangle</param>
+        /// <returns>The common edge of the two triangles</returns>
         IEdge GetCommonEdgeWith(ITriangle other);
         
         /// <summary>
@@ -42,7 +40,7 @@ namespace TriangulatedPolygonAStar
         /// Points that lie on the edges are expected to be determined as contained points.
         /// </summary>
         /// <param name="point">The point to check</param>
-        /// <returns>true if the specified point falls inside the triangle, otherwise false.</returns>
+        /// <returns>true if the specified point falls inside the triangle, otherwise false</returns>
         bool ContainsPoint(IVector point); 
         
         /// <summary>
@@ -50,7 +48,7 @@ namespace TriangulatedPolygonAStar
         /// the same triangle as this one.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
-        /// <returns>true if the specified object is equal to the current triangle, otherwise false.</returns>
+        /// <returns>true if the specified object is equal to the current triangle, otherwise false</returns>
         bool Equals(object other);
     }
 }

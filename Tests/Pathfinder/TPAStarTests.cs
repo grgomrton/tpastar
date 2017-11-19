@@ -25,11 +25,11 @@ using TriangulatedPolygonAStar.BasicGeometry;
 
 namespace TriangulatedPolygonAStar.Tests
 {
-    // in order to have timeout support the assert and act sections are switched
+    // in order to have timeout support the assert and act sections are exchanged
     [TestFixture]
     public class TPAStarTests
     {
-        private static double AssertionPrecision = 0.00001;
+        private static double AssertionPrecision = 0.0001;
         private static int TimeOutInMillseconds = 1000;
         
         [OneTimeSetUp]

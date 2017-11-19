@@ -179,10 +179,9 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// Calculates the minimal length between the current edge and the closest goal point baed on whether
-        /// the paths reached by stepping into this triangle have been built, indicated by the 
-        /// <see cref="ReachedPathsBuilt"/> property. If they have not yet built, those goals are included, 
-        /// otherwise they are excluded from the minimum finding. 
+        /// Updates the estimation of the minimal path length between the current edge and the closest goal point 
+        /// based on whether the paths reached by stepping into this triangle have been built. If they have not yet built, 
+        /// those goals are included, otherwise they are excluded from the minimum finding. 
         /// </summary>
         /// <param name="goals">The goals we execute the pathfinding to</param>
         public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)

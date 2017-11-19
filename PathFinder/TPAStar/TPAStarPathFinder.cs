@@ -39,10 +39,10 @@ namespace TriangulatedPolygonAStar
         }   
         
         /// <summary>
-        /// Method signature for handling <see cref="TriangleExplored"/> events.
+        /// Method signature for handling triangle traversion events.
         /// </summary>
         /// <param name="triangle">The triangle which has been stepped into</param>
-        /// <param name="result">Information about the path which was the result of stepping into this triangle</param>
+        /// <param name="result">Details about the path which was the result of stepping into this triangle</param>
         public delegate void TriangleExploredEventHandler(ITriangle triangle, TriangleEvaluationResult result);
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace TriangulatedPolygonAStar
             
             LinkedList<IVector> bestCandidate = new LinkedList<IVector>();
             bestCandidate.AddFirst(startPoint);
-            double bestCandidateLength = GetLength(bestCandidate);
+            double bestCandidateLength = Double.PositiveInfinity;
             
             TPAPath initialPath = new TPAPath(startPoint, startTriangle);
             AddToOpenSet(initialPath);
@@ -86,7 +86,7 @@ namespace TriangulatedPolygonAStar
                 TPAPath partialPath = openSet.First.Value;
                 openSet.RemoveFirst();
                 
-                if ((bestCandidate.Count > 1) && (partialPath.MinimalTotalCost > bestCandidateLength))    
+                if (partialPath.MinimalTotalCost > bestCandidateLength)    
                 {                            
                     done = true;
                 }
@@ -100,7 +100,7 @@ namespace TriangulatedPolygonAStar
                             {
                                 LinkedList<IVector> newCandidate = partialPath.BuildCompletePathTo(goal);
                                 double newCandidateLength = GetLength(newCandidate);
-                                if ((bestCandidate.Count == 1) || (newCandidateLength < bestCandidateLength))
+                                if (newCandidateLength < bestCandidateLength)
                                 {
                                     bestCandidate = newCandidate;
                                     bestCandidateLength = newCandidateLength;
@@ -116,7 +116,7 @@ namespace TriangulatedPolygonAStar
                     {
                         foreach (ITriangle neighbour in partialPath.CurrentTriangle.Neighbours)
                         {
-                            if (!neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle).Equals(partialPath.CurrentEdge))
+                            if ((partialPath.CurrentEdge == null) || (!partialPath.CurrentEdge.Equals(neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle))))
                             {
                                 TPAPath pathToNeighbour = partialPath.BuildPartialPathTo(neighbour, goals);
                                 if (IsGoodCandidate(pathToNeighbour))
