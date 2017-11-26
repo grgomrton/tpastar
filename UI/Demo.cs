@@ -31,8 +31,8 @@ namespace TriangulatedPolygonAStar.UI
     /// </summary>
     public partial class Demo : Form
     {
-        private static readonly double StartX = 1.3;
-        private static readonly double StartY = 3.23;
+        private static readonly double StartX = 1.0;
+        private static readonly double StartY = 3.25;
         private static readonly double GoalX = 6.0;
         private static readonly double GoalY = 1.75;
         private static readonly int TimeoutInMillseconds = 1000;
@@ -59,7 +59,7 @@ namespace TriangulatedPolygonAStar.UI
             startMarker = new StartMarker(startPosition);
             goalMarkers = new List<ILocationMarker> { new GoalMarker(new Vector(GoalX, GoalY)) };
             currentlyEditedMarker = null;
-            triangles = TriangleMaps.TrianglesOfPolygonWithTwoPolygonHoles;
+            triangles = TriangleMaps.CreateTriangleMapOfPolygonWithTwoPolygonHoles();
             drawableTriangles = CreateTrianglesToDraw(triangles);
             pathFinder = new TPAStarPathFinder();
             pathFinder.TriangleExplored += PathFinderOnTriangleExplored;

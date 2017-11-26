@@ -25,24 +25,6 @@ namespace TriangulatedPolygonAStar.UI.Resources
     /// </summary>
     public static partial class TriangleMaps
     {
-        /// <summary>
-        /// A map of a triangulated polygon with one polygon hole.
-        /// </summary>
-        public static IEnumerable<Triangle> TrianglesOfPolygonWithOnePolygonHole { get; private set; }
-        
-        /// <summary>
-        /// A map of a triangulated polygon with two polygon holes.
-        /// </summary>
-        public static IEnumerable<Triangle> TrianglesOfPolygonWithTwoPolygonHoles { get; private set; }
-        
-        static TriangleMaps()
-        {
-            TrianglesOfPolygonWithOnePolygonHole = GetTrianglesOfPolygonWithOneHole();
-            SetNeighboursForAll(TrianglesOfPolygonWithOnePolygonHole);
-            TrianglesOfPolygonWithTwoPolygonHoles = GetTrianglesOfPolygonWithTwoHoles();
-            SetNeighboursForAll(TrianglesOfPolygonWithTwoPolygonHoles);
-        }
-
         private static void SetNeighboursForAll(IEnumerable<Triangle> triangles)
         {
             foreach (var triangle in triangles)

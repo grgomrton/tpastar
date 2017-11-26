@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System;
 using System.Collections.Generic;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -21,56 +22,63 @@ namespace TriangulatedPolygonAStar.UI.Resources
 {
     public static partial class TriangleMaps
     {
-        private static IEnumerable<Triangle> GetTrianglesOfPolygonWithTwoHoles()
+        /// <summary>
+        /// Builds a map of a triangulated polygon with two polygon holes.
+        /// </summary>
+        public static IEnumerable<Triangle> CreateTriangleMapOfPolygonWithTwoPolygonHoles()
         {
-            var triangleSet = new List<Triangle>();
-            
-            var cr0 = new Vector(2.0, 4.0);
-            var cr1 = new Vector(2.0, 3.0);
-            var cr2 = new Vector(3.0, 2.0);
-            var cr3 = new Vector(5.0, 3.0);
-            var cr4 = new Vector(7.0, 2.0);
-            var cl0 = new Vector(0.0, 4.0);
-            var cl1 = new Vector(0.0, 3.0);
-            var cl2 = new Vector(4.0, 1.5);
-            var cl3 = new Vector(5.0, 2.5);
-            var cl4 = new Vector(6.0, 1.0);
-            var cl5 = new Vector(3.0, 1.0);    
-            var cp0 = new Vector(1.0, 7.0);
-            var cp1 = new Vector(6.0, -0.5);
-            
-            Triangle t0 = new Triangle(cp0, cl0, cr0, 0);
-            triangleSet.Add(t0);
-            Triangle t1 = new Triangle(cl0, cr0, cl1, 1);
-            triangleSet.Add(t1);
-            Triangle t2 = new Triangle(cl1, cr0, cr1, 2);
-            triangleSet.Add(t2);
-            Triangle t3 = new Triangle(cl1, cr1, cl5, 3);
-            triangleSet.Add(t3);
-            Triangle t4 = new Triangle(cr1, cl5, cr2, 4);
-            triangleSet.Add(t4);
-            Triangle t5 = new Triangle(cr2, cl2, cr3, 5);
-            triangleSet.Add(t5);
-            Triangle t6 = new Triangle(cl3, cl2, cr3, 6);
-            triangleSet.Add(t6);
-            Triangle t7 = new Triangle(cl3, cl4, cr3, 7);
-            triangleSet.Add(t7);
-            Triangle t8 = new Triangle(cr4, cl4, cr3, 8);
-            triangleSet.Add(t8);
-            Triangle t9 = new Triangle(cr4, cl4, cp1, 9);
-            triangleSet.Add(t9);
-            Triangle t10 = new Triangle(cr0, cp0, cr3, 10);
-            triangleSet.Add(t10);
-            Triangle t11 = new Triangle(cr4, cp0, cr3, 11);
-            triangleSet.Add(t11);
-            Triangle t12 = new Triangle(cl5, cr2, cl2, 12);
-            triangleSet.Add(t12);
-            Triangle t13 = new Triangle(cl2, cl5, cp1, 13);
-            triangleSet.Add(t13);
-            Triangle t14 = new Triangle(cl4, cl2, cp1, 14);
-            triangleSet.Add(t14);
+            var a = new Vector(2.0, 4.0);
+            var b = new Vector(2.0, 3.0);
+            var c = new Vector(3.0, 2.0);
+            var d = new Vector(5.0, 3.0);
+            var e = new Vector(7.0, 2.0);
+            var f = new Vector(0.0, 4.0);
+            var g = new Vector(0.0, 3.0);
+            var h = new Vector(4.0, 1.5);
+            var i = new Vector(5.0, 2.5);
+            var j = new Vector(6.0, 1.0);
+            var k = new Vector(3.0, 1.0);
+            var l = new Vector(1.0, 7.0);
+            var m = new Vector(2.5, -1.0);
+            var n = new Vector(4.0, 0.0);
+            var o = new Vector(6.5, 0.0);
+            var p = new Vector(5.5, -0.5);
+            var q = new Vector(7.0, -1.0);
+            var r = new Vector(5.5, -1.5);
+            var s = new Vector(7.0, 1.0);
+            var t = new Vector(8.5, 0.0);
+            var u = new Vector(8.0, 2.0);
 
-            return triangleSet;
+            var t0 = new Triangle(l, f, a, 0);
+            var t1 = new Triangle(f, a, g, 1);
+            var t2 = new Triangle(g, a, b, 2);
+            var t3 = new Triangle(g, b, k, 3);
+            var t4 = new Triangle(b, k, c, 4);
+            var t5 = new Triangle(c, h, d, 5);
+            var t6 = new Triangle(i, h, d, 6);
+            var t7 = new Triangle(i, j, d, 7);
+            var t8 = new Triangle(e, j, d, 8);
+            var t9 = new Triangle(a, l, d, 9);
+            var t10 = new Triangle(e, l, d, 10);
+            var t11 = new Triangle(k, c, h, 11);
+            var t12 = new Triangle(h, k, m, 12);
+            var t13 = new Triangle(n, h, m, 13);
+            var t14 = new Triangle(j, e, o, 14);
+            var t15 = new Triangle(p, o, j, 15);
+            var t16 = new Triangle(q, r, p, 16);
+            var t17 = new Triangle(p, q, o, 17);
+            var t18 = new Triangle(r, p, m, 18);
+            var t19 = new Triangle(m, n, p, 19);
+            var t20 = new Triangle(o, q, s, 20);
+            var t21 = new Triangle(t, q, s, 21);
+            var t22 = new Triangle(s, t, u, 22);
+            var triangles = new[]
+            {
+                t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22
+            };
+            SetNeighboursForAll(triangles);
+
+            return triangles;
         }
     }
 }
