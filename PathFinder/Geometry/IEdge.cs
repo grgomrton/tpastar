@@ -37,7 +37,7 @@ namespace TriangulatedPolygonAStar
         /// Returns the closest point on this edge from the specified point.
         /// </summary>
         /// <param name="point">The point to measure the distance from</param>
-        /// <returns>The closest point of the edge to the specified point</returns>
+        /// <returns>The closest point on the edge to the specified point</returns>
         IVector ClosestPointTo(IVector point);
 
         /// <summary>

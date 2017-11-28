@@ -20,8 +20,8 @@ using System.Collections.Generic;
 namespace TriangulatedPolygonAStar
 {
     /// <summary>
-    /// A path finder which is able to determine the euclidean shortest path between one start and multiple goal points
-    /// in a triangulated polygon with holes.
+    /// A pathfinder which is able to determine the euclidean shortest path between one start and multiple goal points
+    /// in a triangulated polygon with polygon holes.
     /// </summary>
     public class TPAStarPathFinder
     {
@@ -30,7 +30,7 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// Initializes a new instance of a <see cref="TPAStarPathFinder"/> class which can be used to find
-        /// shortest paths in a trianglulated polygon with holes.
+        /// shortest paths in a trianglulated polygon with polygon holes.
         /// </summary>
         public TPAStarPathFinder()
         {
@@ -42,7 +42,7 @@ namespace TriangulatedPolygonAStar
         /// Method signature for handling triangle traversion events.
         /// </summary>
         /// <param name="triangle">The triangle which has been stepped into</param>
-        /// <param name="result">Details about the path which was the result of stepping into this triangle</param>
+        /// <param name="result">Details about the resulting path after stepping into this triangle</param>
         public delegate void TriangleExploredEventHandler(ITriangle triangle, TriangleEvaluationResult result);
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace TriangulatedPolygonAStar
         /// </summary>
         /// <param name="startPoint">The point to originate the pathfinding from</param>
         /// <param name="startTriangle">The triangle which contains the start point</param>
-        /// <param name="goals">The possible goal points</param>
-        /// <returns>The list of points that define the euclidean shortest path between the start and goal point which can be reached on the minimal path</returns>
+        /// <param name="goals">The goal points of the pathfinding</param>
+        /// <returns>The list of points that define the path between the start and goal point that can be reached with the shortest path</returns>
         public LinkedList<IVector> FindPath(IVector startPoint, ITriangle startTriangle, IEnumerable<IVector> goals)
         {
             CheckForNullArgument(startPoint, nameof(startPoint));

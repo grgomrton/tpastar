@@ -40,6 +40,7 @@
     <Compile Include="BasicGeometryLibrary\Triangle.cs" />
     <Compile Include="BasicGeometryLibrary\Vector.cs" />
     <Compile Include="BasicGeometryLibrary\VectorEqualityCheck.cs" />
+    <Compile Include="BasicGeometryLibrary\VectorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

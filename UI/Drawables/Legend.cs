@@ -43,8 +43,8 @@ namespace TriangulatedPolygonAStar.UI
         /// Instantiates a new instance of <see cref="Legend"/> class which
         /// displays the meaning of signs and instructions. 
         /// </summary>
-        /// <param name="topCoordinateOnCanvas">The vertical coordinate of the on the canvas</param>
-        /// <param name="leftCoordinateOnCanvas">The horizontal coordinate of the on the canvas</param>
+        /// <param name="topCoordinateOnCanvas">The vertical coordinate of the legend on the canvas</param>
+        /// <param name="leftCoordinateOnCanvas">The horizontal coordinate of the legend on the canvas</param>
         public Legend(int topCoordinateOnCanvas, int leftCoordinateOnCanvas)
         {
             container = new Rectangle(topCoordinateOnCanvas, leftCoordinateOnCanvas, WidthInPx, HeightInPx);

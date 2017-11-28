@@ -64,7 +64,7 @@ namespace TriangulatedPolygonAStar
         /// Parallel vectors should pass the clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation from</param>
-        /// <returns>Result of the clockwise test</returns>
+        /// <returns>The result of the clockwise test</returns>
         bool IsInClockWiseDirectionFrom(IVector other);
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace TriangulatedPolygonAStar
         /// Parallel vectors should pass the counter-clockwise test.
         /// </summary>
         /// <param name="other">The vector to determine the orientation from</param>
-        /// <returns>Result of the counter-clockwise test</returns>
+        /// <returns>The result of the counter-clockwise test</returns>
         bool IsInCounterClockWiseDirectionFrom(IVector other);
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace TriangulatedPolygonAStar
         /// the same point as this one.
         /// </summary>
         /// <param name="other">The other object to compare with</param>
-        /// <returns>true if the specified object is equal to the current object, otherwise false</returns>
+        /// <returns>true if the specified object is equal to the current vector, otherwise false</returns>
         bool Equals(object other);
     }
 }

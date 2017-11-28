@@ -26,8 +26,8 @@ using TriangulatedPolygonAStar.UI.Resources;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// The graphical user interface which can be used to set-up and perform 
-    /// pathfinding operations.
+    /// The user interface which can be used to set-up and execute 
+    /// pathfindings.
     /// </summary>
     public partial class Demo : Form
     {
@@ -49,7 +49,7 @@ namespace TriangulatedPolygonAStar.UI
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Demo"/> class which can be 
-        /// used to set-up and perform pathfinding operations.
+        /// used to set-up and execute pathfindings.
         /// </summary>
         public Demo()
         {

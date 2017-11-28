@@ -128,9 +128,10 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         }
 
         /// <summary>
-        /// Converts this vector to a textual representation with the coordinates rounded by two digits. 
+        /// Creates a textual representation of this vector with its components rounded to hundredths.
+        /// The first value is the <see cref="X"/>, the second value is the <see cref="Y"/> component.
         /// </summary>
-        /// <returns>The coordinates of this vector as text</returns>
+        /// <returns>The rounded components of this vector as text</returns>
         public override string ToString()
         {
             return String.Format("({0:0.00}, {1:0.00})", X, Y);
@@ -147,34 +148,6 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             {
                 throw new ArgumentNullException(parameterName);
             }
-        }
-    }
-
-    /// <summary>
-    /// Extension methods for <see cref="IVector"/> instances. 
-    /// </summary>
-    public static class VectorExtensions
-    {
-        /// <summary>
-        /// Returns the dot product of this vector with the specified one.
-        /// </summary>
-        /// <param name="a">The vector on the left side of the operation</param>
-        /// <param name="b">The vector on the right side of the operation</param>
-        /// <returns></returns>
-        public static double DotProduct(this IVector a, IVector b)
-        {
-            return a.X * b.X +
-                   a.Y * b.Y;
-        }
-
-        /// <summary>
-        /// Returns the distance between the two endpoints of this vector.
-        /// </summary>
-        /// <param name="a">The vector to calculate the length of</param>
-        /// <returns>The length of this vector</returns>
-        public static double Length(this IVector a)
-        {
-            return Math.Sqrt(Math.Pow(a.X, 2) + Math.Pow(a.Y, 2));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace TriangulatedPolygonAStar.UI
         /// Initializes a new instance of the <see cref="PolyLine"/> class
         /// which draws a line defined by line segments on a canvas.
         /// </summary>
-        /// <param name="vertices">The set of positions which define the line</param>
+        /// <param name="vertices">The set of vertices that define the line</param>
         public PolyLine(IEnumerable<IVector> vertices)
         {
             SetVertices(vertices);
@@ -65,7 +65,7 @@ namespace TriangulatedPolygonAStar.UI
         /// <summary>
         /// Sets the set of points which define the line.
         /// Both one-element and empty sets are allowed.
-        /// In case of an empty set, the bounding boxes will not be updated and nothing will be drawn.
+        /// In case of an empty set, the bounding boxes will remain unchanged and nothing will be drawn.
         /// </summary>
         /// <param name="vertices">The set of points of the line</param>
         public void SetVertices(IEnumerable<IVector> vertices)

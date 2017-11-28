@@ -81,7 +81,7 @@ namespace TriangulatedPolygonAStar
 
         /// <summary>
         /// The edge where we entered the current triangle. 
-        /// Until we step to the first neighbour triangle from the start triangle, this value is null.
+        /// Until we step to the first neighbour triangle from the start triangle, this value is <code>null</code>.
         /// </summary>
         public IEdge CurrentEdge
         {
@@ -90,7 +90,7 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// The length of the possibly shortest path from the start point to the current edge along the set of triangles
-        /// which have been stepped over.
+        /// that have been stepped over.
         /// </summary>
         public double ShortestPathToEdgeLength
         {
@@ -99,7 +99,7 @@ namespace TriangulatedPolygonAStar
 
         /// <summary>
         /// The length of the longest possible path from the start point to the current edge along the set of triangles
-        /// which have been stepped over.
+        /// that have been stepped over.
         /// </summary>
         public double LongestPathToEdgeLength
         {
@@ -108,11 +108,7 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// The length of the possibly shortest path from the start point to the closest goal point along the set of 
-        /// triangles which have been stepped over.
-        /// Before the final paths have been at a specific state of an exploration, the goals that fall in the current 
-        /// triangle are taken into account by calculating the minimal total cost. 
-        /// Once the final paths have been built only goals that fall outside the current triangle are included in 
-        /// this value.
+        /// triangles that have been stepped over.
         /// </summary>
         public double MinimalTotalCost
         {
@@ -129,12 +125,12 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Returns a new path which is built by proceeding into the specified neighbour triangle from the triangle this 
-        /// path currently stands on. The resulting path has a <see cref="ReachedPathsBuilt"/>
-        /// value of false, and every cost function is updated accordingly.
+        /// Returns a new path which is built by proceeding to the specified neighbour triangle from the current one. 
+        /// The resulting path has a <see cref="ReachedPathsBuilt"/> value of false, 
+        /// and every cost function is updated accordingly.
         /// </summary>
         /// <param name="neighbour">The neighbour triangle to step into</param>
-        /// <param name="goals">The goals we execute the pathfinding to</param>
+        /// <param name="goals">The goal points of the pathfinding</param>
         /// <returns>The partial path which leads to the neighbour triangle</returns>
         public TPAPath BuildPartialPathTo(ITriangle neighbour, IEnumerable<IVector> goals)
         {
@@ -180,10 +176,10 @@ namespace TriangulatedPolygonAStar
         
         /// <summary>
         /// Updates the estimation of the minimal path length between the current edge and the closest goal point 
-        /// based on whether the paths reached by stepping into this triangle have been built. If they have not yet built, 
-        /// those goals are included, otherwise they are excluded from the minimum finding. 
+        /// based on whether the paths reached by stepping into this triangle have been built. 
+        /// If they are not built yet, those goals are included, otherwise they are excluded from the minimum finding. 
         /// </summary>
-        /// <param name="goals">The goals we execute the pathfinding to</param>
+        /// <param name="goals">The goal points of the pathfinding</param>
         public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
         {
             bool shouldIncludeGoalsInCurrentTriangle = !ReachedPathsBuilt ? true : false;
@@ -221,7 +217,7 @@ namespace TriangulatedPolygonAStar
         {
             double length = 0.0;
 
-            if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minpath to the edge
+            if ((apex.Next != null) && (apex.Previous != null)) // otherwise the apex lies on the edge, the path is already the minimal path to the edge
             {
                 IVector closestPointOfEdgeToApex = edge.ClosestPointTo(apex.Value);
                 IVector apexPoint = apex.Value;

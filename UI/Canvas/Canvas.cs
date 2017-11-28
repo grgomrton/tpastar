@@ -25,7 +25,7 @@ using TriangulatedPolygonAStar.BasicGeometry;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// A canvas user control that can be used for displaying multiple <see cref="IDrawable"/> instances.
+    /// A canvas user control that can be used for displaying multiple drawable instances.
     /// </summary>
     public partial class Canvas : UserControl
     {
@@ -51,8 +51,8 @@ namespace TriangulatedPolygonAStar.UI
         }
 
         /// <summary>
-        /// Adds a drawable object to the list of objects to draw if it is not already in the list.
-        /// Every drawable should use identical coordinate system for drawing.
+        /// Adds a drawable object to the list of drawables if it is not already contained.
+        /// Every drawable on the canvas should use identical coordinate systems for drawing.
         /// </summary>
         /// <param name="drawable">The drawable to add</param>
         public void AddDrawable(IDrawable drawable)
@@ -67,16 +67,16 @@ namespace TriangulatedPolygonAStar.UI
         /// <summary>
         /// Indicates, whether the specified drawable is currently drawn.
         /// </summary>
-        /// <param name="drawable">To drawable to check</param>
+        /// <param name="drawable">The drawable to check</param>
         public bool Draws(IDrawable drawable)
         {
             return drawables.Contains(drawable);
         }
         
         /// <summary>
-        /// Indicates, whether the specified overlay is currently drawn.
+        /// Indicates, whether the specified overlay layer is currently drawn.
         /// </summary>
-        /// <param name="overlay">The overlay layer to check</param>
+        /// <param name="overlay">The overlay to check</param>
         public bool Draws(IOverlay overlay)
         {
             return overlays.Contains(overlay);
@@ -96,7 +96,7 @@ namespace TriangulatedPolygonAStar.UI
         }
         
         /// <summary>
-        /// Removes every drawable objects.
+        /// Removes every drawables.
         /// </summary>
         public void ClearDrawables()
         {
@@ -132,7 +132,7 @@ namespace TriangulatedPolygonAStar.UI
 
         /// <summary>
         /// Aligns the translation and magnification settings in a way
-        /// that every drawable fit the canvas.
+        /// that every drawable fits the canvas.
         /// </summary>
         public void ScaleToFit()
         {
@@ -141,11 +141,11 @@ namespace TriangulatedPolygonAStar.UI
         }
         
         /// <summary>
-        /// Gets the absolute position of the specified coordinates on this canvas.
+        /// Gets the absolute position of the specified point of this canvas.
         /// </summary>
-        /// <param name="x">The x coordinate on the canvas</param>
-        /// <param name="y">The y coordinate on the canvas</param>
-        /// <returns>The point that represent the specified canvas point in absolute coordinate system</returns>
+        /// <param name="x">The horizontal coordinate on the canvas</param>
+        /// <param name="y">The vertical coordinate on the canvas</param>
+        /// <returns>The point under the specified canvas point in the coordinate system of the drawables</returns>
         public IVector GetAbsolutePosition(int x, int y)
         {
             return new Vector(x / magnification - translationXBeforeScaling, y / magnification - translationYBeforeScaling);
@@ -219,6 +219,5 @@ namespace TriangulatedPolygonAStar.UI
             AutoScale();
             Invalidate();
         }
-
     }
 }

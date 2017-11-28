@@ -22,7 +22,7 @@ namespace TriangulatedPolygonAStar.UI
         /// which display poses in the left-bottom corner of the canvas.
         /// </summary>
         /// <param name="distanceFromLeftInPx">Offset from the left side of the canvas</param>
-        /// <param name="distanceFromBottomInPx">Offset from the bottom side of the canvas</param>
+        /// <param name="distanceFromBottomInPx">Offset from the bottom of the canvas</param>
         public PoseDisplay(int distanceFromLeftInPx, int distanceFromBottomInPx)
         {
             SetCurrentPosition(new Vector(0.0, 0.0));

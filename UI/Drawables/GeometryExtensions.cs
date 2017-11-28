@@ -48,17 +48,6 @@ namespace TriangulatedPolygonAStar.UI
             yield return source.A.ToPointF();
             yield return source.B.ToPointF();
             yield return source.C.ToPointF();
-        }
-        
-        /// <summary>
-        /// Calculates the centroid of the specified triangle.
-        /// </summary>
-        /// <param name="triangle">The triangle to calculate the centroid of</param>
-        /// <returns>The centroid of the triangle</returns>
-        public static Vector GetCentroid(this Triangle triangle)
-        {
-            var sum = triangle.A.Plus(triangle.B).Plus(triangle.C);
-            return new Vector(sum.X / 3.0, sum.Y / 3.0);
-        }    
+        }   
     }
 }

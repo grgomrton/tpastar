@@ -95,10 +95,8 @@ namespace TriangulatedPolygonAStar.BasicGeometry
 
         /// <summary>
         /// Indicates, whether the specified point lies on this edge. 
-        /// A point is considered to be lying on the edge if the 
-        /// closest point on the edge is equal with the point itself.
-        /// It also means that the point is closer to the edge than the value defined in
-        /// <see cref="VectorEqualityCheck.Tolerance"/>.
+        /// A point is considered to be lying on the edge if the closest point on the edge
+        /// is closer to the point than the value defined in <see cref="VectorEqualityCheck.Tolerance"/>.
         /// </summary>
         /// <param name="point">The point to check</param>
         /// <returns>true if the point falls on this edge, otherwise false</returns>
@@ -106,7 +104,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             CheckForNullArgument(point, nameof(point));
 
-            return ClosestPointTo(point).Equals(point);
+            return point.DistanceFrom(ClosestPointTo(point)) < VectorEqualityCheck.Tolerance;
         }
 
         /// <inheritdoc />

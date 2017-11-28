@@ -96,7 +96,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// Every neighbour triangle is expected to share exactly two vertices with this one. 
         /// The maximum allowed number of neighbours is three.
         /// </summary>
-        /// <param name="neighbours">The neighbours to be set</param>
+        /// <param name="neighbours">The neighbours to set</param>
         public void SetNeighbours(params Triangle[] neighbours)
         {
             CheckForNullArgument(neighbours, nameof(neighbours));
@@ -107,7 +107,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
             if (neighbours.Length > 3)
             {
                 throw new ArgumentOutOfRangeException(
-                    "The amount of specified neighbours exceed the maximual amount of three", nameof(neighbours));
+                    "The amount of the specified neighbours exceeds the maximal amount of three", nameof(neighbours));
             }
             if (neighbours.Any(triangle => triangle.GetCommonVerticesWith(this).Count() != 2))
             {
@@ -142,7 +142,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         {
             CheckForNullArgument(other, nameof(other));
             
-            return vertices.Where(point => other.vertices.Any(otherVertex => otherVertex.Equals(point)));
+            return vertices.Where(vertex => other.vertices.Any(otherVertex => otherVertex.Equals(vertex)));
         }
 
         // Source: http://www.blackpawn.com/texts/pointinpoly/default.html

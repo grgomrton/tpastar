@@ -20,8 +20,9 @@ using System.Collections.Generic;
 namespace TriangulatedPolygonAStar
 {
     /// <summary>
-    /// The funnel structure from the Funnel algorithm that can be used to determine the 
-    /// euclidean shortest path between a start and a goal point along a set of adjacent triangles.
+    /// The funnel structure from the Funnel algorithm (Chazelle, Lee, Preparata), 
+    /// which can be used to determine the euclidean shortest path between 
+    /// a start and a goal point along a set of adjacent triangles.
     /// </summary>
     public class FunnelStructure
     {
@@ -47,9 +48,9 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="FunnelStructure"/> class by 
-        /// another funnel instance. The instantiation will result in a 
-        /// deep copy of the specified one.
+        /// Initializes a new instance of a <see cref="FunnelStructure"/> class 
+        /// by another funnel instance. The instantiation will result 
+        /// in a deep copy of the specified one.
         /// </summary>
         /// <param name="other">The other funnel to copy the values from</param>
         public FunnelStructure(FunnelStructure other)
@@ -62,8 +63,9 @@ namespace TriangulatedPolygonAStar
         }
 
         /// <summary>
-        /// The path which is built by stepping over the specified edges.
-        /// Once a goal point has added to the funnel, the path contains the complete path.
+        /// The path that is built during stepping over the specified edges.
+        /// Once a path has been finalized to a goal point, 
+        /// this path contains the complete path.
         /// </summary>
         public LinkedList<IVector> Path
         {
@@ -71,7 +73,8 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// The apex of the funnel. 
+        /// The peak of the funnel which separates left and right side 
+        /// by their different orientations of the neighbouring segments.
         /// </summary>
         public LinkedListNode<IVector> Apex
         {
@@ -92,7 +95,7 @@ namespace TriangulatedPolygonAStar
 
             if (commonSide == Side.Both)
             {
-                throw new ArgumentException("Illegal new edge: edge endpoints are identical with funnel endpoints",
+                throw new ArgumentException("Edge endpoints are identical with funnel endpoints",
                     nameof(edge));
             }
             else if (commonSide == Side.Left)
@@ -103,7 +106,7 @@ namespace TriangulatedPolygonAStar
             else if (commonSide == Side.Right)
             {
                 IVector pointToAdd = rightEnd.Equals(edge.A) ? edge.B : edge.A;
-                AddToLeftSideOfFunnel(pointToAdd); // regular edge overstep
+                AddToLeftSideOfFunnel(pointToAdd);
             }
             else if (commonSide == Side.None)
             {
@@ -113,7 +116,7 @@ namespace TriangulatedPolygonAStar
                 }
                 else
                 {
-                    throw new ArgumentException("Illegal new edge: funnel end and new edge do not share any vertex", nameof(edge));
+                    throw new ArgumentException("Funnel end and new edge do not share any vertex", nameof(edge));
                 }
             }
         }
@@ -260,6 +263,5 @@ namespace TriangulatedPolygonAStar
                 throw new ArgumentNullException(parameterName);
             }
         }
-        
     }
 }

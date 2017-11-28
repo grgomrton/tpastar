@@ -19,24 +19,24 @@ using System.Drawing;
 namespace TriangulatedPolygonAStar.UI
 {
     /// <summary>
-    /// An object which can be drawn on a <see cref="Canvas "/>.
+    /// An object which can be drawn on a canvas.
     /// </summary>
     public interface IDrawable
     {
         /// <summary>
         /// Draws the visual representation of the object to the specified canvas.
-        /// Every drawable need to use the same coordinate-system.
+        /// Every drawable on the same canvas should use identical coordinate systems.
         /// </summary>
         /// <param name="canvas">The canvas to draw onto</param>
         void Draw(Graphics canvas);
         
         /// <summary>
-        /// The highest coordinates of the rectangle in which the entire object fits.
+        /// The point with the highest coordinate values of the rectangle in which the entire object fits.
         /// </summary>
         PointF BoundingBoxHigh { get; }
         
         /// <summary>
-        /// The lowest coordinates of the rectangle in which the entire object fits.
+        /// The point with the lowest coordinate values of the rectangle in which the entire object fits.
         /// </summary>
         PointF BoundingBoxLow { get; }
     }

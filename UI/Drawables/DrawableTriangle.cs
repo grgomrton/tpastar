@@ -35,7 +35,7 @@ namespace TriangulatedPolygonAStar.UI
 
         /// <summary>
         /// Initializes a new instance of <see cref="DrawableTriangle"/> which draws
-        /// a <see cref="Triangle"/> to the canvas.
+        /// a triangle to the canvas.
         /// </summary>
         /// <param name="triangle">The triangle to draw</param>
         public DrawableTriangle(Triangle triangle)
@@ -54,7 +54,7 @@ namespace TriangulatedPolygonAStar.UI
         
         /// <summary>
         /// The set of meta information about explorations of this triangle 
-        /// since the metadata was cleared.
+        /// since the last time the metadata was cleared.
         /// </summary>
         public IEnumerable<TriangleEvaluationResult> Traversions
         {
@@ -71,8 +71,7 @@ namespace TriangulatedPolygonAStar.UI
         public PointF BoundingBoxLow { get; private set; }
         
         /// <summary>
-        /// Increases the amount of time this triangle have been stepped into during
-        /// exploring the triangle graph.
+        /// Stores metadata about the traversal of this triangle.
         /// </summary>
         /// <param name="metadata">The result of the evaluation of the triangle</param>
         public void AddMetaData(TriangleEvaluationResult metadata)
@@ -81,7 +80,7 @@ namespace TriangulatedPolygonAStar.UI
         }
 
         /// <summary>
-        /// Clears the stored information which was gathered during triangle map exploration.
+        /// Clears the stored information gathered during triangle map exploration.
         /// </summary>
         public void ClearMetaData()
         {
