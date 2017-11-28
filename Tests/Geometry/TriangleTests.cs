@@ -96,7 +96,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void TwoTrianglesShouldNotBeEqualIfAnyOfTheirPointsAreInHigherDistanceThanVectorTolerance()
+        public void TwoTrianglesShouldNotBeEqualIfAnyOfTheirPointsIsFartherThanVectorTolerance()
         {
             VectorEqualityCheck.Tolerance = 0.01;
             var t1a = new Vector(3.0, 1.0);
@@ -132,7 +132,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void GettingCommonEdgeShouldThrowExceptionIfOtherIsNotAmoungNeighbours()
+        public void GettingCommonEdgeShouldThrowExceptionIfOtherIsNotAmongNeighbours()
         {
             var t1a = new Vector(3.0, 1.0);
             var t1b = new Vector(2.0, 2.0);
@@ -461,7 +461,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void CommonEdgeShouldEqualWithOtherTriangleEdgeIfNothSharedPointDiffersButLessThanTolerance()
+        public void CommonEdgeShouldEqualWithOtherTriangleEdgeIfBothSharedPointDiffersButLessThanTolerance()
         {
             VectorEqualityCheck.Tolerance = 0.1;
             var a = new Vector(0.0, 0.0);

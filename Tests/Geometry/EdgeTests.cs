@@ -33,7 +33,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void DistanceFromPointShouldBeZeroIfPointFallsOnLeftEdgeEndpoint()
+        public void DistanceFromPointShouldBeZeroIfPointFallsOnLeftEndpoint()
         {
             var leftEndpoint = new Vector(2.0, 1.0);
             var rightEndpoint = new Vector(4.0, 1.0);
@@ -44,7 +44,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void DistanceFromPointShouldBeZeroIfPointFallsOnRightEdgeEndpoint()
+        public void DistanceFromPointShouldBeZeroIfPointFallsOnRightEndpoint()
         {
             var leftEndpoint = new Vector(2.0, 1.0);
             var rightEndpoint = new Vector(4.0, 1.0);
@@ -101,7 +101,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void DistanceOfPointFromDiagonalEdgeShouldBeTheLenghtOfARightSegmentBetweenEdgeAndPoint()
+        public void DistanceOfPointFromDiagonalEdgeShouldBeTheLenghtOfRightLineSegmentBetweenEdgeAndPoint()
         {
             var leftEndpoint = new Vector(1.0, 1.0);
             var rightEndpoint = new Vector(3.0, 3.0);

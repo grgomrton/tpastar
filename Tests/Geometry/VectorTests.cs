@@ -269,7 +269,7 @@ namespace TriangulatedPolygonAStar.Tests
         {
             VectorEqualityCheck.Tolerance = 0.01;
             var u = new Vector(1.001, 1.0);
-            var v = new Vector(1.001, 1.0);
+            var v = new Vector(1.0, 1.001);
 
             u.Equals(v).Should().BeTrue();
         }

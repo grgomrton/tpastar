@@ -88,7 +88,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
         
         [Test]
-        public void FunnelShouldSkipFirstEdgeIfApexLiesOnIt()
+        public void FunnelShouldSkipFirstEdgeIfApexLiesOnThat()
         {
             var v1 = new Vector(1.0, 1.0);
             var v2 = new Vector(3.0, 1.0);
@@ -98,13 +98,13 @@ namespace TriangulatedPolygonAStar.Tests
             
             funnel.StepOver(edge);
 
-            var funnelPoints = funnel.Apex.List;
-            funnelPoints.Count.Should().Be(1);
-            funnelPoints.First.Value.Should().Be(apex);
+            var funnelVertices = funnel.Apex.List;
+            funnelVertices.Count.Should().Be(1);
+            funnelVertices.First.Value.Should().Be(apex);
         }
 
         [Test]
-        public void FunnelShouldRemovePointThatCreatesABump()
+        public void FunnelShouldRemovePointThatCreatesABumpOnTheLeftFunnelSide()
         {
             var origin = new Vector(0.0, 0.0);
             var a = new Vector(1.0, 1.0);

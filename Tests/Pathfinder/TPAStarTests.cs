@@ -397,7 +397,7 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void IfStartTriangleContainsGoalPointButThereIsAnotherGoalInAnAdjacentTriangleCloserToStartPathFinderShouldFindPathToThatOne()
+        public void IfStartTriangleContainsGoalPointButThereIsAnotherGoalInAnAdjacentTriangleCloserToStartPathFinderShouldFindPathToTheOneInNeighbour()
         {
             var a = new Vector(0.0, 0.0);
             var b = new Vector(1.0, 0.0);
