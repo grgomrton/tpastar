@@ -4,7 +4,7 @@ _Triangulated Polygon A-star_ is a pathfinder, which is able to determine the sh
 
 <p align="center"><img src="./Documentation/exploration-one-start-multiple-goals-cropped.png" alt="The result of an exploration between one start and multiple goals" /></p>  
 
-The image shows the result of a pathfinding between one start and three goal points. The shade of the triangles indicates how many times the given triangle was expanded. In this case white means zero, grey means once.
+The image shows the result of a pathfinding between one start and three goal points. The shade of the triangles indicate how many times the given triangle was expanded. In this case white means zero, grey means once.
 
 ## Licensing
 
