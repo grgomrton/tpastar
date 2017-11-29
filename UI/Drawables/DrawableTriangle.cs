@@ -107,7 +107,7 @@ namespace TriangulatedPolygonAStar.UI
         {
             FillColor = Color.White;
             TraversionShade = Color.FromArgb(30, 30, 30);
-            var edgeWidth = 0.1f;
+            var edgeWidth = 0.01f;
             EdgePen = new Pen(Color.Gray, edgeWidth);
         }
     }

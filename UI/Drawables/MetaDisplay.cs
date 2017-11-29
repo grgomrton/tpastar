@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -58,19 +59,20 @@ namespace TriangulatedPolygonAStar.UI
         {
             var canvasSize = canvas.ClipBounds;
             var builder = new StringBuilder();
+            var invariantCulture = CultureInfo.InvariantCulture;
 
             if (selectedTriangle != null)
             {
-                builder.AppendFormat("{0,-22}", selectedTriangle.DisplayName).AppendLine();
+                builder.AppendFormat(invariantCulture, "{0,-22}", selectedTriangle.DisplayName).AppendLine();
                 var traversionCount = selectedTriangle.Traversions.Count();
                 builder.Append("traversed: ").Append(traversionCount).AppendLine(" time(s)");
                 builder.AppendLine();
 
                 foreach (var traversion in selectedTriangle.Traversions)
                 {
-                    builder.Append("       g_min: ").AppendFormat("{0:0.00}", traversion.ShortestPathToEdgeLength).AppendLine();
-                    builder.Append("       g_max: ").AppendFormat("{0:0.00}", traversion.LongestPathToEdgeLength).AppendLine();
-                    builder.Append("       f_min: ").AppendFormat("{0:0.00}", traversion.EstimatedMinimalCost).AppendLine();
+                    builder.Append("       g_min: ").AppendFormat(invariantCulture, "{0:0.00}", traversion.ShortestPathToEdgeLength).AppendLine();
+                    builder.Append("       g_max: ").AppendFormat(invariantCulture, "{0:0.00}", traversion.LongestPathToEdgeLength).AppendLine();
+                    builder.Append("       f_min: ").AppendFormat(invariantCulture, "{0:0.00}", traversion.EstimatedMinimalCost).AppendLine();
                     builder.AppendLine();   
                 }                
             }
@@ -79,18 +81,18 @@ namespace TriangulatedPolygonAStar.UI
             builder.AppendLine("path:");
             foreach (var point in path.Vertices)
             {
-                builder.AppendFormat("       {0:0.00}, {1:0.00}", point.X, point.Y).AppendLine();
+                builder.AppendFormat(invariantCulture, "       {0:0.00}, {1:0.00}", point.X, point.Y).AppendLine();
             }
             
             builder.AppendLine();
-            builder.AppendFormat("{0,-22}", "start:").AppendLine();
-            builder.AppendFormat("       {0:0.00}, {1:0.00}", start.CurrentLocation.X, start.CurrentLocation.Y).AppendLine();
+            builder.AppendFormat(invariantCulture, "{0,-22}", "start:").AppendLine();
+            builder.AppendFormat(invariantCulture, "       {0:0.00}, {1:0.00}", start.CurrentLocation.X, start.CurrentLocation.Y).AppendLine();
             builder.AppendLine();
             
             builder.AppendLine("goals:");
             foreach (var goal in goals)
             {
-                builder.AppendFormat("       {0:0.00}, {1:0.00}", goal.CurrentLocation.X, goal.CurrentLocation.Y).AppendLine();
+                builder.AppendFormat(invariantCulture, "       {0:0.00}, {1:0.00}", goal.CurrentLocation.X, goal.CurrentLocation.Y).AppendLine();
             }
 
             var caption = builder.ToString();

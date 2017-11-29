@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -95,13 +96,13 @@ namespace TriangulatedPolygonAStar.UI
                     canvas.DrawLines(LinePen, Vertices.Select(point => point.ToPointF()).ToArray());
                 }
                 var captionPosition = Vertices.Last().Plus(CaptionTranslation).ToPointF();
-                canvas.DrawString(String.Format(CaptionFormat, length), CaptionFont, CaptionBrush, captionPosition);                
+                canvas.DrawString(String.Format(CultureInfo.InvariantCulture, CaptionFormat, length), CaptionFont, CaptionBrush, captionPosition);                
             }
         }
 
         static PolyLine()
         {
-            var width = 0.04f;
+            var width = 0.03f;
             LinePen = new Pen(Color.Green, width);
             CaptionBrush = Brushes.Black;
             var fontSize = 0.12f;

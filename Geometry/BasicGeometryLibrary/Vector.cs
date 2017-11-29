@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Globalization;
 
 namespace TriangulatedPolygonAStar.BasicGeometry
 {
@@ -134,7 +135,7 @@ namespace TriangulatedPolygonAStar.BasicGeometry
         /// <returns>The rounded components of this vector as text</returns>
         public override string ToString()
         {
-            return String.Format("({0:0.00}, {1:0.00})", X, Y);
+            return String.Format(CultureInfo.InvariantCulture, "({0:0.00}, {1:0.00})", X, Y);
         }
 
         private double ZComponentOfCrossProductWith(IVector other)

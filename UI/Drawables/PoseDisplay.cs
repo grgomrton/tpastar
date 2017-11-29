@@ -1,7 +1,8 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
+ using System.Globalization;
+ using System.Runtime.InteropServices;
 using System.Text;
 using TriangulatedPolygonAStar.BasicGeometry;
 
@@ -42,7 +43,7 @@ namespace TriangulatedPolygonAStar.UI
         public void Draw(Graphics canvas)
         {
             var canvasSize = canvas.ClipBounds;
-            var caption = String.Format("{0:0.00}, {1:0.00}", currentPosition.X, currentPosition.Y);
+            var caption = String.Format(CultureInfo.InvariantCulture, "{0:0.00}, {1:0.00}", currentPosition.X, currentPosition.Y);
             var captionSize = canvas.MeasureString(caption, CaptionFont);
             canvas.DrawString(caption, CaptionFont, CaptionBrush, offset.X, canvasSize.Bottom - captionSize.Height + offset.Y);
         }

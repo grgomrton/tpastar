@@ -49,7 +49,7 @@ namespace TriangulatedPolygonAStar.UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1000, 670);
+            this.ClientSize = new System.Drawing.Size(1000, 600);
             this.Controls.Add(this.display);
             this.Name = "Demo";
             this.Text = "Triangulated Polygon A-star demo";
