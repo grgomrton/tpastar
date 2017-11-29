@@ -235,8 +235,6 @@ namespace TriangulatedPolygonAStar.Tests
             var start = origin;
             var goals = Enumerable.Empty<IVector>();
             var initialPath = new TPAPath(start, t1);
-            var squareRootFive = 2.23607;
-            var squareRootOnePointTwentyFive = 1.11803;
             var onePlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.35410;
             
             var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
@@ -273,8 +271,6 @@ namespace TriangulatedPolygonAStar.Tests
             var start = origin;
             var goals = Enumerable.Empty<IVector>();
             var initialPath = new TPAPath(start, t1);
-            var squareRootFive = 2.23607;
-            var squareRootOnePointTwentyFive = 1.11803;
             var onePlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.35410;
             
             var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
@@ -314,9 +310,6 @@ namespace TriangulatedPolygonAStar.Tests
             var start = origin;
             var goals = Enumerable.Empty<IVector>();
             var initialPath = new TPAPath(start, t1);
-            var squareRootFive = 2.23607;
-            var squareRootOnePointTwentyFive = 1.11803;
-            var squareRootTwo = 1.41421;
             var sqaureRootTwoPlusSquareRootFivePlusSquareRootOnePointTwentyFive = 4.76832;
             
             var pathToT2 = initialPath.BuildPartialPathTo(t2, goals);
