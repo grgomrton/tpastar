@@ -156,7 +156,7 @@ namespace TriangulatedPolygonAStar
 
         /// <summary>
         /// Returns the complete, final path to the specified goal point. 
-        /// The goal has to be contained by the current triangle this path stands on.
+        /// The goal has to be contained by the triangle this path stands on.
         /// </summary>
         /// <param name="goal">The goal to build the complete path to</param>
         /// <returns>The completed path to the reached goal point</returns>
@@ -175,9 +175,9 @@ namespace TriangulatedPolygonAStar
         }
         
         /// <summary>
-        /// Updates the estimation of the minimal path length between the current edge and the closest goal point 
-        /// based on whether the paths reached by stepping into this triangle have been built. 
-        /// If they are not built yet, those goals are included, otherwise they are excluded from the minimum finding. 
+        /// Updates the estimation of the distance from the closest goal point. 
+        /// The estimation depends on whether the paths to the goals in the current triangle have been built. 
+        /// If not then those goals are included, otherwise they are excluded. 
         /// </summary>
         /// <param name="goals">The goal points of the pathfinding</param>
         public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
