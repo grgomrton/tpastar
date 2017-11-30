@@ -1,0 +1,13 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# c# source and project files should keep crlf line ending
+*.sln text eol=crlf
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.resx text eol=crlf
+*.config text eol=crlf
+
+# text files should keep crlf line ending
+*.txt text eol=crlf
+*.md text eol=crlf
