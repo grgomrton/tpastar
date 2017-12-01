@@ -8,10 +8,10 @@ The image shows the result of a pathfinding between one source and three target 
 
 ## Licensing
 
-This repository contains the implementation of the algorithm in C#. It is shipped with a demo application, which can be used for testing it in various arrangements. The entire codebase is licensed under [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+This repository contains the implementation of the algorithm in C#. It is shipped with a demo application, which can be used for testing in various arrangements. The entire codebase is licensed under [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Acknowledgements
-- _István Engedy_, my thesis advisor, without whose support I couldn't have pulled this through
+- _István Engedy_, my thesis advisor, whose support was key in the development of this project
 - _Douglas Demyen_, whose master's thesis guided me this direction
 - The _creators_ of the _Funnel algorithm_ on which this solution is based
 - _Richard Potter_, whose library _Vector3_ was used extensively during development
