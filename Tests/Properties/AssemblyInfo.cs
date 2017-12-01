@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TriangulatedPolygonAStar.Tests")]
-[assembly: AssemblyCopyright("Copyright (c) 2017 Márton Gergó")]
+[assembly: AssemblyCopyright("Copyright 2017 Márton Gergó")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
