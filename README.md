@@ -12,7 +12,7 @@ This repository contains the implementation of the algorithm in C#.
 
 The [build](https://github.com/grgomrton/tpastar/releases/latest) contains a demo application, which can be used for testing it in various arrangements.
 
-Everything is licensed under [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+The project is licensed under [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Acknowledgements
 - _István Engedy_, my thesis advisor, whose support was key in the development of this project
