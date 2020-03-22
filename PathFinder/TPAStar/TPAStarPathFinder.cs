@@ -92,41 +92,31 @@ namespace TriangulatedPolygonAStar
                 }
                 else
                 {
-                    if (!partialPath.ReachedPathsBuilt)
+                    foreach (IVector goal in goals)
                     {
-                        foreach (IVector goal in goals)
+                        if (partialPath.CurrentTriangle.ContainsPoint(goal))
                         {
-                            if (partialPath.CurrentTriangle.ContainsPoint(goal))
+                            LinkedList<IVector> newCandidate = partialPath.BuildCompletePathTo(goal);
+                            double newCandidateLength = GetLength(newCandidate);
+                            if (newCandidateLength < bestCandidateLength)
                             {
-                                LinkedList<IVector> newCandidate = partialPath.BuildCompletePathTo(goal);
-                                double newCandidateLength = GetLength(newCandidate);
-                                if (newCandidateLength < bestCandidateLength)
-                                {
-                                    bestCandidate = newCandidate;
-                                    bestCandidateLength = newCandidateLength;
-                                }
+                                bestCandidate = newCandidate;
+                                bestCandidateLength = newCandidateLength;
                             }
                         }
-                        partialPath.ReachedPathsBuilt = true;
-                        partialPath.UpdateEstimationToClosestGoalPoint(goals);
-                        
-                        AddToOpenSet(partialPath);
                     }
-                    else
+                    foreach (ITriangle neighbour in partialPath.CurrentTriangle.Neighbours)
                     {
-                        foreach (ITriangle neighbour in partialPath.CurrentTriangle.Neighbours)
+                        if ((partialPath.CurrentEdge == null) || (!partialPath.CurrentEdge.Equals(neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle))))
                         {
-                            if ((partialPath.CurrentEdge == null) || (!partialPath.CurrentEdge.Equals(neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle))))
+                            TPAPath pathToNeighbour = partialPath.BuildPartialPathTo(neighbour, goals);
+                            if (IsGoodCandidate(pathToNeighbour))
                             {
-                                TPAPath pathToNeighbour = partialPath.BuildPartialPathTo(neighbour, goals);
-                                if (IsGoodCandidate(pathToNeighbour))
-                                {
-                                    AddToOpenSet(pathToNeighbour);
-                                    UpdateHigherBoundToReachedEdge(pathToNeighbour);
-                                }
-                            
-                                FireTriangleExploredEvent(pathToNeighbour);
+                                AddToOpenSet(pathToNeighbour);
+                                UpdateHigherBoundToReachedEdge(pathToNeighbour);
                             }
+                        
+                            FireTriangleExploredEvent(pathToNeighbour);
                         }
                     }
                 }

@@ -34,20 +34,6 @@ namespace TriangulatedPolygonAStar.Tests
         }
 
         [Test]
-        public void InitiallyFinalPathsShouldNotBeAcquired()
-        {
-            var a = new Vector(0.0,0.0);
-            var b = new Vector(1.0, 0.0);
-            var c = new Vector(0.0, 1.0);
-            var t = new Triangle(a, b, c, 0);
-            var start = new Vector(0.1, 0.1);
-            
-            var initialPath = new TPAPath(start, t);
-
-            initialPath.ReachedPathsBuilt.Should().BeFalse();
-        }
-        
-        [Test]
         public void InitiallyCurrentEdgeShouldNotBeSet()
         {
             var a = new Vector(0.0,0.0);
@@ -73,28 +59,6 @@ namespace TriangulatedPolygonAStar.Tests
             var initialPath = new TPAPath(start, t);
 
             initialPath.CurrentTriangle.Should().Be(t);            
-        }
-
-        [Test]
-        public void AfterBuildingFinalPathsFromTheStartTriangleTheCostEstimationShouldBeCalculatedBetweenTheApexAndTheGoalOutsideTheTriangle()
-        {
-            var a = new Vector(0.0,0.0);
-            var b = new Vector(1.0, 0.0);
-            var c = new Vector(0.0, 1.0);
-            var t = new Triangle(a, b, c, 0);
-            var start = new Vector(0.1, 0.1);
-            var goalInT = new Vector(0.2, 0.1);
-            var goalOutsideT = new Vector(-0.2, 0.1);
-            var distaneBetweenStartAndOutsideGoal = 0.3;
-            var goals = new[] { goalInT, goalOutsideT };
-            var initialPath = new TPAPath(start, t);
-            initialPath.ReachedPathsBuilt = true;
-            
-            initialPath.UpdateEstimationToClosestGoalPoint(goals);
-
-            t.ContainsPoint(goalOutsideT).Should().BeFalse();
-            initialPath.MinimalTotalCost.Should()
-                .BeApproximately(distaneBetweenStartAndOutsideGoal, AssertionPrecision);
         }
 
         [Test]

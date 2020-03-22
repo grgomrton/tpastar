@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2017 Márton Gergó
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,7 @@ namespace TriangulatedPolygonAStar
     {
         private ITriangle currentTriangle;
         private IEdge currentEdge;
-        private bool reachedPathsBuilt;
-        
+
         private FunnelStructure funnel;
         private double alreadyBuiltPathLength;                 // gPart
         private double lengthOfShortestPathFromApexToEdge;     // dgMin
@@ -55,7 +54,6 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = 0;
             lengthOfLongestPathFromApexToEdge = 0;
             distanceFromClosestGoalPoint = 0; 
-            reachedPathsBuilt = false;
         }
 
         private TPAPath(TPAPath other)
@@ -68,7 +66,6 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = other.lengthOfShortestPathFromApexToEdge;
             lengthOfLongestPathFromApexToEdge = other.lengthOfLongestPathFromApexToEdge;
             distanceFromClosestGoalPoint = other.distanceFromClosestGoalPoint;
-            reachedPathsBuilt = other.reachedPathsBuilt;
         }
 
         /// <summary>
@@ -113,15 +110,6 @@ namespace TriangulatedPolygonAStar
         public double MinimalTotalCost
         {
             get { return ShortestPathToEdgeLength + distanceFromClosestGoalPoint; }
-        }
-
-        /// <summary>
-        /// Indicates whether complete paths to the goals contained by the current triangle have been acquired.
-        /// </summary>
-        public bool ReachedPathsBuilt
-        {
-            get { return reachedPathsBuilt; }
-            set { reachedPathsBuilt = value; }
         }
 
         /// <summary>
@@ -174,24 +162,17 @@ namespace TriangulatedPolygonAStar
             return funnelCopy.Path;
         }
         
-        /// <summary>
-        /// Updates the estimation of the distance from the closest goal point. 
-        /// The estimation depends on whether the paths to the goals in the current triangle have been built. 
-        /// If not then those goals are included, otherwise they are excluded. 
-        /// </summary>
-        /// <param name="goals">The goal points of the pathfinding</param>
-        public void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
+        private void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
         {
-            bool shouldIncludeGoalsInCurrentTriangle = !ReachedPathsBuilt ? true : false;
             if (currentEdge != null)
             {
                 distanceFromClosestGoalPoint = 
-                    MinimalDistanceBetween(currentEdge, goals, shouldIncludeGoalsInCurrentTriangle, currentTriangle);
+                    MinimalDistanceBetween(currentEdge, goals);
             }
             else
             {
                 distanceFromClosestGoalPoint = 
-                    MinimalDistanceBetween(funnel.Apex.Value, goals, shouldIncludeGoalsInCurrentTriangle, currentTriangle);
+                    MinimalDistanceBetween(funnel.Apex.Value, goals);
             }
         }
         
@@ -204,7 +185,6 @@ namespace TriangulatedPolygonAStar
             alreadyBuiltPathLength = LengthOfBuiltPathInFunnel(funnel.Path);
             lengthOfShortestPathFromApexToEdge = LengthOfShortestPathFromApexToEdge(currentEdge, funnel.Apex);
             lengthOfLongestPathFromApexToEdge = LengthOfLongestPathFromApexToEdge(funnel.Apex);
-            ReachedPathsBuilt = false;
             UpdateEstimationToClosestGoalPoint(goals);
         }
         
@@ -331,39 +311,29 @@ namespace TriangulatedPolygonAStar
             return length;
         }
 
-        private static double MinimalDistanceBetween(IEdge edge, IEnumerable<IVector> targetPoints, bool shouldIncludePointsInTriangle, ITriangle triangle)
+        private static double MinimalDistanceBetween(IEdge edge, IEnumerable<IVector> targetPoints)
         {
             double minDistance = Double.PositiveInfinity;
             foreach (var targetPoint in targetPoints)
             {
-                bool pointFallsInTriangle = triangle.ContainsPoint(targetPoint);
-                bool shouldEvaluate = !pointFallsInTriangle || (pointFallsInTriangle && shouldIncludePointsInTriangle);
-                if (shouldEvaluate)
+                double distance = edge.DistanceFrom(targetPoint);
+                if (distance < minDistance)
                 {
-                    double distance = edge.DistanceFrom(targetPoint);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                    }                    
+                    minDistance = distance;
                 }
             }
             return minDistance;
         }
 
-        private static double MinimalDistanceBetween(IVector point, IEnumerable<IVector> targetPoints, bool shouldIncludePointsInTriangle, ITriangle currentTriangle)
+        private static double MinimalDistanceBetween(IVector point, IEnumerable<IVector> targetPoints)
         {
             double minDistance = Double.PositiveInfinity;
             foreach (var targetPoint in targetPoints)
             {
-                bool pointFallsInTriangle = currentTriangle.ContainsPoint(targetPoint);
-                bool shouldEvaluate = !pointFallsInTriangle || (pointFallsInTriangle && shouldIncludePointsInTriangle);
-                if (shouldEvaluate)
+                double distance = point.DistanceFrom(targetPoint);
+                if (distance < minDistance)
                 {
-                    double distance = point.DistanceFrom(targetPoint);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                    }                    
+                    minDistance = distance;
                 }
             }
             return minDistance;
