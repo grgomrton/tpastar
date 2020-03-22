@@ -26,7 +26,6 @@ namespace TriangulatedPolygonAStar
     public class TPAStarPathFinder
     {
         private LinkedList<TPAPath> openSet;
-        private Dictionary<IEdge, double> higherBounds;
         
         /// <summary>
         /// Initializes a new instance of a <see cref="TPAStarPathFinder"/> class which can be used to find
@@ -35,7 +34,6 @@ namespace TriangulatedPolygonAStar
         public TPAStarPathFinder()
         {
             openSet = new LinkedList<TPAPath>();
-            higherBounds = new Dictionary<IEdge, double>();    
         }   
         
         /// <summary>
@@ -70,7 +68,6 @@ namespace TriangulatedPolygonAStar
             }
             
             openSet.Clear();
-            higherBounds.Clear();
             
             LinkedList<IVector> bestCandidate = new LinkedList<IVector>();
             bestCandidate.AddFirst(startPoint);
@@ -107,15 +104,10 @@ namespace TriangulatedPolygonAStar
                     }
                     foreach (ITriangle neighbour in partialPath.CurrentTriangle.Neighbours)
                     {
-                        if ((partialPath.CurrentEdge == null) || (!partialPath.CurrentEdge.Equals(neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle))))
+                        if ((partialPath.CurrentEdge == null) || (!partialPath.IsAlreadyOverstepped(neighbour.GetCommonEdgeWith(partialPath.CurrentTriangle))))
                         {
                             TPAPath pathToNeighbour = partialPath.BuildPartialPathTo(neighbour, goals);
-                            if (IsGoodCandidate(pathToNeighbour))
-                            {
-                                AddToOpenSet(pathToNeighbour);
-                                UpdateHigherBoundToReachedEdge(pathToNeighbour);
-                            }
-                        
+                            AddToOpenSet(pathToNeighbour);
                             FireTriangleExploredEvent(pathToNeighbour);
                         }
                     }
@@ -134,34 +126,6 @@ namespace TriangulatedPolygonAStar
                 currentNode = currentNode.Next;
             }
             return length;
-        }
-        
-        private bool IsGoodCandidate(TPAPath path)
-        {
-            bool isGoodCandidate = true;
-            if (higherBounds.ContainsKey(path.CurrentEdge))
-            {
-                if (higherBounds[path.CurrentEdge] < path.ShortestPathToEdgeLength)
-                {
-                    isGoodCandidate = false;
-                }
-            }
-            return isGoodCandidate;
-        }
-
-        private void UpdateHigherBoundToReachedEdge(TPAPath path)
-        {
-            if (higherBounds.ContainsKey(path.CurrentEdge))
-            {
-                if (higherBounds[path.CurrentEdge] > path.LongestPathToEdgeLength)
-                {
-                    higherBounds[path.CurrentEdge] = path.LongestPathToEdgeLength;
-                }
-            }
-            else
-            {
-                higherBounds.Add(path.CurrentEdge, path.LongestPathToEdgeLength);
-            }
         }
 
         private void AddToOpenSet(TPAPath path)

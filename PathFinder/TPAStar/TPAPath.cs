@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Copyright 2017 Márton Gergó
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ namespace TriangulatedPolygonAStar
         private IEdge currentEdge;
 
         private FunnelStructure funnel;
+        private LinkedList<IEdge> oversteppedEdges;
         private double alreadyBuiltPathLength;                 // gPart
         private double lengthOfShortestPathFromApexToEdge;     // dgMin
         private double lengthOfLongestPathFromApexToEdge;      // dgMax
@@ -54,6 +55,7 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = 0;
             lengthOfLongestPathFromApexToEdge = 0;
             distanceFromClosestGoalPoint = 0; 
+            oversteppedEdges = new LinkedList<IEdge>();
         }
 
         private TPAPath(TPAPath other)
@@ -66,6 +68,7 @@ namespace TriangulatedPolygonAStar
             lengthOfShortestPathFromApexToEdge = other.lengthOfShortestPathFromApexToEdge;
             lengthOfLongestPathFromApexToEdge = other.lengthOfLongestPathFromApexToEdge;
             distanceFromClosestGoalPoint = other.distanceFromClosestGoalPoint;
+            oversteppedEdges = new LinkedList<IEdge>(other.oversteppedEdges);
         }
 
         /// <summary>
@@ -161,6 +164,16 @@ namespace TriangulatedPolygonAStar
             
             return funnelCopy.Path;
         }
+
+        /// <summary>
+        /// Indicates whether this path has already stepped over the specified edge.
+        /// </summary>
+        /// <param name="edge">The edge to test</param>
+        /// <returns>Whether the path has visited this edge</returns>
+        public bool IsAlreadyOverstepped(IEdge edge)
+        {
+            return oversteppedEdges.Contains(edge);
+        }
         
         private void UpdateEstimationToClosestGoalPoint(IEnumerable<IVector> goals)
         {
@@ -179,6 +192,7 @@ namespace TriangulatedPolygonAStar
         private void StepTo(ITriangle targetTriangle, IEnumerable<IVector> goals)
         {
             currentEdge = currentTriangle.GetCommonEdgeWith(targetTriangle);
+            oversteppedEdges.AddLast(currentEdge);
             currentTriangle = targetTriangle;
 
             funnel.StepOver(currentEdge);
